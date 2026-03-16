@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidate Profile</title>
+    <!-- Include Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: { bg: '#f8f9fc', border: '#e5e7eb', textMuted: '#6b7280', textDark: '#111827', blue: '#134E8E', yellow: '#FFB33F' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        i[class^="fi-"] { display: inline-flex; align-items: center; justify-content: center; line-height: 1; }
+        .font-mono-custom { font-family: 'JetBrains Mono', monospace; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 4px; }
+    </style>
+</head>
+<body class="bg-brand-bg font-sans min-h-screen p-4 sm:p-6 md:p-8">
+
+    <div class="max-w-[1400px] w-full mx-auto pb-10">
+        
+        <!-- Header Section -->
+        <header class="flex items-center justify-between gap-4 mb-6">
+            <div class="flex items-center gap-4">
+                <button onclick="if(typeof loadModule === 'function') loadModule('allCandidates')" class="w-10 h-10 bg-white border border-gray-200 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors shadow-sm shrink-0">
+                    <i class="fi fi-rr-arrow-left"></i>
+                </button>
+                
+                <div id="vc-avatar" class="hidden sm:flex w-14 h-14 rounded-xl bg-blue-50 border border-blue-100 text-brand-blue items-center justify-center text-[22px] font-bold shadow-sm shrink-0 uppercase">
+                    ?
+                </div>
+                
+                <div class="flex flex-col">
+                    <h1 id="vc-name" class="text-xl sm:text-[24px] font-bold text-gray-900 leading-tight">Loading...</h1>
+                    <div class="flex items-center gap-2 text-sm text-gray-500 mt-1">
+                        <span id="vc-chest" class="font-medium text-gray-600 font-mono-custom">#--</span>
+                        <span class="text-gray-300">&bull;</span>
+                        <span id="vc-adm" class="font-mono-custom text-[13px]">Adm: --</span>
+                        <span class="text-gray-300">&bull;</span>
+                        <span id="vc-class" class="border border-gray-200 rounded px-1.5 py-0.5 text-[11px] font-semibold tracking-wider bg-white shadow-sm uppercase">N/A</span>
+                    </div>
+                </div>
+            </div>
+            <div class="shrink-0 flex items-center">
+                <span id="vc-status" class="px-3 py-1.5 text-[11px] font-bold bg-[#FFB33F] text-[#111827] rounded-full shadow-sm">ACTIVE</span>
+            </div>
+        </header>
+
+        <!-- Summary Cards Section -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            
+            <!-- Card 1: Total Points -->
+            <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] flex justify-between items-center">
+                <div>
+                    <h3 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Points</h3>
+                    <div class="flex items-baseline gap-1">
+                        <span id="vc-stat-points" class="text-3xl font-black text-gray-900">0</span>
+                        <span class="text-sm font-semibold text-gray-400">pts</span>
+                    </div>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-500">
+                    <i class="fi fi-rr-star text-lg"></i>
+                </div>
+            </div>
+
+            <!-- Card 2: Total Percentage -->
+            <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] flex justify-between items-center">
+                <div>
+                    <h3 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Percentage</h3>
+                    <div id="vc-stat-percent" class="text-3xl font-black text-gray-900">0%</div>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-green-600">
+                    <i class="fi fi-rr-chart-pie-alt text-lg"></i>
+                </div>
+            </div>
+
+            <!-- Card 3: Programs Participated -->
+            <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] flex justify-between items-center">
+                <div>
+                    <h3 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Programs Participated</h3>
+                    <div id="vc-stat-participated" class="text-3xl font-black text-gray-900">0</div>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center text-purple-500">
+                    <i class="fi fi-rr-document text-lg"></i>
+                </div>
+            </div>
+
+            <!-- Card 4: Results Published -->
+            <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] flex justify-between items-center">
+                <div>
+                    <h3 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Results Published</h3>
+                    <div id="vc-stat-results" class="text-3xl font-black text-gray-900">0</div>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-teal-50 flex items-center justify-center text-teal-500">
+                    <i class="fi fi-rr-trophy text-lg"></i>
+                </div>
+            </div>
+            
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="flex flex-col lg:flex-row gap-6">
+            
+            <!-- Left Sidebar: Personal Details -->
+            <div class="w-full lg:w-[320px] shrink-0">
+                <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]">
+                    <h2 class="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-5">Personal Details</h2>
+                    
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center text-sm">
+                            <span class="text-gray-500">Team</span>
+                            <span class="font-medium text-gray-900" id="vc-det-team">—</span>
+                        </div>
+                        <div class="flex justify-between items-center text-sm">
+                            <span class="text-gray-500">Section</span>
+                            <span class="font-medium text-gray-900" id="vc-det-sec">—</span>
+                        </div>
+                        
+                        <!-- Divider -->
+                        <div class="h-px bg-gray-100 my-4"></div>
+                        
+                        <div class="flex justify-between items-center text-sm">
+                            <span class="text-gray-500">Chest Number</span>
+                            <span class="font-medium text-gray-900 font-mono-custom" id="vc-det-chest">—</span>
+                        </div>
+                        <div class="flex justify-between items-center text-sm">
+                            <span class="text-gray-500">Admission Number</span>
+                            <span class="font-medium text-gray-900 font-mono-custom" id="vc-det-adm">—</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Area: Tabs and Content -->
+            <div class="flex-grow bg-white rounded-xl border border-gray-200 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] overflow-hidden flex flex-col min-h-[400px]">
+                
+                <!-- Tab Navigation -->
+                <div class="flex border-b border-gray-100 overflow-x-auto no-scrollbar">
+                    
+                    <!-- Tab 1 -->
+                    <button class="tab-btn flex-1 min-w-[150px] flex items-center justify-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors duration-200 outline-none active" data-target="tab-participations">
+                        <i class="fi fi-rr-document-signed"></i>
+                        Participations
+                    </button>
+                    
+                    <!-- Tab 2 -->
+                    <button class="tab-btn flex-1 min-w-[150px] flex items-center justify-center gap-2 px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 transition-colors duration-200 outline-none" data-target="tab-results">
+                        <i class="fi fi-rr-trophy"></i>
+                        Results
+                    </button>
+                    
+                    <!-- Tab 3 -->
+                    <button class="tab-btn flex-1 min-w-[150px] flex items-center justify-center gap-2 px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 transition-colors duration-200 outline-none" data-target="tab-penalties">
+                        <i class="fi fi-rr-minus-circle"></i>
+                        Penalties
+                    </button>
+                </div>
+
+                <!-- Tab Contents Container -->
+                <div class="flex-grow flex flex-col">
+                    
+                    <!-- Content 1: Participations -->
+                    <div id="tab-participations" class="tab-content flex-grow flex flex-col h-full">
+                        <div class="flex justify-between items-center mb-2 px-6 pt-6">
+                            <h3 class="text-[14px] font-bold text-gray-900">Registered Events</h3>
+                            <span class="px-2.5 py-1 bg-gray-100 text-gray-600 text-[10px] font-bold tracking-wide rounded-full shadow-sm border border-gray-200">0 Total</span>
+                        </div>
+                        
+                        <div class="flex-grow flex flex-col items-center justify-center text-gray-400 pb-10">
+                            <i class="fi fi-rr-document-signed text-4xl mb-3 text-gray-200"></i>
+                            <p class="text-[13px] font-medium">No participations found</p>
+                        </div>
+                    </div>
+
+                    <!-- Content 2: Results -->
+                    <div id="tab-results" class="tab-content hidden flex-grow flex flex-col h-full">
+                        <div class="flex justify-between items-center mb-2 px-6 pt-6">
+                            <h3 class="text-[14px] font-bold text-gray-900">Results</h3>
+                            <span class="px-2.5 py-1 bg-gray-100 text-gray-600 text-[10px] font-bold tracking-wide rounded-full shadow-sm border border-gray-200">0 Total</span>
+                        </div>
+                        
+                        <div class="flex-grow flex flex-col items-center justify-center text-gray-400 pb-10">
+                            <i class="fi fi-rr-trophy text-4xl mb-3 text-gray-200"></i>
+                            <p class="text-[13px] font-medium">No results found</p>
+                        </div>
+                    </div>
+
+                    <!-- Content 3: Penalties / Negative Points -->
+                    <div id="tab-penalties" class="tab-content hidden flex-grow flex flex-col h-full">
+                        <div class="flex justify-between items-start mb-2 px-6 pt-6">
+                            <div>
+                                <h3 class="text-[14px] font-bold text-gray-900">Negative Points</h3>
+                                <p class="text-[12px] text-gray-500 mt-0.5">Disciplinary actions and penalty points.</p>
+                            </div>
+                            <span class="px-3 py-1 bg-white text-gray-800 text-[11px] font-bold rounded-full border border-gray-200 shadow-sm">0 Points</span>
+                        </div>
+                        
+                        <div class="flex-grow flex flex-col items-center justify-center text-gray-400 pb-10">
+                            <i class="fi fi-rr-minus-circle text-4xl mb-3 text-gray-200"></i>
+                            <p class="text-[13px] font-medium">No negative points recorded</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- JavaScript for Tab Switching -->
+    <script>
+        (function() {
+            
+            // Initialize Data from LocalStorage/Firebase
+            const candId = localStorage.getItem('viewCandidateId');
+            const candNameStr = localStorage.getItem('viewCandidateName') || 'Candidate';
+            const currentDb = (typeof db !== 'undefined') ? db : (typeof firebase !== 'undefined' ? firebase.firestore() : null);
+            
+            if (candId && currentDb) {
+                if (window.vcUnsub) window.vcUnsub();
+                window.vcUnsub = currentDb.collection('candidates').doc(candId).onSnapshot(doc => {
+                    if (doc.exists) {
+                        const c = doc.data();
+                        document.getElementById('vc-name').innerText = c.name || candNameStr;
+                        document.getElementById('vc-avatar').innerText = (c.name || candNameStr).charAt(0).toUpperCase();
+                        document.getElementById('vc-class').innerText = c.class || 'N/A';
+                        document.getElementById('vc-chest').innerText = '#' + (c.chestNo || '--');
+                        document.getElementById('vc-adm').innerText = 'Adm: ' + (c.admissionNo || '--');
+                        
+                        document.getElementById('vc-det-team').innerText = c.team || '—';
+                        document.getElementById('vc-det-sec').innerText = c.section || '—';
+                        document.getElementById('vc-det-chest').innerText = '#' + (c.chestNo || '--');
+                        document.getElementById('vc-det-adm').innerText = c.admissionNo || '--';
+                        
+                        const statEl = document.getElementById('vc-status');
+                        statEl.innerText = c.active !== false ? 'ACTIVE' : 'INACTIVE';
+                        statEl.className = c.active !== false 
+                            ? 'px-3 py-1.5 text-[11px] font-bold bg-[#FFB33F] text-[#111827] rounded-full shadow-sm'
+                            : 'px-3 py-1.5 text-[11px] font-bold bg-red-50 text-red-500 rounded-full shadow-sm';
+                    }
+                });
+
+                // Fetch Participations dynamically
+                if (window.vcPartUnsub) window.vcPartUnsub();
+                window.vcPartUnsub = currentDb.collection('registrations').where('candidateId', '==', candId).onSnapshot(snap => {
+                    const tab = document.getElementById('tab-participations');
+                    const partStat = document.getElementById('vc-stat-participated');
+                    if (partStat) partStat.innerText = snap.size;
+                    
+                    if (!tab) return;
+                    if (snap.empty) {
+                        tab.innerHTML = `
+                            <div class="flex justify-between items-center mb-2 px-6 pt-6">
+                                <h3 class="text-[14px] font-bold text-gray-900">Registered Events</h3>
+                                <span class="px-2.5 py-1 bg-gray-100 text-gray-600 text-[10px] font-bold tracking-wide rounded-full shadow-sm border border-gray-200">0 Total</span>
+                            </div>
+                            <div class="flex-grow flex flex-col items-center justify-center text-gray-400 pb-10">
+                                <i class="fi fi-rr-document-signed text-4xl mb-3 text-gray-200"></i>
+                                <p class="text-[13px] font-medium">No participations found</p>
+                            </div>`;
+                    } else {
+                        let html = `
+                            <div class="flex justify-between items-center mb-2 px-6 pt-6">
+                                <h3 class="text-[14px] font-bold text-gray-900">Registered Events</h3>
+                                <span class="px-2.5 py-1 bg-gray-100 text-gray-600 text-[10px] font-bold tracking-wide rounded-full shadow-sm border border-gray-200">${snap.size} Total</span>
+                            </div>
+                            <div class="flex-grow overflow-y-auto px-6 pb-6 mt-2 space-y-3 custom-scrollbar">`;
+                        
+                        snap.forEach(doc => {
+                            const d = doc.data();
+                            html += `
+                                <div class="bg-gray-50 border border-gray-100 rounded-xl p-4 flex justify-between items-center hover:bg-white hover:shadow-sm transition-all">
+                                    <div class="flex flex-col">
+                                        <span class="font-bold text-[13.5px] text-gray-900">${d.programName || 'Unknown Program'}</span>
+                                        <span class="text-[12px] text-gray-500 mt-0.5 font-mono-custom">Code: ${d.programCode || 'N/A'}</span>
+                                    </div>
+                                    <span class="px-3 py-1 bg-white border border-gray-200 rounded-full text-[10px] font-bold text-gray-600 shadow-sm uppercase tracking-wider">Registered</span>
+                                </div>`;
+                        });
+                        html += `</div>`;
+                        tab.innerHTML = html;
+                    }
+                });
+
+                // Fetch Results dynamically
+                if (window.vcResUnsub) window.vcResUnsub();
+                window.vcResUnsub = currentDb.collection('results').where('candidateId', '==', candId).onSnapshot(snap => {
+                    const tab = document.getElementById('tab-results');
+                    const resStat = document.getElementById('vc-stat-results');
+                    if (resStat) resStat.innerText = snap.size;
+                    
+                    let totalPoints = 0;
+                    
+                    if (!tab) return;
+                    if (snap.empty) {
+                        tab.innerHTML = `
+                            <div class="flex justify-between items-center mb-2 px-6 pt-6">
+                                <h3 class="text-[14px] font-bold text-gray-900">Results</h3>
+                                <span class="px-2.5 py-1 bg-gray-100 text-gray-600 text-[10px] font-bold tracking-wide rounded-full shadow-sm border border-gray-200">0 Total</span>
+                            </div>
+                            <div class="flex-grow flex flex-col items-center justify-center text-gray-400 pb-10">
+                                <i class="fi fi-rr-trophy text-4xl mb-3 text-gray-200"></i>
+                                <p class="text-[13px] font-medium">No results found</p>
+                            </div>`;
+                    } else {
+                        let html = `
+                            <div class="flex justify-between items-center mb-2 px-6 pt-6">
+                                <h3 class="text-[14px] font-bold text-gray-900">Results</h3>
+                                <span class="px-2.5 py-1 bg-gray-100 text-gray-600 text-[10px] font-bold tracking-wide rounded-full shadow-sm border border-gray-200">${snap.size} Total</span>
+                            </div>
+                            <div class="flex-grow overflow-y-auto px-6 pb-6 mt-2 space-y-3 custom-scrollbar">`;
+                        
+                        snap.forEach(doc => {
+                            const d = doc.data();
+                            const pts = parseInt(d.points) || 0;
+                            totalPoints += pts;
+                            html += `
+                                <div class="bg-gray-50 border border-gray-100 rounded-xl p-4 flex justify-between items-center hover:bg-white hover:shadow-sm transition-all">
+                                    <div class="flex flex-col">
+                                        <span class="font-bold text-[13.5px] text-gray-900">${d.programName || 'Unknown Program'}</span>
+                                        <span class="text-[12px] text-gray-500 mt-0.5 font-mono-custom">Position: ${d.position || 'N/A'} &bull; Grade: ${d.grade || 'None'}</span>
+                                    </div>
+                                    <div class="flex flex-col items-end">
+                                        <span class="text-[15px] font-black text-brand-blue">${pts} <span class="text-[10px] font-bold text-gray-400">PTS</span></span>
+                                    </div>
+                                </div>`;
+                        });
+                        html += `</div>`;
+                        tab.innerHTML = html;
+                    }
+                    
+                    window.vcTotalPositivePoints = totalPoints;
+                    updateTotalPoints();
+                });
+
+                // Fetch Penalties dynamically
+                if (window.vcPenUnsub) window.vcPenUnsub();
+                window.vcPenUnsub = currentDb.collection('penalties').where('candidateId', '==', candId).onSnapshot(snap => {
+                    const tab = document.getElementById('tab-penalties');
+                    let totalPenalty = 0;
+                    
+                    if (!tab) return;
+                    if (snap.empty) {
+                        tab.innerHTML = `
+                            <div class="flex justify-between items-start mb-2 px-6 pt-6">
+                                <div>
+                                    <h3 class="text-[14px] font-bold text-gray-900">Negative Points</h3>
+                                    <p class="text-[12px] text-gray-500 mt-0.5">Disciplinary actions and penalty points.</p>
+                                </div>
+                                <span class="px-3 py-1 bg-white text-gray-800 text-[11px] font-bold rounded-full border border-gray-200 shadow-sm">0 Points</span>
+                            </div>
+                            <div class="flex-grow flex flex-col items-center justify-center text-gray-400 pb-10">
+                                <i class="fi fi-rr-minus-circle text-4xl mb-3 text-gray-200"></i>
+                                <p class="text-[13px] font-medium">No negative points recorded</p>
+                            </div>`;
+                    } else {
+                        let html = `
+                            <div class="flex justify-between items-start mb-2 px-6 pt-6">
+                                <div>
+                                    <h3 class="text-[14px] font-bold text-gray-900">Negative Points</h3>
+                                    <p class="text-[12px] text-gray-500 mt-0.5">Disciplinary actions and penalty points.</p>
+                                </div>
+                                <span id="vc-penalty-total-badge" class="px-3 py-1 bg-red-50 text-red-600 text-[11px] font-bold rounded-full shadow-sm">0 Points</span>
+                            </div>
+                            <div class="flex-grow overflow-y-auto px-6 pb-6 mt-2 space-y-3 custom-scrollbar">`;
+                        
+                        snap.forEach(doc => {
+                            const d = doc.data();
+                            const pts = parseInt(d.points) || 0;
+                            totalPenalty += pts;
+                            html += `
+                                <div class="bg-red-50/50 border border-red-100 rounded-xl p-4 flex justify-between items-center hover:bg-white hover:shadow-sm transition-all">
+                                    <div class="flex flex-col">
+                                        <span class="font-bold text-[13.5px] text-gray-900">${d.reason || 'Penalty'}</span>
+                                        <span class="text-[12px] text-gray-500 mt-0.5 font-mono-custom">${d.date ? new Date(d.date.seconds*1000).toLocaleDateString() : 'N/A'}</span>
+                                    </div>
+                                    <span class="text-[15px] font-black text-red-500">-${pts} <span class="text-[10px] font-bold text-red-300">PTS</span></span>
+                                </div>`;
+                        });
+                        html += `</div>`;
+                        tab.innerHTML = html;
+                        
+                        const badge = document.getElementById('vc-penalty-total-badge');
+                        if (badge) badge.innerText = `-${totalPenalty} Points`;
+                    }
+                    
+                    window.vcTotalNegativePoints = totalPenalty;
+                    updateTotalPoints();
+                });
+
+                function updateTotalPoints() {
+                    const pos = window.vcTotalPositivePoints || 0;
+                    const neg = window.vcTotalNegativePoints || 0;
+                    const total = pos - neg;
+                    const ptsEl = document.getElementById('vc-stat-points');
+                    if (ptsEl) ptsEl.innerText = total;
+                }
+            }
+
+            const tabs = document.querySelectorAll('.tab-btn');
+            const contents = document.querySelectorAll('.tab-content');
+
+            const activeClasses = ['border-[#FFB33F]', 'text-gray-900'];
+            const inactiveClasses = ['border-transparent', 'text-gray-500'];
+
+            const initTabs = () => {
+                tabs.forEach(tab => {
+                    if (tab.classList.contains('active')) {
+                        tab.classList.add(...activeClasses);
+                        tab.classList.remove(...inactiveClasses);
+                    } else {
+                        tab.classList.remove(...activeClasses);
+                        tab.classList.add(...inactiveClasses);
+                    }
+                });
+            };
+
+            initTabs();
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => {
+                        t.classList.remove('active', ...activeClasses);
+                        t.classList.add(...inactiveClasses);
+                    });
+                    contents.forEach(c => c.classList.add('hidden'));
+
+                    tab.classList.add('active', ...activeClasses);
+                    tab.classList.remove(...inactiveClasses);
+
+                    const targetId = tab.getAttribute('data-target');
+                    document.getElementById(targetId).classList.remove('hidden');
+                });
+            });
+        })();
+    </script>
+</body>
+</html>

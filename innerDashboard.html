@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings — Festival Dashboard</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            bg: '#f8f9fc',
+                            border: '#e5e7eb',
+                            textMuted: '#6b7280',
+                            textDark: '#111827',
+                            blue: '#134E8E',
+                            red: '#C00707',
+                            orange: '#FF4400',
+                            yellow: '#FFB33F'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+        i[class^="fi-"] { display: inline-flex; align-items: center; justify-content: center; line-height: 1; }
+        /* Dropdown animation */
+        .dropdown-enter { animation: drop-in 0.15s ease-out forwards; transform-origin: top right; }
+        @keyframes drop-in {
+            0% { opacity: 0; transform: scale(0.95) translateY(-5px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+    </style>
+</head>
+
+<body class="bg-brand-bg text-brand-textDark font-sans h-[100dvh] overflow-hidden w-full relative">
+
+    <div class="flex h-full w-full">
+
+        <div id="ownerSidebarOverlay" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden" onclick="toggleSidebar()"></div>
+
+        <aside id="ownerSidebar"
+            class="bg-white w-64 h-full border-r border-brand-border flex flex-col fixed lg:relative z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out shadow-sm lg:shadow-none">
+
+            <div class="h-20 flex items-center justify-between px-6 border-b border-brand-border">
+                <div class="flex items-center gap-3">
+                    <div id="owner-sidebar-avatar"
+                        class="w-10 h-10 rounded-full bg-brand-yellow flex items-center justify-center text-brand-textDark font-semibold text-lg border border-yellow-200">S</div>
+                    <div>
+                        <h2 id="owner-sidebar-name" class="text-sm font-bold text-brand-textDark leading-none mb-1">Suhail</h2>
+                        <span id="owner-sidebar-status" class="text-[11px] font-medium text-brand-blue bg-blue-50 px-2 py-0.5 rounded-full">Active</span>
+                    </div>
+                </div>
+                <button class="lg:hidden text-gray-400 hover:text-gray-800" onclick="toggleSidebar()">
+                    <i class="fi fi-rr-cross text-sm"></i>
+                </button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto py-4 px-3 flex flex-col gap-1">
+                <div class="px-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 mt-2">Menu</div>
+
+                <a href="#" data-tab="users" onclick="event.preventDefault(); showOwnerTab('users')"
+                    id="nav-users"
+                    class="flex items-center gap-3 px-4 py-2.5 mb-1 rounded-xl text-brand-blue bg-blue-50/80 font-bold transition-all group">
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-white shadow-sm text-brand-blue"><i class="fi fi-rr-users text-lg"></i></div>
+                    <span class="text-[13px]">Users</span>
+                </a>
+
+                <div class="mb-1">
+                    <button onclick="toggleSubmenu('owner-submenu-templates', 'owner-icon-submenu-templates')"
+                        class="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-brand-textMuted hover:bg-gray-50 hover:text-brand-textDark group transition-all text-left outline-none cursor-pointer">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-transparent group-hover:bg-white group-hover:shadow-sm transition-all"><i class="fi fi-rr-document text-lg group-hover:text-brand-blue"></i></div>
+                            <span class="text-[13px] font-semibold">Templates</span>
+                        </div>
+                        <i id="owner-icon-submenu-templates" class="fi fi-rr-angle-small-down text-xs opacity-50 group-hover:opacity-100 transition-transform duration-200"></i>
+                    </button>
+                    <div id="owner-submenu-templates" class="hidden flex-col mt-1 space-y-0.5 px-2">
+                        <a href="#" class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item"><div class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors"></div> Grade</a>
+                        <a href="#" class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item"><div class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors"></div> Position</a>
+                    </div>
+                </div>
+
+                <div class="mb-1">
+                    <button onclick="toggleSubmenu('owner-submenu-frame', 'owner-icon-submenu-frame')"
+                        class="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-brand-textMuted hover:bg-gray-50 hover:text-brand-textDark group transition-all text-left outline-none cursor-pointer">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-transparent group-hover:bg-white group-hover:shadow-sm transition-all"><i class="fi fi-rr-picture text-lg group-hover:text-brand-red"></i></div>
+                            <span class="text-[13px] font-semibold">Frame</span>
+                        </div>
+                        <i id="owner-icon-submenu-frame" class="fi fi-rr-angle-small-down text-xs opacity-50 group-hover:opacity-100 transition-transform duration-200"></i>
+                    </button>
+                    <div id="owner-submenu-frame" class="hidden flex-col mt-1 space-y-0.5 px-2">
+                        <a href="#" class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item"><div class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors"></div> Poster</a>
+                        <a href="#" class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item"><div class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors"></div> Certificate</a>
+                    </div>
+                </div>
+
+                <div class="px-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-6 mb-2">Access Control</div>
+                
+                <a href="#" data-tab="notify" onclick="event.preventDefault(); showOwnerTab('notify')"
+                    class="flex items-center justify-between px-4 py-2.5 mb-1 rounded-xl text-brand-textMuted hover:bg-gray-50 hover:text-brand-textDark group transition-all">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-transparent group-hover:bg-white group-hover:shadow-sm transition-all"><i class="fi fi-rr-bell text-lg group-hover:text-amber-500"></i></div>
+                        <span class="text-[13px] font-semibold">Notifications</span>
+                    </div>
+                    <span id="nav-notify-badge" class="hidden bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">0</span>
+                </a>
+
+                <a href="#" data-tab="token" onclick="event.preventDefault(); showOwnerTab('token')"
+                    class="flex items-center gap-3 px-4 py-2.5 mb-1 rounded-xl text-brand-textMuted hover:bg-gray-50 hover:text-brand-textDark group transition-all">
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-transparent group-hover:bg-white group-hover:shadow-sm transition-all"><i class="fi fi-rr-key text-lg group-hover:text-blue-500"></i></div>
+                    <span class="text-[13px] font-semibold">Access Tokens</span>
+                </a>
+            </div>
+
+            <div class="p-4 border-t border-brand-border">
+                <a href="dashboard.html"
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg text-brand-textMuted hover:bg-gray-50 hover:text-brand-textDark transition-colors group">
+                    <i class="fi fi-rr-angle-small-left text-lg text-gray-500 group-hover:text-brand-blue transition-colors"></i>
+                    <span class="text-sm font-semibold text-gray-700">Back to Admin</span>
+                </a>
+            </div>
+        </aside>
+
+        <main class="flex-1 flex flex-col h-full overflow-hidden">
+
+            <header class="h-20 bg-brand-bg flex items-center justify-between px-4 md:px-8 border-b border-transparent shrink-0">
+                <div class="flex items-center gap-4">
+                    <button class="p-2 -ml-2 rounded-lg text-brand-textDark hover:bg-gray-200 lg:hidden" onclick="toggleSidebar()">
+                        <i class="fi fi-rr-menu-burger text-xl"></i>
+                    </button>
+                    <div class="flex items-center gap-2 text-gray-400" id="breadcrumb-trail">
+                        <i class="fi fi-rr-home text-xs"></i>
+                        <span id="breadcrumb-base" class="text-[13px] font-medium cursor-pointer hover:text-gray-600 transition-colors" onclick="window.location.href='dashboard.html'">Admin</span>
+                        <i class="fi fi-rr-angle-small-right text-[10px] hidden" id="breadcrumb-separator-1"></i>
+                        <span class="text-[13px] font-medium cursor-pointer hover:text-gray-600 transition-colors hidden" id="breadcrumb-middle"></span>
+                        <i class="fi fi-rr-angle-small-right text-[10px] hidden" id="breadcrumb-separator-2"></i>
+                        <span class="text-[13px] font-bold text-gray-800 hidden" id="breadcrumb-current"></span>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-4 relative" id="ownerUserMenuContainer">
+                    <div class="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity" onclick="toggleDropdown()">
+                        <div id="owner-top-avatar" class="w-9 h-9 rounded-full bg-brand-yellow border border-yellow-200 flex items-center justify-center text-brand-textDark font-bold text-sm shadow-sm">S</div>
+                        <span id="owner-top-name" class="text-sm font-semibold hidden md:block text-brand-textDark">Suhail</span>
+                        <i class="fi fi-rr-angle-small-down text-brand-textMuted hidden md:block text-xs"></i>
+                    </div>
+
+                    <div id="profileDropdownOwner" class="hidden absolute top-12 right-0 w-64 bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-gray-100 z-50 overflow-hidden">
+                        <div class="p-4 border-b border-gray-50 bg-gray-50/50 flex items-center gap-3">
+                            <div id="dropdown-avatar-owner" class="w-11 h-11 rounded-full bg-brand-yellow flex items-center justify-center text-brand-textDark font-bold text-lg border border-yellow-200 shrink-0">S</div>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span id="dropdown-name-owner" class="font-bold text-brand-textDark leading-none">Suhail</span>
+                                    <span id="dropdown-role-owner" class="text-[9px] font-bold text-gray-500 border border-gray-200 px-1.5 py-0.5 rounded-full tracking-wider bg-white uppercase">OWNER</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="py-2">
+                            <a href="#" onclick="openManageAccount(event)" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                                <i class="fi fi-rr-user text-gray-400 text-base"></i> Manage account
+                            </a>
+                            <a href="#" id="fest-data-link" onclick="openFestData(event)" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                                <i class="fi fi-rr-database text-gray-400 text-base"></i> Fest Data
+                            </a>
+                        </div>
+                        <div class="py-2 border-t border-gray-50 bg-gray-50/30">
+                            <a href="#" id="logoutBtnOwner" class="flex items-center gap-3 px-4 py-2 text-sm font-medium text-brand-red hover:bg-red-50 transition-colors">
+                                <i class="fi fi-rr-sign-out-alt text-brand-red text-base"></i> Sign out
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div id="owner-content-area" class="flex-1 flex flex-col overflow-y-auto p-4 md:p-6 lg:p-8 max-w-[1400px] mx-auto w-full relative">
+
+                <!-- Notifications Tab -->
+                <div id="tpl-notify" class="hidden animate-in fade-in duration-500">
+                    <div class="flex items-center justify-between mb-8">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-900 tracking-tight">Access Requests</h2>
+                            <p class="text-gray-500 mt-1">Review and manage admin requests for Result Management.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-[2rem] border border-gray-100 shadow-[0_10px_40px_-15px_rgba(0,0,0,0.05)] overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <div class="w-full min-w-[600px]">
+                                <div class="grid grid-cols-12 gap-4 items-center py-3 px-6 border-b border-gray-100 bg-[#FAFAFA]">
+                                    <div class="col-span-6 text-[13px] font-medium text-gray-700">Admin User</div>
+                                    <div class="col-span-4 text-[13px] font-medium text-gray-700">Request Time</div>
+                                    <div class="col-span-2 text-[13px] font-medium text-gray-700 text-center">Actions</div>
+                                </div>
+                                <div id="requestTable">
+                                    <div class="px-8 py-20 text-center text-gray-400">Loading requests...</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="emptyState" class="hidden py-24 text-center">
+                            <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center text-gray-300 mx-auto mb-4">
+                                <i class="fi fi-rr-envelopes text-3xl"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-800">No Pending Requests</h3>
+                            <p class="text-sm text-gray-400 mt-1">New requests will appear here automatically.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Token Tab -->
+                <div id="tpl-token" class="hidden animate-in fade-in duration-500">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                        <div>
+                            <h1 class="text-[1.35rem] font-bold text-gray-800 flex items-center gap-2">
+                                <i class="fi fi-rr-key text-brand-blue"></i> Access Tokens
+                            </h1>
+                            <p class="text-[13px] text-gray-500 mt-1">Generate time-limited OTPs for admin access control.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 md:p-8 max-w-xl mx-auto mt-8">
+                        <div class="flex items-center gap-4 mb-8">
+                            <div class="w-12 h-12 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-brand-blue shrink-0">
+                                <i class="fi fi-rr-key text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-[16px] font-bold text-gray-900">Token Generator</h3>
+                                <p class="text-[13px] text-gray-500">Create a secure code for synchronization</p>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block text-[13px] font-semibold text-gray-700 mb-2">Duration (Seconds)</label>
+                                <input type="number" id="tokenTime" value="60" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-[13px] font-semibold text-gray-700 mb-2">Active Token</label>
+                                <div class="relative">
+                                    <input type="text" id="tokenDisplay" readonly class="w-full px-4 py-4 bg-gray-50 border border-gray-200 rounded-xl text-2xl font-black tracking-[0.25em] text-center text-gray-800 placeholder-gray-300 focus:outline-none" placeholder="------">
+                                    <div id="countdown" class="absolute right-4 top-1/2 -translate-y-1/2 hidden bg-brand-blue text-white px-3 py-1.5 rounded-lg text-[12px] font-bold shadow-sm">0s</div>
+                                </div>
+                            </div>
+
+                            <button onclick="generateToken()" id="genBtn" class="w-full py-3 bg-brand-blue text-white rounded-xl text-[14px] font-bold hover:bg-opacity-90 transition-all flex items-center justify-center gap-2 shadow-md">
+                                <i class="fi fi-rr-refresh"></i> Generate Token
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tpl-users" class="flex flex-col gap-6">
+
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.02)] p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <h1 class="text-[1.25rem] font-bold text-gray-800 flex items-center gap-2">
+                                <i class="fi fi-rr-users text-brand-blue"></i> Festival User Roles
+                            </h1>
+                            <p id="du-count-label" class="text-[13px] text-gray-500 mt-1">Assign and manage users with specific roles for this festival</p>
+                        </div>
+                        <button onclick="openAssignRole()" class="flex items-center justify-center gap-2 w-10 h-10 sm:w-auto sm:px-5 sm:py-2.5 bg-brand-blue border border-transparent rounded-full text-[13px] font-bold text-white hover:bg-opacity-90 transition-all shadow-md p-0">
+                            <i class="fi fi-rr-add text-sm sm:text-[13px]"></i> <span class="hidden sm:block">Assign New Role</span>
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] overflow-hidden flex flex-col">
+
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 border-b border-gray-100 gap-4 sm:gap-0">
+                            <div class="flex bg-gray-100/80 p-1 rounded-lg items-center w-full sm:w-auto overflow-x-auto no-scrollbar border border-gray-200/60">
+                                <button id="du-btn-table" onclick="duSwitchView('table')" class="bg-white shadow-sm text-[#111827] text-[13px] font-semibold py-1.5 px-4 rounded-md flex items-center justify-center gap-2 transition-all duration-200 whitespace-nowrap">
+                                    <i class="fi fi-rr-table-list text-xs shrink-0"></i> Table
+                                </button>
+                                <button id="du-btn-cards" onclick="duSwitchView('cards')" class="text-gray-500 hover:text-gray-800 bg-transparent text-[13px] font-medium py-1.5 px-4 rounded-md flex items-center justify-center gap-2 transition-all duration-200 whitespace-nowrap">
+                                    <i class="fi fi-rr-grid text-xs shrink-0"></i> Cards
+                                </button>
+                            </div>
+                            
+                            <div class="flex items-center gap-3 w-full sm:w-auto mt-3 sm:mt-0">
+                                <div class="relative w-full sm:w-72">
+                                    <i class="fi fi-rr-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-[13px]"></i>
+                                    <input type="text" id="du-search-users" oninput="duApplyFilters()" placeholder="Search users by name or role..." 
+                                        class="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-full text-[13px] focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue transition-all placeholder-gray-400">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="du-view-table">
+                            <div class="overflow-x-auto w-full">
+                                <div class="w-full min-w-[800px]">
+                                    <div class="grid grid-cols-12 gap-4 items-center py-3 px-6 border-b border-gray-100 bg-[#FAFAFA]">
+                                        <div class="col-span-4 text-[13px] font-medium text-gray-700">User</div>
+                                        <div class="col-span-3 text-[13px] font-medium text-gray-700">Role</div>
+                                        <div class="col-span-2 text-[13px] font-medium text-gray-700 text-center">Status</div>
+                                        <div class="col-span-2 text-[13px] font-medium text-gray-700">Assigned</div>
+                                        <div class="col-span-1 text-[13px] font-medium text-gray-700 text-right">Actions</div>
+                                    </div>
+                                    <div id="du-table-body" class="min-h-[350px]">
+                                        <div class="text-center py-12 text-sm text-gray-400">
+                                            <div class="flex flex-col items-center gap-2">
+                                                <div class="w-8 h-8 border-2 border-gray-200 border-t-brand-blue rounded-full animate-spin"></div>
+                                                Loading...
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="du-view-cards" style="display:none;" class="p-6 bg-gray-50/30 min-h-[350px]">
+                            <div id="du-cards-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"></div>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row justify-between items-center py-3 px-4 sm:px-6 bg-white border-t border-gray-100 text-[13px] text-gray-600">
+                            <div class="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-0">
+                                <span id="du-pagination-label">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+        </main>
+
+        <!-- Global Action Menu -->
+        <div id="global-action-menu" class="hidden fixed w-48 bg-white rounded-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.15)] border border-gray-100 py-1.5 z-[100] dropdown-enter text-left overflow-hidden"></div>
+
+        <div id="rightSidebarOverlay" class="fixed inset-0 bg-black/40 backdrop-blur-[2px] z-[60] hidden" onclick="closeAllSidebars()"></div>
+
+        <div id="manageAccountSidebar" class="fixed inset-y-0 right-0 w-80 bg-white shadow-2xl z-[70] transform translate-x-full transition-transform duration-300 flex flex-col border-l border-gray-100">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                <h2 class="text-lg font-bold text-gray-800">Manage Account</h2>
+                <button onclick="closeManageAccount()" class="text-gray-400 hover:text-gray-700 transition-colors"><i class="fi fi-rr-cross"></i></button>
+            </div>
+            <div class="p-6 flex-1 overflow-y-auto bg-white">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1.5">Name</label>
+                        <input type="text" id="edit-name" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/40" placeholder="Enter your name">
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label class="block text-xs font-semibold text-gray-700">Username</label>
+                            <i class="fi fi-rr-edit text-xs text-brand-blue cursor-pointer" onclick="toggleEdit('edit-username')"></i>
+                        </div>
+                        <input type="text" id="edit-username" disabled class="w-full px-4 py-2 bg-gray-100 border border-gray-200 rounded-lg text-sm text-gray-500 focus:outline-none disabled:opacity-70 disabled:cursor-not-allowed" placeholder="Enter new username">
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label class="block text-xs font-semibold text-gray-700">Password</label>
+                            <div class="flex items-center gap-2">
+                                <i class="fi fi-rr-eye text-xs text-gray-400 cursor-pointer" onclick="togglePasswordVisibility('edit-password')"></i>
+                                <i class="fi fi-rr-edit text-xs text-brand-blue cursor-pointer" onclick="toggleEdit('edit-password')"></i>
+                            </div>
+                        </div>
+                        <input type="password" id="edit-password" disabled class="w-full px-4 py-2 bg-gray-100 border border-gray-200 rounded-lg text-sm text-gray-500 focus:outline-none disabled:opacity-70 disabled:cursor-not-allowed" placeholder="Enter new password">
+                    </div>
+                </div>
+            </div>
+            <div class="p-6 border-t border-gray-100 bg-white">
+                <button onclick="saveManageAccount()" class="w-full bg-brand-blue text-white py-3 rounded-xl font-semibold hover:opacity-90 shadow-lg shadow-brand-blue/30 transition-all active:scale-95">Save Changes & Login</button>
+            </div>
+        </div>
+
+        <div id="festDataSidebar" class="fixed inset-y-0 right-0 w-80 bg-white shadow-2xl z-[70] transform translate-x-full transition-transform duration-300 flex flex-col border-l border-gray-100">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                <h2 class="text-lg font-bold text-gray-800">Fest Data</h2>
+                <button onclick="closeFestData()" class="text-gray-400 hover:text-gray-700 transition-colors"><i class="fi fi-rr-cross"></i></button>
+            </div>
+            <div class="p-6 flex-1 overflow-y-auto bg-white">
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1.5">Fest Name / Login Name</label>
+                        <input type="text" id="edit-festname" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/40">
+                    </div>
+                    <div class="flex items-center justify-between py-2 border-t border-b border-gray-50">
+                        <div class="flex flex-col">
+                            <label class="text-sm font-semibold text-gray-800">Active Status</label>
+                            <span class="text-[10px] text-gray-500">Toggle whether the fest is active.</span>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer group">
+                            <input type="checkbox" id="edit-feststatus" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#FFB33F]/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#FFB33F] shadow-inner transition-colors"></div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="p-6 border-t border-gray-100 bg-white">
+                <button onclick="saveFestData()" class="w-full bg-brand-blue text-white py-3 rounded-xl font-semibold hover:opacity-90 shadow-lg shadow-brand-blue/30 transition-all active:scale-95">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="assignRoleOverlay" onclick="closeAssignRole()" class="fixed inset-0 bg-black/40 backdrop-blur-[2px] z-[60] hidden transition-opacity duration-300"></div>
+
+    <div id="assignRoleSidebar" class="fixed inset-y-0 right-0 w-[340px] bg-white shadow-2xl z-[70] transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col border-l border-gray-100">
+
+        <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-gray-50">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-full bg-brand-blue/10 flex items-center justify-center">
+                    <i class="fi fi-rr-user-add text-brand-blue text-sm"></i>
+                </div>
+                <h2 id="assignRoleTitle" class="text-[15px] font-bold text-gray-800">Add Role</h2>
+            </div>
+            <button onclick="closeAssignRole()" class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:bg-gray-200 hover:text-gray-700 transition-colors">
+                <i class="fi fi-rr-cross text-sm"></i>
+            </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-6 space-y-5">
+            <div>
+                <label class="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wide">Full Name</label>
+                <input type="text" id="ar-name" oninput="arAutoGenerate()" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue transition-all" placeholder="e.g. Rahul Sharma">
+            </div>
+
+            <div>
+                <div class="flex items-center justify-between mb-1.5">
+                    <label class="text-xs font-bold text-gray-600 uppercase tracking-wide">Username</label>
+                    <button onclick="arToggleEdit('ar-username')" class="flex items-center gap-1 text-[11px] font-medium text-brand-blue hover:opacity-70 transition-opacity">
+                        <i id="ar-icon-username" class="fi fi-rr-edit text-xs"></i>
+                        <span id="ar-label-username">Edit</span>
+                    </button>
+                </div>
+                <div class="relative">
+                    <input type="text" id="ar-username" readonly class="w-full px-4 py-2.5 bg-gray-100 border border-gray-200 rounded-xl text-sm text-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue transition-all cursor-not-allowed" placeholder="Auto-generated">
+                    <div id="ar-username-lock" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300">
+                        <i class="fi fi-rr-lock text-xs"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="flex items-center justify-between mb-1.5">
+                    <label class="text-xs font-bold text-gray-600 uppercase tracking-wide">Password</label>
+                    <button onclick="arToggleEdit('ar-password')" class="flex items-center gap-1 text-[11px] font-medium text-brand-blue hover:opacity-70 transition-opacity">
+                        <i id="ar-icon-password" class="fi fi-rr-edit text-xs"></i>
+                        <span id="ar-label-password">Edit</span>
+                    </button>
+                </div>
+                <div class="relative">
+                    <input type="password" id="ar-password" readonly class="w-full px-4 py-2.5 bg-gray-100 border border-gray-200 rounded-xl text-sm text-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue transition-all cursor-not-allowed" placeholder="Auto-generated">
+                    <div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                        <i class="fi fi-rr-eye text-xs text-gray-300 cursor-pointer hover:text-gray-500 transition-colors" onclick="togglePasswordVisibility('ar-password')"></i>
+                        <div id="ar-password-lock" class="text-gray-300">
+                             <i class="fi fi-rr-lock text-xs"></i>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-[11px] text-gray-400 mt-1.5 flex items-center gap-1">
+                    <i class="fi fi-rr-info text-xs"></i> Auto-generated. Click Edit to change.
+                </p>
+            </div>
+
+            <div class="border-t border-gray-100"></div>
+
+            <div>
+                <label class="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wide">Role</label>
+                <div class="relative">
+                    <select id="ar-role" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-700 font-medium focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue appearance-none cursor-pointer transition-all">
+                        <option value="" disabled selected>Select a role…</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Team Manager">Team Manager</option>
+                        <option value="Media">Media</option>
+                    </select>
+                    <i class="fi fi-rr-angle-small-down absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none text-sm"></i>
+                </div>
+                <div id="ar-role-preview" class="hidden mt-2.5 flex items-center gap-2">
+                    <span class="text-[11px] text-gray-400">Preview:</span>
+                    <span id="ar-role-badge" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold"></span>
+                </div>
+            </div>
+
+            <div id="ar-team-container" class="hidden">
+                <label class="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wide">Assign Team</label>
+                <div class="relative">
+                    <select id="ar-team" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-700 font-medium focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue appearance-none cursor-pointer transition-all">
+                        <option value="" disabled selected>Select a team…</option>
+                    </select>
+                    <i class="fi fi-rr-angle-small-down absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none text-sm"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-5 border-t border-gray-100 bg-white space-y-2.5">
+            <button id="btn-save-role" onclick="arSave()" class="w-full py-3 bg-brand-blue text-white rounded-xl text-sm font-bold hover:opacity-90 shadow-lg shadow-brand-blue/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+                <i class="fi fi-rr-check text-sm"></i> Add User & Assign Role
+            </button>
+            <button onclick="closeAssignRole()" class="w-full py-2.5 text-gray-500 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors">
+                Cancel
+            </button>
+        </div>
+    </div>
+
+    <div id="permissionsOverlay" onclick="closePermissions()" class="fixed inset-0 bg-black/40 backdrop-blur-[2px] z-[60] hidden transition-opacity duration-300"></div>
+    <div id="permissionsSidebar" class="fixed inset-y-0 right-0 w-[340px] bg-white shadow-2xl z-[70] transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col border-l border-gray-100">
+        <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-gray-50">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center">
+                    <i class="fi fi-rr-key text-indigo-600 text-sm"></i>
+                </div>
+                <h2 class="text-[15px] font-bold text-gray-800">Permissions</h2>
+            </div>
+            <button onclick="closePermissions()" class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:bg-gray-200 hover:text-gray-700 transition-colors">
+                <i class="fi fi-rr-cross text-sm"></i>
+            </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-6 space-y-4">
+            <p class="text-[13px] text-gray-500 mb-2">Configure access levels for <span id="perm-user-name" class="font-bold text-gray-800"></span>.</p>
+
+            <label class="flex items-center gap-3 p-3.5 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 hover:border-indigo-300 transition-colors group">
+                <input type="checkbox" id="perm-user-mgmt" class="w-4 h-4 text-brand-blue bg-gray-100 border-gray-300 rounded focus:ring-brand-blue">
+                <div class="flex flex-col">
+                    <span class="text-[13px] font-bold text-gray-700 group-hover:text-indigo-700 transition-colors">User Management</span>
+                    <span class="text-[11px] text-gray-400">Can add, edit, or remove users.</span>
+                </div>
+            </label>
+
+            <label class="flex items-center gap-3 p-3.5 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 hover:border-indigo-300 transition-colors group">
+                <input type="checkbox" id="perm-result-mgmt" class="w-4 h-4 text-brand-blue bg-gray-100 border-gray-300 rounded focus:ring-brand-blue">
+                <div class="flex flex-col">
+                    <span class="text-[13px] font-bold text-gray-700 group-hover:text-indigo-700 transition-colors">Result Management</span>
+                    <span class="text-[11px] text-gray-400">Can publish and modify festival results.</span>
+                </div>
+            </label>
+
+            <label class="flex items-center gap-3 p-3.5 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 hover:border-indigo-300 transition-colors group">
+                <input type="checkbox" id="perm-semi-owner" class="w-4 h-4 text-brand-blue bg-gray-100 border-gray-300 rounded focus:ring-brand-blue">
+                <div class="flex flex-col">
+                    <span class="text-[13px] font-bold text-gray-700 group-hover:text-indigo-700 transition-colors">Semi-Owner</span>
+                    <span class="text-[11px] text-gray-400">Has extensive administrative access.</span>
+                </div>
+            </label>
+        </div>
+
+        <div class="p-5 border-t border-gray-100 bg-white space-y-2.5">
+            <button id="btn-save-perms" onclick="savePermissions()" class="w-full py-3 bg-brand-blue text-white rounded-xl text-sm font-bold hover:opacity-90 shadow-lg shadow-brand-blue/20 transition-all flex items-center justify-center gap-2">
+                <i class="fi fi-rr-check text-sm"></i> Save Permissions
+            </button>
+            <button onclick="closePermissions()" class="w-full py-2.5 text-gray-500 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors">
+                Cancel
+            </button>
+        </div>
+    </div>
+
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+    <script>
+        // ── Auth Guard ─────────────────────────────────────────────────
+        if (localStorage.getItem('isLoggedIn') !== 'true') window.location.href = 'index.html';
+        
+        // Roles and permissions are now handled dynamically via localStorage inside functions
+
+
+        // ── Firebase ───────────────────────────────────────────────────
+        const firebaseConfig = {
+            apiKey: "AIzaSyCKA0k_9UgoJX_RBgEsIeNdiW2w0Okko1o",
+            authDomain: "festie-s1u2h3.firebaseapp.com",
+            projectId: "festie-s1u2h3",
+            storageBucket: "festie-s1u2h3.firebasestorage.app",
+            messagingSenderId: "794049194885",
+            appId: "1:794049194885:web:8f75f0df4c15cde15eb2ec"
+        };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        var db = firebase.firestore();
+        window.db = db;
+
+        // ── Toast ──────────────────────────────────────────────────────
+        function showToast(msg) {
+            Toastify({ text: msg, duration: 2500, gravity: "top", position: "center",
+                style: { background:"#fff", color:"#333", boxShadow:"0 4px 15px -3px rgba(0,0,0,0.1)", borderRadius:"10px", border:"1px solid #eaeaea", padding:"12px 24px", fontSize:"14px", fontFamily:"'Inter',sans-serif", display:"flex", gap:"8px", alignItems:"center" },
+                escapeMarkup: false }).showToast();
+        }
+
+        // ── UI helpers ─────────────────────────────────────────────────
+        function updateFestDataUI(name, isActive) {
+            const ch = name ? name.charAt(0).toUpperCase() : 'S';
+            [['owner-sidebar-name', name]].forEach(([id, val]) => { const el=document.getElementById(id); if(el) el.innerText=val; });
+            [['owner-sidebar-avatar', ch]].forEach(([id, val]) => { const el=document.getElementById(id); if(el) el.innerText=val; });
+            const el = document.getElementById('owner-sidebar-status');
+            if (el) { el.innerText = isActive ? 'Active' : 'Inactive'; el.className = isActive ? "text-[11px] font-medium text-brand-blue bg-blue-50 px-2 py-0.5 rounded-full" : "text-[11px] font-medium text-brand-red bg-red-50 px-2 py-0.5 rounded-full"; }
+        }
+
+        function updateUserDataUI(username) {
+            const role = localStorage.getItem('userRole') || 'USER';
+            const name = localStorage.getItem('festUserName') || username || 'User';
+            const ch = name.charAt(0).toUpperCase();
+
+            [['owner-top-name', name], ['dropdown-name-owner', name]].forEach(([id, val]) => { const el=document.getElementById(id); if(el) el.innerText=val; });
+            [['owner-top-avatar', ch], ['dropdown-avatar-owner', ch]].forEach(([id, val]) => { const el=document.getElementById(id); if(el) el.innerText=val; });
+            
+            const roleEl = document.getElementById('dropdown-role-owner');
+            if (roleEl) roleEl.innerText = role;
+
+            // Hide Fest Data link for non-owners (Asst. Owner can see it)
+            const festDataLink = document.getElementById('fest-data-link');
+            const isAsstOwner = localStorage.getItem('semiOwner') === 'true';
+            if (festDataLink) festDataLink.classList.toggle('hidden', role.toLowerCase() !== 'owner' && !isAsstOwner);
+
+            const navUsers = document.getElementById('nav-users');
+            const canManage = localStorage.getItem('userManagement') === 'true';
+
+            if (navUsers) {
+                if (role.toLowerCase() === 'owner' || isAsstOwner || canManage) navUsers.classList.remove('hidden');
+                else {
+                    navUsers.classList.add('hidden');
+                    // Fallback if currently on users tab
+                    const urlParams = new URLSearchParams(window.location.search);
+                    if (urlParams.get('tab') === 'users') showOwnerTab('templates');
+                }
+            }
+
+            // Access Control visibility
+            const notifyTab = document.querySelector('[data-tab="notify"]');
+            const tokenTab = document.querySelector('[data-tab="token"]');
+            const hasAccessControl = role.toLowerCase() === 'owner' || isAsstOwner;
+
+            if (notifyTab) notifyTab.classList.toggle('hidden', !hasAccessControl);
+            if (tokenTab) tokenTab.classList.toggle('hidden', !hasAccessControl);
+            
+            // Selection by specific section text
+            const headers = document.querySelectorAll('.uppercase.tracking-widest');
+            headers.forEach(h => { 
+                if(h.innerText.trim() === 'ACCESS CONTROL') h.classList.toggle('hidden', !hasAccessControl); 
+            });
+        }
+
+        function togglePasswordVisibility(id) {
+            const input = document.getElementById(id);
+            const icon = event.currentTarget;
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fi-rr-eye', 'fi-rr-eye-crossed');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fi-rr-eye-crossed', 'fi-rr-eye');
+            }
+        }
+
+        // ── Real-time Session Watcher ──────────────────────────────────
+        const currentId = localStorage.getItem('festUserId');
+        if (currentId && localStorage.getItem('userRole') !== 'owner') {
+            db.collection('festUsers').doc(currentId).onSnapshot(doc => {
+                if (doc.exists) {
+                    const d = doc.data();
+                    if (d.isActive === false) {
+                        alert("Account deactivated.");
+                        localStorage.removeItem('isLoggedIn');
+                        window.location.href = 'index.html';
+                        return;
+                    }
+                    const oldMgmt = localStorage.getItem('userManagement');
+                    const newMgmt = d.permissions?.userManagement ? 'true' : 'false';
+                    
+                    localStorage.setItem('userManagement', newMgmt);
+                    localStorage.setItem('userRole', d.role || 'user');
+                    localStorage.setItem('resultManagement', d.permissions?.resultManagement ? 'true' : 'false');
+                    localStorage.setItem('semiOwner', d.permissions?.semiOwner ? 'true' : 'false');
+
+                    if (oldMgmt !== newMgmt) {
+                        updateUserDataUI(localStorage.getItem('festUserName') || d.name || d.username);
+                    }
+                } else {
+                    localStorage.removeItem('isLoggedIn');
+                    window.location.href = 'index.html';
+                }
+            });
+        }
+
+        // Action Menu Logic centralized below
+
+        // ── Users Panel Data Management ────────────────────────────────
+        let duOwnerUser = null;
+        let duFestUsersList = [];
+        let duAllUsers = [];
+        let duSearchQuery = '';
+
+        function duRelativeTime(ts) {
+            if (!ts || !ts.toMillis) return 'just now';
+            const diff = Math.floor((Date.now() - ts.toMillis()) / 1000);
+            if (diff < 60) return 'just now';
+            if (diff < 3600) return Math.floor(diff / 60) + ' min ago';
+            if (diff < 86400) return Math.floor(diff / 3600) + ' hr ago';
+            return Math.floor(diff / 86400) + ' days ago';
+        }
+
+        function duInitial(name) { return name ? name.charAt(0).toUpperCase() : '?'; }
+
+        function duRoleBadge(role) {
+            const map = { 
+                'Owner':'bg-[#134E8E] text-white', 
+                'Asst. Owner':'bg-[#134E8E] text-white', 
+                'Admin':'bg-purple-500 text-white', 
+                'Team Manager':'bg-teal-500 text-white', 
+                'Media':'bg-[#FF4400] text-white' 
+            };
+            return map[role] || 'bg-gray-300 text-gray-800';
+        }
+
+        function duRenderTableRow(u) {
+            const isOwner = u.id === 'owner';
+            const isActive = u.isActive !== false;
+            const isSemiOwner = u.role === 'Admin' && u.permissions && u.permissions.semiOwner;
+            const displayRole = isSemiOwner ? 'Asst. Owner' : (u.role || 'Owner');
+
+            const currentRole = localStorage.getItem('userRole');
+            const currentIsSemiOwner = localStorage.getItem('semiOwner') === 'true';
+            const canManageAll = currentRole === 'owner' || currentIsSemiOwner;
+
+            return `
+            <div class="grid grid-cols-12 gap-4 items-center py-2.5 px-6 border-b border-gray-100 bg-white hover:bg-gray-50 transition-colors group">
+                <div class="col-span-4 flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-brand-blue font-bold text-sm shrink-0">${duInitial(u.name||u.username)}</div>
+                    <div class="flex flex-col">
+                        <span class="text-[13.5px] font-bold text-gray-900 leading-none">${u.name||u.username||'—'}</span>
+                        <span class="text-[12px] text-gray-400 mt-1">${u.email||u.username||'—'}</span>
+                    </div>
+                </div>
+                <div class="col-span-3 flex flex-col gap-1.5 items-start">
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold shadow-sm ${duRoleBadge(displayRole)}">${displayRole}</span>
+                    ${u.role === 'Team Manager' && u.team ? `<span class="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full border border-gray-200 leading-none">${u.team}</span>` : ''}
+                </div>
+                <div class="col-span-2 flex justify-center">
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold ${isActive?'bg-[#FFB33F] text-gray-900':'bg-red-50 text-red-500'}">${isActive?'ACTIVE':'INACTIVE'}</span>
+                </div>
+                <div class="col-span-2 text-[13px] text-gray-500 font-medium">${duRelativeTime(u.assignedAt)}</div>
+                <div class="col-span-1 flex justify-end relative">
+                    ${isOwner ? `<div class="w-8 h-8 rounded-full flex items-center justify-center text-gray-300 cursor-not-allowed" title="Not applicable for Owner"><i class="fi fi-rr-ban text-[15px]"></i></div>` : `
+                        <div class="relative inline-block text-left menu-container">
+                            <button onclick="openActionMenu('${u.id}', event)" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors text-gray-400 hover:text-gray-700 opacity-0 group-hover:opacity-100 focus:opacity-100">
+                                <i class="fi fi-rr-menu-dots-vertical text-sm"></i>
+                            </button>
+                        </div>
+                    `}
+                </div>
+            </div>`;
+        }
+
+        function duRenderCard(u) {
+            const isOwner = u.id === 'owner';
+            const isActive = u.isActive !== false;
+            const isSemiOwner = u.role === 'Admin' && u.permissions && u.permissions.semiOwner;
+            const displayRole = isSemiOwner ? 'Asst. Owner' : (u.role || 'Owner');
+
+            const currentRole = localStorage.getItem('userRole');
+            const currentIsSemiOwner = localStorage.getItem('semiOwner') === 'true';
+            const canManageAll = currentRole === 'owner' || currentIsSemiOwner;
+
+            return `<div class="bg-white border border-gray-200 rounded-2xl p-5 flex flex-col justify-between shadow-sm hover:shadow-md hover:border-brand-blue/30 transition-all cursor-pointer relative group min-h-[140px]">
+                ${isOwner ? '' : `
+                <div class="absolute top-3 right-3 inline-block text-left z-10">
+                    <button onclick="openActionMenu('${u.id}', event)" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors text-gray-400 opacity-0 group-hover:opacity-100 focus:opacity-100">
+                        <i class="fi fi-rr-menu-dots-vertical text-xs"></i>
+                    </button>
+                </div>`}
+                <div class="flex items-center gap-3 w-full pr-8 mb-4">
+                    <div class="w-12 h-12 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
+                        <span class="text-brand-blue font-bold text-[16px]">${duInitial(u.name||u.username)}</span>
+                    </div>
+                    <div class="flex flex-col overflow-hidden w-full">
+                        <h4 class="text-[15px] font-bold text-gray-900 leading-tight truncate w-full flex items-center gap-1">
+                            ${u.name||u.username||'—'}
+                            ${!isActive ? '<div class="w-2 h-2 rounded-full bg-red-500 ml-1" title="Inactive"></div>' : ''}
+                        </h4>
+                        <p class="text-[12px] text-gray-500 truncate w-full mt-0.5">${u.email||u.username||'—'}</p>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between w-full mt-auto">
+                    <div class="flex flex-col gap-1 items-start">
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold shadow-sm ${duRoleBadge(displayRole)}">${displayRole}</span>
+                        ${u.role === 'Team Manager' && u.team ? `<span class="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full border border-gray-200 leading-none">${u.team}</span>` : ''}
+                    </div>
+                    <span class="text-[12px] text-gray-400 font-medium">${duRelativeTime(u.assignedAt)}</span>
+                </div>
+            </div>`;
+        }
+
+        // ── Global Action Menu System ──────────────────────────────────
+        let activeDropdownId = null;
+        function openActionMenu(userId, event) {
+            event.stopPropagation();
+            if (activeDropdownId === userId) {
+                closeAllDropdowns();
+                return;
+            }
+            activeDropdownId = userId;
+            const btn = event.currentTarget;
+            const rect = btn.getBoundingClientRect();
+            const menu = document.getElementById('global-action-menu');
+            
+            const u = duAllUsers.find(x => x.id === userId);
+            if(!u) return;
+
+            const isActive = u.isActive !== false;
+            const currentRole = localStorage.getItem('userRole');
+            const currentIsSemiOwner = localStorage.getItem('semiOwner') === 'true';
+            const canManageAll = currentRole === 'owner' || currentIsSemiOwner;
+            const isMe = u.id === localStorage.getItem('festUserId');
+            
+            let html = `<button onclick="closeAllDropdowns(); openAssignRole('${u.id}')" class="w-full text-left px-4 py-2.5 text-[13px] font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2.5 transition-colors"><i class="fi fi-rr-edit text-gray-400"></i> Edit Role</button>`;
+            if (canManageAll && u.role === 'Admin') {
+                html += `<button onclick="closeAllDropdowns(); openPermissions('${u.id}')" class="w-full text-left px-4 py-2.5 text-[13px] font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2.5 transition-colors"><i class="fi fi-rr-key text-gray-400"></i> Permissions</button>`;
+            }
+            html += `<div class="border-t border-gray-100 my-1"></div>`;
+            
+            if (!isMe) {
+                if (canManageAll) html += `<button onclick="closeAllDropdowns(); toggleUserStatus('${u.id}', ${isActive})" class="w-full text-left px-4 py-2.5 text-[13px] font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2.5 transition-colors"><i class="fi ${isActive ? 'fi-rr-ban text-orange-400' : 'fi-rr-check-circle text-green-500'}"></i> ${isActive ? 'Deactivate' : 'Activate'}</button>`;
+                html += `<button onclick="closeAllDropdowns(); deleteUser('${u.id}')" class="w-full text-left px-4 py-2.5 text-[13px] font-medium text-red-600 hover:bg-red-50 flex items-center gap-2.5 transition-colors"><i class="fi fi-rr-trash text-red-400"></i> Delete User</button>`;
+            } else {
+                html += `<div class="px-4 py-2 text-[11px] text-gray-400 italic font-medium text-center">Your Account</div>`;
+            }
+
+            menu.innerHTML = html;
+            menu.classList.remove('hidden');
+            const menuHeight = menu.offsetHeight || 160;
+            let topPos = rect.bottom + 4;
+            if (topPos + menuHeight > window.innerHeight) topPos = rect.top - menuHeight - 4;
+            menu.style.top = topPos + 'px';
+            menu.style.left = (rect.right - 192) + 'px'; // 192px = w-48
+        }
+        function closeAllDropdowns(event) {
+            const menu = document.getElementById('global-action-menu');
+            if (event && event.type === 'click' && menu && menu.contains(event.target)) return;
+            activeDropdownId = null;
+            if (menu) menu.classList.add('hidden');
+        }
+        document.addEventListener('click', closeAllDropdowns);
+        window.addEventListener('scroll', closeAllDropdowns, true);
+
+        // Search logic
+        function duApplyFilters() {
+            duSearchQuery = document.getElementById('du-search-users').value.toLowerCase().trim();
+            duRenderCombine();
+        }
+
+        function getFilteredUsers() {
+            if (!duSearchQuery) return duAllUsers;
+            return duAllUsers.filter(u => 
+                (u.name && u.name.toLowerCase().includes(duSearchQuery)) ||
+                (u.username && u.username.toLowerCase().includes(duSearchQuery)) ||
+                (u.role && u.role.toLowerCase().includes(duSearchQuery))
+            );
+        }
+
+        function duRenderAll(displayUsers) {
+            const total = displayUsers.length;
+            const countEl = document.getElementById('du-count-label');
+            const pageEl  = document.getElementById('du-pagination-label');
+            const tbody   = document.getElementById('du-table-body');
+            const grid    = document.getElementById('du-cards-grid');
+            
+            if (countEl) countEl.textContent = `Assign and manage users with specific roles for this festival (${duAllUsers.length} total)`;
+            if (pageEl)  pageEl.textContent  = total > 0 ? `Showing 1 to ${total} of ${total} results` : `No users match your search.`;
+            
+            if (tbody) tbody.innerHTML = total
+                ? displayUsers.map(duRenderTableRow).join('')
+                    : `<div class="text-center py-12 text-[13px] text-gray-400">No users found matching "${duSearchQuery}".</div>`;
+                
+            if (grid) grid.innerHTML  = total
+                ? displayUsers.map(duRenderCard).join('')
+                : `<div class="col-span-full text-center text-[13px] text-gray-400 py-12">No users found matching "${duSearchQuery}".</div>`;
+        }
+
+        function duRenderCombine() {
+            const currentRole = localStorage.getItem('userRole');
+            const currentId = localStorage.getItem('festUserId');
+            const currentIsSemiOwner = localStorage.getItem('semiOwner') === 'true';
+            
+            let filteredList = [];
+            if (currentRole === 'owner' || currentIsSemiOwner) {
+                // Owner and Asst. Owner see everyone
+                if (duOwnerUser) filteredList.push(duOwnerUser);
+                filteredList = filteredList.concat(duFestUsersList);
+            } else {
+                // Admin sees themselves first + users they created
+                const me = duFestUsersList.find(u => u.id === currentId);
+                if (me) filteredList.push(me);
+                
+                const myUsers = duFestUsersList.filter(u => u.createdBy === currentId && u.id !== currentId);
+                filteredList = filteredList.concat(myUsers);
+            }
+
+            duAllUsers = filteredList;
+            const displayUsers = getFilteredUsers();
+            duRenderAll(displayUsers);
+        }
+
+        // Fetch active teams
+        db.collection('teams').where('isActive', '==', true).onSnapshot(snap => {
+            const select = document.getElementById('ar-team');
+            const currentVal = select ? select.value : '';
+            let optionsHTML = '<option value="" disabled selected>Select a team…</option>';
+            snap.forEach(doc => {
+                const team = doc.data();
+                optionsHTML += `<option value="${team.name}">${team.name}</option>`;
+            });
+            if (select) {
+                select.innerHTML = optionsHTML;
+                if(currentVal) select.value = currentVal;
+            }
+        });
+
+        // Real-time Listeners
+        db.collection('config').doc('festData').onSnapshot(doc => {
+            const d = doc.exists ? doc.data() : {};
+            updateFestDataUI(d.name || 'ArtFest', d.isActive !== false);
+        });
+
+        db.collection('admin').doc('credentials').onSnapshot(doc => {
+            if (doc.exists) {
+                const d = doc.data();
+                updateUserDataUI(d.name || d.username || 'admin');
+                duOwnerUser = { 
+                    id: 'owner', name: d.name || d.username, username: d.username, email: d.email || d.username, 
+                    role: 'Owner', isActive: true, assignedAt: null 
+                };
+            } else {
+                duOwnerUser = null;
+            }
+            duRenderCombine();
+        });
+
+        db.collection('festUsers').onSnapshot(snapshot => {
+            duFestUsersList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            duRenderCombine();
+        });
+
+        function duSwitchView(mode) {
+            const isTable = mode === 'table';
+            const tv = document.getElementById('du-view-table');
+            const cv = document.getElementById('du-view-cards');
+            const bt = document.getElementById('du-btn-table');
+            const bc = document.getElementById('du-btn-cards');
+            if (tv) tv.style.display = isTable ? '' : 'none';
+            if (cv) cv.style.display = isTable ? 'none' : '';
+            
+            const activeClassList = "bg-white shadow-sm text-[#111827] text-[13px] font-semibold py-1.5 px-4 rounded-md flex items-center justify-center gap-2 transition-all duration-200 whitespace-nowrap";
+            const inactiveClassList = "text-gray-500 hover:text-gray-800 bg-transparent text-[13px] font-medium py-1.5 px-4 rounded-md flex items-center justify-center gap-2 transition-all duration-200 whitespace-nowrap";
+            if (bt) bt.className = isTable ? activeClassList : inactiveClassList;
+            if (bc) bc.className = isTable ? inactiveClassList : activeClassList;
+        }
+
+        // ── Tab switching (for future tabs) ────────────────────────────
+        function showOwnerTab(tab) {
+            const currentRole = localStorage.getItem('userRole');
+            const canManage = localStorage.getItem('userManagement') === 'true';
+            const isAsstOwner = localStorage.getItem('semiOwner') === 'true';
+            if (tab === 'users' && currentRole !== 'owner' && !isAsstOwner && !canManage) {
+                showToast('<b>🚫</b> Access denied.');
+                // If this was triggered by URL, fallback to templates
+                if (window.location.search.includes('tab=users')) {
+                    showOwnerTab('templates'); 
+                }
+                return;
+            }
+
+            // Update the URL so refreshing keeps the current tab active
+            const url = new URL(window.location);
+            url.searchParams.set('tab', tab);
+            window.history.pushState({}, '', url);
+
+            document.querySelectorAll('[data-tab]').forEach(a => {
+                a.classList.remove('bg-blue-50', 'text-brand-blue', 'font-semibold');
+                a.classList.add('text-brand-textMuted');
+            });
+            const link = document.querySelector(`[data-tab="${tab}"]`);
+            if (link) { link.classList.remove('text-brand-textMuted'); link.classList.add('bg-blue-50','text-brand-blue','font-semibold'); }
+            document.querySelectorAll('[id^="tpl-"]').forEach(p => p.classList.add('hidden'));
+            const panel = document.getElementById('tpl-' + tab);
+            if (panel) panel.classList.remove('hidden');
+            if (window.innerWidth < 1024) toggleSidebar();
+
+            // Update Breadcrumb
+            const map = {
+                'users': 'Users Management',
+                'notify': 'Access Requests',
+                'token': 'Access Tokens'
+            };
+            const title = map[tab] || (tab.charAt(0).toUpperCase() + tab.slice(1));
+            const sep1 = document.getElementById('breadcrumb-separator-1');
+            const mid = document.getElementById('breadcrumb-middle');
+            const sep2 = document.getElementById('breadcrumb-separator-2');
+            const currentCrumb = document.getElementById('breadcrumb-current');
+            
+            if (sep1 && currentCrumb) {
+                sep1.classList.remove('hidden');
+                if (mid) mid.classList.add('hidden');
+                if (sep2) sep2.classList.add('hidden');
+                currentCrumb.classList.remove('hidden'); currentCrumb.innerText = title;
+            }
+
+            // Refresh dynamic content for these tabs if needed
+            if (tab === 'notify') setupNotifyListener();
+        }
+
+        // ── Manage Account ─────────────────────────────────────────────
+        function toggleEdit(id) {
+            const el = document.getElementById(id);
+            el.disabled = !el.disabled;
+            el.classList.toggle('bg-gray-100', el.disabled);
+            el.classList.toggle('text-gray-500', el.disabled);
+            el.classList.toggle('bg-gray-50', !el.disabled);
+            el.classList.toggle('text-gray-800', !el.disabled);
+            if (id === 'edit-password') el.type = el.disabled ? 'password' : 'text';
+            if (!el.disabled) el.focus();
+        }
+
+        function openManageAccount(e) {
+            if (e) e.preventDefault();
+            toggleDropdown();
+            document.getElementById('rightSidebarOverlay').classList.remove('hidden');
+            document.getElementById('manageAccountSidebar').classList.remove('translate-x-full');
+            
+            const role = localStorage.getItem('userRole');
+            const festUserId = localStorage.getItem('festUserId');
+
+            if (role.toLowerCase() === 'owner') {
+                db.collection('admin').doc('credentials').get().then(doc => {
+                    if (doc.exists) populateManageFields(doc.data());
+                });
+            } else if (festUserId) {
+                db.collection('festUsers').doc(festUserId).get().then(doc => {
+                    if (doc.exists) populateManageFields(doc.data());
+                });
+            }
+        }
+
+        function populateManageFields(data) {
+            document.getElementById('edit-name').value = data.name || '';
+            document.getElementById('edit-username').value = data.username || '';
+            document.getElementById('edit-password').value = data.password || '';
+            ['edit-username','edit-password'].forEach(id => { 
+                const el=document.getElementById(id); 
+                el.disabled=true; 
+                el.classList.add('bg-gray-100','text-gray-500'); 
+                el.classList.remove('bg-gray-50','text-gray-800');
+                if(id === 'edit-password') el.type = 'password';
+            });
+        }
+
+        function closeManageAccount() {
+            document.getElementById('manageAccountSidebar').classList.add('translate-x-full');
+            document.getElementById('rightSidebarOverlay').classList.add('hidden');
+        }
+
+        function saveManageAccount() {
+            const role = localStorage.getItem('userRole');
+            const festUserId = localStorage.getItem('festUserId');
+            const payload = {
+                name: document.getElementById('edit-name').value,
+                username: document.getElementById('edit-username').value,
+                password: document.getElementById('edit-password').value
+            };
+
+            let promise;
+            if (role && role.toLowerCase() === 'owner') {
+                promise = db.collection('admin').doc('credentials').set(payload);
+            } else if (festUserId) {
+                promise = db.collection('festUsers').doc(festUserId).update(payload);
+                localStorage.setItem('festUserName', payload.name);
+            }
+
+            if (promise) {
+                promise.then(() => {
+                    showToast('<b>✅</b> Updated! Logout and Login again.');
+                    setTimeout(() => {
+                        localStorage.removeItem('isLoggedIn');
+                        window.location.href = 'index.html';
+                    }, 1500);
+                }).catch(err => showToast('<b>❌</b> ' + err.message));
+            }
+        }
+
+        // ── Fest Data ──────────────────────────────────────────────────
+        function openFestData(e) {
+            if (e) e.preventDefault();
+            toggleDropdown();
+            document.getElementById('rightSidebarOverlay').classList.remove('hidden');
+            document.getElementById('festDataSidebar').classList.remove('translate-x-full');
+            db.collection('config').doc('festData').get().then(doc => {
+                const d = doc.exists ? doc.data() : {};
+                document.getElementById('edit-festname').value = d.name || '';
+                document.getElementById('edit-feststatus').checked = d.isActive !== false;
+            });
+        }
+
+        function closeFestData() {
+            document.getElementById('festDataSidebar').classList.add('translate-x-full');
+            document.getElementById('rightSidebarOverlay').classList.add('hidden');
+        }
+
+        function saveFestData() {
+            db.collection('config').doc('festData').set({
+                name: document.getElementById('edit-festname').value,
+                isActive: document.getElementById('edit-feststatus').checked
+            }).then(() => { showToast('<b>✅</b> Fest data updated!'); closeFestData(); })
+              .catch(err => showToast('<b>❌</b> ' + err.message));
+        }
+
+        function closeAllSidebars() { closeManageAccount(); closeFestData(); }
+
+        // ── Assign Role Sidebar ────────────────────────────────────────
+        let currentEditId = null;
+
+        function openAssignRole(userId = null) {
+            currentEditId = userId;
+            const title = document.getElementById('assignRoleTitle');
+            const saveBtn = document.getElementById('btn-save-role');
+
+            ['ar-name','ar-username','ar-password'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById('ar-role').value = '';
+            document.getElementById('ar-team').value = '';
+            document.getElementById('ar-team-container').classList.add('hidden');
+            document.getElementById('ar-role-preview').classList.add('hidden');
+            ['ar-username','ar-password'].forEach(id => arLockField(id));
+
+            if (userId && typeof userId === 'string') {
+                title.innerHTML = 'Edit Role';
+                saveBtn.innerHTML = '<i class="fi fi-rr-check text-sm"></i> Update User';
+                const user = duFestUsersList.find(u => u.id === userId);
+                if (user) {
+                    document.getElementById('ar-name').value = user.name || '';
+                    document.getElementById('ar-username').value = user.username || '';
+                    document.getElementById('ar-password').value = user.password || '';
+                    document.getElementById('ar-role').value = user.role || '';
+                    document.getElementById('ar-role').dispatchEvent(new Event('change'));
+                    if (user.role === 'Team Manager' && user.team) {
+                        document.getElementById('ar-team').value = user.team;
+                    }
+                }
+            } else {
+                currentEditId = null;
+                title.innerHTML = 'Add Role';
+                saveBtn.innerHTML = '<i class="fi fi-rr-check text-sm"></i> Add User & Assign Role';
+            }
+
+            // Filter role options: Only owner can create Admins
+            const roleSelect = document.getElementById('ar-role');
+            for (let i = 0; i < roleSelect.options.length; i++) {
+                const opt = roleSelect.options[i];
+                if (opt.value === 'Admin') {
+                    opt.disabled = (localStorage.getItem('userRole') !== 'owner');
+                    opt.style.display = (localStorage.getItem('userRole') !== 'owner' ? 'none' : 'block');
+                }
+            }
+
+            document.getElementById('assignRoleOverlay').classList.remove('hidden');
+            document.getElementById('assignRoleSidebar').classList.remove('translate-x-full');
+            setTimeout(() => document.getElementById('ar-name').focus(), 320);
+        }
+
+        function closeAssignRole() {
+            document.getElementById('assignRoleSidebar').classList.add('translate-x-full');
+            document.getElementById('assignRoleOverlay').classList.add('hidden');
+            currentEditId = null;
+        }
+
+        function arAutoGenerate() {
+            if(currentEditId) return; // Only auto-generate on add
+            const name = document.getElementById('ar-name').value.trim();
+            if (!name) return;
+            const base = name.split(' ')[0].toLowerCase().replace(/[^a-z0-9]/g, '');
+            const rand = Math.floor(100 + Math.random() * 900);
+            const uEl = document.getElementById('ar-username');
+            const pEl = document.getElementById('ar-password');
+            if (uEl.readOnly) uEl.value = base + rand;
+            if (pEl.readOnly) pEl.value = base.charAt(0).toUpperCase() + base.split('').reverse().join('') + rand + '@';
+        }
+
+        function arLockField(id) {
+            const el = document.getElementById(id);
+            el.readOnly = true;
+            if (id === 'ar-password') el.type = 'password';
+            el.classList.add('bg-gray-100','text-gray-500','cursor-not-allowed');
+            el.classList.remove('bg-white','text-gray-800', 'border-brand-blue');
+            const lock = document.getElementById(id + '-lock');
+            if (lock) lock.classList.remove('hidden');
+            const lbl = document.getElementById('ar-label-' + id.replace('ar-',''));
+            if (lbl) lbl.textContent = 'Edit';
+        }
+
+        function arToggleEdit(id) {
+            const el  = document.getElementById(id);
+            const lock = document.getElementById(id + '-lock');
+            const lbl  = document.getElementById('ar-label-' + id.replace('ar-',''));
+            if (el.readOnly) {
+                el.readOnly = false;
+                el.type = 'text';
+                el.classList.remove('bg-gray-100','text-gray-500','cursor-not-allowed');
+                el.classList.add('bg-white','text-gray-800', 'border-brand-blue');
+                if (lock) lock.classList.add('hidden');
+                if (lbl)  lbl.textContent = 'Lock';
+                el.focus(); el.select();
+            } else {
+                el.classList.remove('border-brand-blue');
+                arLockField(id);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const roleColors = { 'Admin':'bg-purple-500 text-white', 'Team Manager':'bg-teal-500 text-white', 'Media':'bg-[#F8843F] text-white' };
+            document.getElementById('ar-role').addEventListener('change', function() {
+                const preview = document.getElementById('ar-role-preview');
+                const badge   = document.getElementById('ar-role-badge');
+                if (this.value) {
+                    badge.textContent = this.value;
+                    badge.className   = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold shadow-sm ' + (roleColors[this.value] || 'bg-gray-300 text-gray-800');
+                    preview.classList.remove('hidden');
+                } else { preview.classList.add('hidden'); }
+
+                const teamContainer = document.getElementById('ar-team-container');
+                if (this.value === 'Team Manager') {
+                    teamContainer.classList.remove('hidden');
+                } else {
+                    teamContainer.classList.add('hidden');
+                    document.getElementById('ar-team').value = '';
+                }
+            });
+        });
+
+        function arSave() {
+            const name     = document.getElementById('ar-name').value.trim();
+            const username = document.getElementById('ar-username').value.trim();
+            const password = document.getElementById('ar-password').value.trim();
+            const role     = document.getElementById('ar-role').value;
+            const team     = document.getElementById('ar-team').value;
+            
+            if (!name)     return arShake('ar-name');
+            if (!username) return arShake('ar-username');
+            if (!password) return arShake('ar-password');
+            if (!role)     return arShake('ar-role');
+            if (role === 'Team Manager' && !team) return arShake('ar-team');
+
+            const btn = document.querySelector('#assignRoleSidebar button[onclick="arSave()"]');
+            const origHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<div class="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin"></div> Saving…';
+
+            const payload = { 
+                name, 
+                username, 
+                password, 
+                role,
+                createdBy: localStorage.getItem('festUserId') || 'owner'
+            };
+            if (role === 'Team Manager') {
+                payload.team = team;
+            } else if (currentEditId) {
+                payload.team = firebase.firestore.FieldValue.delete();
+            }
+            let promise;
+
+            if (currentEditId) {
+                promise = db.collection('festUsers').doc(currentEditId).update(payload);
+            } else {
+                payload.isActive = true;
+                payload.assignedAt = firebase.firestore.FieldValue.serverTimestamp();
+                payload.permissions = { userManagement: false, resultManagement: false, semiOwner: false };
+                promise = db.collection('festUsers').add(payload);
+            }
+
+            promise.then(() => { 
+                closeAssignRole(); 
+                btn.disabled=false; 
+                btn.innerHTML=origHTML; 
+                showToast(`<b>✅</b> User successfully ${currentEditId ? 'updated' : 'added'}!`); 
+            }).catch(err => { 
+                btn.disabled=false; 
+                btn.innerHTML=origHTML; 
+                showToast('<b>❌</b> Error: ' + err.message); 
+            });
+        }
+
+        function arShake(id) {
+            const el = document.getElementById(id);
+            el.classList.add('border-red-400','ring-2','ring-red-200');
+            el.focus();
+            setTimeout(() => el.classList.remove('border-red-400','ring-2','ring-red-200'), 1800);
+        }
+
+        // ── Manage User Status & Deletion ──────────────────────────────
+        function toggleUserStatus(userId, currentStatus) {
+            const newStatus = !currentStatus;
+            db.collection('festUsers').doc(userId).update({ isActive: newStatus })
+            .then(() => showToast(`<b>✅</b> User account ${newStatus ? 'activated' : 'deactivated'}!`))
+            .catch(err => showToast('<b>❌</b> Error updating status: ' + err.message));
+        }
+
+        function deleteUser(userId) {
+            if (confirm("Are you sure you want to completely remove this user? This action cannot be undone.")) {
+                db.collection('festUsers').doc(userId).delete()
+                .then(() => showToast('<b>🗑️</b> User deleted successfully!'))
+                .catch(err => showToast("<b>❌</b> Error deleting user: " + err.message));
+            }
+        }
+
+        // ── Permissions Logic ──────────────────────────────────────────
+        let currentPermUserId = null;
+        function openPermissions(userId) {
+            const currentRole = localStorage.getItem('userRole');
+            const isAsstOwner = localStorage.getItem('semiOwner') === 'true';
+
+            if (currentRole !== 'owner' && !isAsstOwner) {
+                showToast('<b>🚫</b> Access denied.');
+                return;
+            }
+            const user = duFestUsersList.find(u => u.id === userId);
+            if (!user) return;
+
+            currentPermUserId = userId;
+            document.getElementById('perm-user-name').textContent = user.name || user.username;
+
+            const perms = user.permissions || {};
+            document.getElementById('perm-user-mgmt').checked = !!perms.userManagement;
+            document.getElementById('perm-result-mgmt').checked = !!perms.resultManagement;
+            document.getElementById('perm-semi-owner').checked = !!perms.semiOwner;
+
+            document.getElementById('permissionsOverlay').classList.remove('hidden');
+            document.getElementById('permissionsSidebar').classList.remove('translate-x-full');
+        }
+
+        function closePermissions() {
+            document.getElementById('permissionsOverlay').classList.add('hidden');
+            document.getElementById('permissionsSidebar').classList.add('translate-x-full');
+            currentPermUserId = null;
+        }
+
+        function savePermissions() {
+            if (!currentPermUserId) return;
+
+            const btn = document.getElementById('btn-save-perms');
+            const origHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<div class="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin"></div> Saving…';
+
+            const permissions = {
+                userManagement: document.getElementById('perm-user-mgmt').checked,
+                resultManagement: document.getElementById('perm-result-mgmt').checked,
+                semiOwner: document.getElementById('perm-semi-owner').checked
+            };
+
+            db.collection('festUsers').doc(currentPermUserId).update({ permissions })
+            .then(() => {
+                closePermissions();
+                btn.disabled = false;
+                btn.innerHTML = origHTML;
+                showToast('<b>✅</b> Permissions updated successfully!');
+            }).catch(err => {
+                showToast('<b>❌</b> Error: ' + err.message);
+                btn.disabled = false;
+                btn.innerHTML = origHTML;
+            });
+        }
+
+        // ── UI Controls ────────────────────────────────────────────────
+        function toggleSidebar() {
+            const s = document.getElementById('ownerSidebar');
+            const o = document.getElementById('ownerSidebarOverlay');
+            s.classList.toggle('-translate-x-full');
+            o.classList.toggle('hidden', s.classList.contains('-translate-x-full'));
+        }
+
+        function toggleSubmenu(id, iconId) {
+            const el = document.getElementById(id);
+            const icon = document.getElementById(iconId);
+            
+            // Accordion logic for Submenus
+            document.querySelectorAll('[id^="owner-submenu-"]').forEach(sub => {
+                if (sub.id !== id) {
+                    sub.classList.add('hidden');
+                    sub.classList.remove('flex');
+                    const otherIcon = document.getElementById('owner-icon-' + sub.id.replace('owner-', ''));
+                    if (otherIcon) otherIcon.classList.remove('rotate-180');
+                }
+            });
+
+            const open = el.classList.contains('hidden');
+            el.classList.toggle('hidden', !open);
+            el.classList.toggle('flex', open);
+            if (icon) icon.classList.toggle('rotate-180', open);
+        }
+
+        function toggleDropdown() {
+            document.getElementById('profileDropdownOwner').classList.toggle('hidden');
+        }
+
+        // ── Access Requests Management ───────────────────────────────
+        function setupNotifyListener() {
+            db.collection('requests').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+                const table = document.getElementById('requestTable');
+                const empty = document.getElementById('emptyState');
+                if (!table || !empty) return;
+                
+                if (snapshot.empty) {
+                    table.parentElement.parentElement.classList.add('hidden');
+                    empty.classList.remove('hidden');
+                    return;
+                }
+
+                table.parentElement.parentElement.classList.remove('hidden');
+                empty.classList.add('hidden');
+                
+                table.innerHTML = snapshot.docs.map(doc => {
+                    const data = doc.data();
+                    const time = data.timestamp ? new Date(data.timestamp.seconds * 1000).toLocaleString() : 'Just now';
+                    return `
+                        <div class="grid grid-cols-12 gap-4 items-center py-2.5 px-6 border-b border-gray-100 bg-white hover:bg-gray-50 transition-colors group">
+                            <div class="col-span-6 flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-brand-blue font-bold text-[13px]">
+                                    ${(data.adminName || 'A').charAt(0).toUpperCase()}
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="font-bold text-[13.5px] text-gray-900">${data.adminName || 'Admin'}</span>
+                                    <span class="text-[11px] font-medium text-gray-400 mt-0.5">ID: ${data.adminId}</span>
+                                </div>
+                            </div>
+                            <div class="col-span-4 text-[13px] text-gray-500 font-medium">${time}</div>
+                            <div class="col-span-2 flex items-center justify-center gap-2">
+                                <button onclick="handleAccessAction('${doc.id}', '${data.adminId}', true)" class="px-4 py-1.5 bg-[#FFB33F] text-gray-900 rounded-full text-[11px] font-bold hover:bg-opacity-90 shadow-sm transition-all flex items-center gap-1.5"><i class="fi fi-rr-check"></i> Allow</button>
+                                <button onclick="handleAccessAction('${doc.id}', '${data.adminId}', false)" class="px-4 py-1.5 bg-white border border-gray-200 text-gray-600 rounded-full text-[11px] font-bold hover:bg-gray-50 transition-all flex items-center gap-1.5"><i class="fi fi-rr-cross"></i> Deny</button>
+                            </div>
+                        </div>`;
+                }).join('');
+            });
+        }
+
+        function handleAccessAction(requestId, adminId, allow) {
+            if (allow) {
+                db.collection('festUsers').doc(adminId).update({ 'permissions.resultManagement': true })
+                .then(() => {
+                    showToast("<b>✅</b> Access Granted!");
+                    return db.collection('requests').doc(requestId).delete();
+                }).catch(err => showToast("<b>❌</b> " + err.message));
+            } else {
+                db.collection('requests').doc(requestId).delete()
+                .then(() => showToast("<b>🗑️</b> Request Denied."));
+            }
+        }
+
+        // ── Token Generation Logic ────────────────────────────────────
+        let tokenTimer = null;
+        function generateToken() {
+            const timeVal = parseInt(document.getElementById('tokenTime').value) || 60;
+            const otp = Math.floor(100000 + Math.random() * 900000).toString();
+            const expiresAt = firebase.firestore.Timestamp.fromDate(new Date(Date.now() + timeVal * 1000));
+
+            const btn = document.getElementById('genBtn');
+            btn.disabled = true;
+            btn.innerHTML = 'Generating...';
+
+            db.collection('config').doc('activeToken').set({ token: otp, expiresAt: expiresAt })
+            .then(() => {
+                document.getElementById('tokenDisplay').value = otp;
+                startTokenCountdown(timeVal);
+                showToast("<b>🔑</b> Token Generated!");
+            }).finally(() => {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fi fi-rr-refresh"></i> Generate Token';
+            });
+        }
+
+        function startTokenCountdown(seconds) {
+            if (tokenTimer) clearInterval(tokenTimer);
+            const countEl = document.getElementById('countdown');
+            const display = document.getElementById('tokenDisplay');
+            countEl.classList.remove('hidden');
+            
+            let remaining = seconds;
+            countEl.innerText = remaining + 's';
+            tokenTimer = setInterval(() => {
+                remaining--;
+                if (remaining <= 0) {
+                    clearInterval(tokenTimer);
+                    display.value = '';
+                    countEl.classList.add('hidden');
+                    db.collection('config').doc('activeToken').delete();
+                } else {
+                    countEl.innerText = remaining + 's';
+                }
+            }, 1000);
+        }
+
+        window.onclick = function(e) {
+            const c = document.getElementById('ownerUserMenuContainer');
+            const d = document.getElementById('profileDropdownOwner');
+            if (c && d && !c.contains(e.target) && !d.classList.contains('hidden')) d.classList.add('hidden');
+        };
+
+        // Real-time Session Watcher
+        const currId = localStorage.getItem('festUserId');
+        const currRole = localStorage.getItem('userRole');
+        if (currId && currRole !== 'owner') {
+            db.collection('festUsers').doc(currId).onSnapshot(doc => {
+                if (doc.exists) {
+                    const d = doc.data();
+                    if (d.isActive === false) { window.location.href = 'index.html'; return; }
+                    const p = d.permissions || {};
+                    localStorage.setItem('userManagement', p.userManagement ? 'true' : 'false');
+                    localStorage.setItem('resultManagement', p.resultManagement ? 'true' : 'false');
+                    localStorage.setItem('semiOwner', p.semiOwner ? 'true' : 'false');
+                    localStorage.setItem('userRole', d.role || 'user');
+                    updateUserDataUI(d.name || d.username);
+                }
+            });
+        }
+
+        // ── Logout ─────────────────────────────────────────────────────
+        document.addEventListener('DOMContentLoaded', () => {
+            const role = localStorage.getItem('userRole');
+            const bcBase = document.getElementById('breadcrumb-base');
+            if (bcBase) {
+                if (role === 'owner') bcBase.innerText = 'Owner';
+                else if (role === 'Team Manager') bcBase.innerText = 'Team Manager';
+                else if (role === 'Media') bcBase.innerText = 'Media';
+                else if (role === 'Admin') bcBase.innerText = 'Admin';
+                else bcBase.innerText = 'Dashboard';
+            }
+            // Handle tab switching via URL parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            const tab = urlParams.get('tab');
+            if (tab) {
+                showOwnerTab(tab);
+            }
+
+            const btn = document.getElementById('logoutBtnOwner');
+            if (btn) btn.addEventListener('click', e => { 
+                e.preventDefault(); 
+                localStorage.removeItem('isLoggedIn'); 
+                localStorage.removeItem('userRole');
+                localStorage.removeItem('userManagement');
+                localStorage.removeItem('resultManagement');
+                localStorage.removeItem('semiOwner');
+                localStorage.removeItem('festUserId');
+                localStorage.removeItem('festUserName');
+                window.location.href = 'index.html'; 
+            });
+        });
+        // Notification Badge Listener
+        db.collection('requests').onSnapshot(snap => {
+            const badge = document.getElementById('nav-notify-badge');
+            if (badge) {
+                if (snap.empty) {
+                    badge.classList.add('hidden');
+                } else {
+                    badge.innerText = snap.size;
+                    badge.classList.remove('hidden');
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>
