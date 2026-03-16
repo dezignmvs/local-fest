@@ -49,7 +49,7 @@
 </head>
 <body class="bg-brand-bg font-sans min-h-screen p-4 sm:p-6 md:p-8">
 
-    <div class="max-w-[1400px] w-full mx-auto relative">
+    <div class="max-w-full w-full mx-auto relative">
         
         <!-- ========================================== -->
         <!-- LIST VIEW (Main Display)                   -->
@@ -190,6 +190,16 @@
                                     <select id="progType" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-[13px] focus:outline-none focus:ring-1 focus:ring-[#FFB33F] focus:border-[#FFB33F] appearance-none cursor-pointer">
                                         <option value="Individual">Individual</option>
                                         <option value="Group">Group</option>
+                                    </select>
+                                    <i class="fi fi-rr-angle-small-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-[13px] font-medium text-gray-800 mb-1.5">Program Set Limit</label>
+                                <div class="relative">
+                                    <select id="progSet" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-[13px] focus:outline-none focus:ring-1 focus:ring-[#FFB33F] focus:border-[#FFB33F] appearance-none cursor-pointer">
+                                        <option value="">No Limit Set</option>
+                                        <!-- Fetched dynamically -->
                                     </select>
                                     <i class="fi fi-rr-angle-small-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
                                 </div>
@@ -358,6 +368,17 @@
                 secSelect.innerHTML = opts;
                 if(current) secSelect.value = current;
             });
+            
+            db.collection('programSets').onSnapshot(snap => {
+                const el = document.getElementById('progSet');
+                const cur = el ? el.value : '';
+                if(el) {
+                    let html = '<option value="">No Limit Set</option>';
+                    snap.forEach(d => { html += `<option value="${d.data().name}">${d.data().name}</option>`; });
+                    el.innerHTML = html;
+                    if(cur) el.value = cur;
+                }
+            });
 
             // Real-time listener for Programs
             window.progUnsub = db.collection('programs').orderBy('createdAt', 'desc').onSnapshot(snap => {
@@ -405,7 +426,8 @@
                 // Reset
                 ['progCode', 'progName', 'progSection'].forEach(x => document.getElementById(x).value = '');
                 document.getElementById('progType').value = 'Individual';
-                document.getElementById('progStatusToggle').checked = true;
+                document.getElementById('progStatus').value = 'active';
+                document.getElementById('progSet').value = '';
                 document.getElementById('progMin').value = '1';
                 document.getElementById('progMax').value = '1';
                 
@@ -423,7 +445,8 @@
                     document.getElementById('progName').value = p.name || '';
                     document.getElementById('progSection').value = p.section || '';
                     document.getElementById('progType').value = p.type || 'Individual';
-                    document.getElementById('progStatusToggle').checked = p.status !== false;
+                    document.getElementById('progStatus').value = p.status !== false ? 'active' : 'inactive';
+                    document.getElementById('progSet').value = p.progSet || '';
                     
                     document.getElementById('progMin').value = p.minParticipants || 1;
                     document.getElementById('progMax').value = p.maxParticipants || 1;
@@ -459,16 +482,19 @@
             const payload = {
                 code, name, section,
                 type: document.getElementById('progType').value,
-                status: document.getElementById('progStatusToggle').checked,
+                progSet: document.getElementById('progSet').value,
+                status: document.getElementById('progStatus').value === 'active',
                 minParticipants: parseInt(document.getElementById('progMin').value) || 1,
                 maxParticipants: parseInt(document.getElementById('progMax').value) || 1,
                 topicRegistration: document.getElementById('progTopicReg').checked,
                 enableGrading: document.getElementById('progGrading').checked,
                 gradeTemplate: document.getElementById('progGrading').checked ? document.getElementById('progGradeTemplate').value : null,
                 enableScoring: document.getElementById('progScoring').checked,
-                positionTemplate: document.getElementById('progScoring').checked ? document.getElementById('progScoreTemplate').value : null,
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                positionTemplate: document.getElementById('progScoring').checked ? document.getElementById('progScoreTemplate').value : null
             };
+            if (typeof firebase !== 'undefined' && firebase.firestore) {
+                payload.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
+            }
 
             if(editingProgId) {
                 db.collection('programs').doc(editingProgId).update(payload).then(() => {
@@ -476,7 +502,9 @@
                     closeFormView();
                 });
             } else {
-                payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                if (typeof firebase !== 'undefined' && firebase.firestore) {
+                    payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                }
                 db.collection('programs').add(payload).then(() => {
                     typeof showToast === 'function' && showToast("✅ Program added!");
                     closeFormView();
@@ -620,7 +648,7 @@
             document.getElementById('btn-add-result').onclick = (e) => { window.progCloseMenu(); typeof showToast === 'function' && showToast("Navigating to Add Result..."); };
             document.getElementById('btn-delete').onclick = (e) => { 
                 window.progCloseMenu(); 
-                if(confirm("Delete this program?")) db.collection('programs').doc(id).delete().then(() => showToast("✅ Deleted")); 
+                if(confirm("Delete this program?")) db.collection('programs').doc(id).delete().then(() => typeof showToast === 'function' && showToast("✅ Deleted")); 
             };
         }
         

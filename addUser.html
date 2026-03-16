@@ -817,6 +817,18 @@
                 .catch(err => showToast("<b>❌</b> Error deleting user: " + err.message));
             }
         }
+
+        function togglePasswordVisibility(id) {
+            const input = document.getElementById(id);
+            const icon = window.event ? window.event.target : null;
+            if (input && input.type === 'password') {
+                input.type = 'text';
+                if (icon && icon.classList.contains('fi-rr-eye')) icon.classList.replace('fi-rr-eye', 'fi-rr-eye-crossed');
+            } else if (input) {
+                input.type = 'password';
+                if (icon && icon.classList.contains('fi-rr-eye-crossed')) icon.classList.replace('fi-rr-eye-crossed', 'fi-rr-eye');
+            }
+        }
     </script>
 </body>
 </html>

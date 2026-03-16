@@ -33,7 +33,7 @@
 </head>
 <body class="bg-brand-bg font-sans min-h-screen p-4 sm:p-6 md:p-8">
 
-    <div class="max-w-[1400px] w-full mx-auto pb-10">
+    <div class="max-w-full w-full mx-auto pb-10">
         
         <!-- Header Section -->
         <header class="flex items-center justify-between gap-4 mb-6">
@@ -258,7 +258,7 @@
 
                 // Fetch Participations dynamically
                 if (window.vcPartUnsub) window.vcPartUnsub();
-                window.vcPartUnsub = currentDb.collection('registrations').where('candidateId', '==', candId).onSnapshot(snap => {
+                window.vcPartUnsub = currentDb.collection('registrations').where('candidateIds', 'array-contains', candId).onSnapshot(snap => {
                     const tab = document.getElementById('tab-participations');
                     const partStat = document.getElementById('vc-stat-participated');
                     if (partStat) partStat.innerText = snap.size;

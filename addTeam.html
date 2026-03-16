@@ -50,7 +50,7 @@
 </head>
 <body class="bg-brand-bg font-sans min-h-screen p-4 sm:p-6 md:p-8">
 
-    <div class="max-w-[1400px] w-full mx-auto">
+    <div class="max-w-full w-full mx-auto">
         
         <!-- Header Section (Updated for Mobile Responsiveness) -->
         <div class="flex justify-between items-center mb-6">
@@ -509,7 +509,10 @@
             const isActive = document.getElementById('teamActive').checked;
             if(!name) return typeof showToast === 'function' ? showToast("❌ Team Name is required!") : alert("Name required");
             
-            const payload = { name, color, isActive, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
+            const payload = { name, color, isActive };
+            if (typeof firebase !== 'undefined' && firebase.firestore) {
+                payload.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
+            }
 
             if(editingTeamId) {
                 if(typeof db !== 'undefined') {
@@ -525,7 +528,9 @@
                 }
             } else {
                 if(typeof db !== 'undefined') {
-                    payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                    if (typeof firebase !== 'undefined' && firebase.firestore) {
+                        payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                    }
                     db.collection('teams').add(payload).then(() => {
                         window.closeTeamSidebar();
                         typeof showToast === 'function' && showToast("✅ Team added!");

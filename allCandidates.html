@@ -46,7 +46,7 @@
 </head>
 <body class="bg-brand-bg font-sans min-h-screen p-4 sm:p-6 md:p-8">
 
-    <div class="max-w-[1400px] w-full mx-auto">
+    <div class="max-w-full w-full mx-auto">
         <!-- Header Section -->
         <div class="flex justify-between items-center mb-6">
             <div>
@@ -339,14 +339,14 @@
                         <div class="w-9 h-9 rounded-full border border-[#FFD085] flex items-center justify-center bg-[#F8F9FA] text-gray-600 font-medium text-[15px] shrink-0">
                             ${initial}
                         </div>
-                        <div>
-                            <div class="text-[14px] font-medium text-gray-900 leading-snug">${cand.name}</div>
+                        <div class="flex flex-col items-start">
+                            <span onclick="window.viewCandidate('${cand.id}', event)" class="text-[14px] font-medium text-gray-900 leading-snug hover:text-brand-blue hover:underline cursor-pointer transition-colors">${cand.name}</span>
                             <div class="text-[12.5px] text-[#6B7280] font-mono-custom mt-0.5 tracking-tight">#${cand.chestNo} &bull; Adm: ${cand.admissionNo}</div>
                         </div>
                     </div>
                     <div class="col-span-3 flex items-center justify-center space-x-2">
                         <span class="w-[7px] h-[7px] rounded-full" style="background-color: ${teamColorHex}"></span>
-                        <span class="text-[13px] text-gray-700">${cand.team}</span>
+                        <span onclick="window.viewTeamByName('${cand.team}', event)" class="text-[13px] text-gray-700 hover:text-brand-blue hover:underline cursor-pointer transition-all active:scale-95">${cand.team}</span>
                     </div>
                     <div class="col-span-2 flex items-center justify-center">
                         <span class="px-2.5 py-1 bg-white border border-gray-200 rounded-full text-[11px] font-medium text-gray-600 shadow-sm leading-tight">${cand.section}</span>
@@ -368,14 +368,14 @@
                             ${initial}
                         </div>
                         <div class="flex-1 pt-0.5">
-                            <div class="text-[14.5px] font-semibold text-gray-900 pr-8">${cand.name}</div>
+                            <div onclick="window.viewCandidate('${cand.id}', event)" class="text-[14.5px] font-semibold text-gray-900 pr-8 hover:text-brand-blue hover:underline cursor-pointer transition-colors w-max">${cand.name}</div>
                             <div class="flex items-center space-x-2 mt-1">
                                 <span class="text-[12.5px] text-[#6B7280] font-mono-custom tracking-tight">#${cand.chestNo} &bull; Adm: ${cand.admissionNo}</span>
                                 <span class="px-2.5 py-1 bg-white border border-gray-200 rounded-full text-[10px] font-medium text-gray-600 shadow-sm leading-tight">${cand.section}</span>
                             </div>
                             <div class="flex items-center space-x-2 mt-3">
                                 <span class="w-[7px] h-[7px] rounded-full" style="background-color: ${teamColorHex}"></span>
-                                <span class="text-[13px] text-gray-600">${cand.team}</span>
+                                <span onclick="window.viewTeamByName('${cand.team}', event)" class="text-[13px] text-gray-600 hover:text-brand-blue hover:underline cursor-pointer transition-all active:scale-95">${cand.team}</span>
                             </div>
                         </div>
                     </div>
@@ -439,6 +439,16 @@
             localStorage.setItem('viewCandidateId', id);
             localStorage.setItem('viewCandidateName', cand.name);
             if (typeof loadModule === 'function') loadModule('viewCandidateData');
+        };
+
+        // VIEW TEAM PROFILE BY NAME
+        window.viewTeamByName = function(teamName, event) {
+            if(event) event.stopPropagation();
+            const team = activeTeamsData.find(t => t.name === teamName);
+            if(!team) return;
+            localStorage.setItem('viewTeamId', team.id);
+            localStorage.setItem('viewTeamName', team.name);
+            if (typeof loadModule === 'function') loadModule('viewTeamData');
         };
 
         // DROPDOWN LOGIC
@@ -564,7 +574,10 @@
                 return typeof showToast === 'function' ? showToast("❌ Please fill out all required fields (*)") : alert("❌ Please fill out all required fields (*)");
             }
             
-            const payload = { chestNo, name, admissionNo: admissionNo || 'N/A', class: className, team, section, active, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
+            const payload = { chestNo, name, admissionNo: admissionNo || 'N/A', class: className, team, section, active };
+            if (typeof firebase !== 'undefined' && firebase.firestore) {
+                payload.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
+            }
 
             if(editingCandidateId !== null) {
                 db.collection('candidates').doc(editingCandidateId).update(payload).then(() => {
@@ -572,7 +585,9 @@
                     window.closeCandidateSidebar();
                 });
             } else {
-                payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                if (typeof firebase !== 'undefined' && firebase.firestore) {
+                    payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                }
                 db.collection('candidates').add(payload).then(() => {
                     typeof showToast === 'function' && showToast("✅ Candidate added!");
                     window.closeCandidateSidebar();

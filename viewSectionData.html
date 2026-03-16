@@ -30,7 +30,7 @@
 </head>
 <body class="bg-brand-bg font-sans min-h-screen p-4 sm:p-6 md:p-8">
 
-    <div class="max-w-[1400px] w-full mx-auto">
+    <div class="max-w-full w-full mx-auto">
         <!-- Header Section -->
         <div class="flex justify-between items-center mb-6">
             <div class="flex items-center gap-4">
@@ -216,8 +216,8 @@
                         return `
                         <div class="grid grid-cols-12 gap-4 items-center py-2.5 px-6 border-b border-gray-100 bg-white hover:bg-gray-50 transition-colors">
                             <div class="col-span-2 font-bold text-[13px] text-gray-900">#${c.chestNo || '?'}</div>
-                            <div class="col-span-5 flex flex-col">
-                                <span class="text-[14px] font-medium text-gray-900">${c.name || '—'}</span>
+                            <div class="col-span-5 flex flex-col items-start">
+                                <span onclick="window.viewCandidateProfile('${c.id}', '${(c.name || '').replace(/'/g, "\\'")}')" class="text-[14px] font-medium text-gray-900 hover:text-brand-blue hover:underline cursor-pointer transition-colors">${c.name || '—'}</span>
                                 <span class="text-[12px] text-gray-400">Adm: ${c.admissionNo || 'N/A'}</span>
                             </div>
                             <div class="col-span-3 text-[13px] text-gray-600 font-medium">${c.team || '—'}</div>
@@ -269,7 +269,7 @@
                 if(window.vsdCandUnsub) window.vsdCandUnsub();
                 window.vsdCandUnsub = db.collection('candidates').where('section', '==', secName).onSnapshot(snap => {
                     document.getElementById('vsd-stat-candidates').innerText = snap.size;
-                    sectionCandidatesData = snap.docs.map(d => d.data());
+                    sectionCandidatesData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                     if (document.getElementById('content-candidates').classList.contains('block')) renderVsdCandidates();
                 });
 
@@ -277,7 +277,7 @@
                 if(window.vsdProgUnsub) window.vsdProgUnsub();
                 window.vsdProgUnsub = db.collection('programs').where('section', '==', secName).onSnapshot(snap => {
                     document.getElementById('vsd-stat-programs').innerText = snap.size;
-                    sectionProgramsData = snap.docs.map(d => d.data());
+                    sectionProgramsData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                     if (document.getElementById('content-programs').classList.contains('block')) renderVsdPrograms();
                 });
             }
@@ -314,6 +314,13 @@
                     if(!isCand && window.renderVsdPrograms) window.renderVsdPrograms();
                 });
             });
+            
+            window.viewCandidateProfile = function(id, name) {
+                if (!id) return;
+                localStorage.setItem('viewCandidateId', id);
+                localStorage.setItem('viewCandidateName', name);
+                if (typeof loadModule === 'function') loadModule('viewCandidateData');
+            };
         })();
     </script>
 </body>

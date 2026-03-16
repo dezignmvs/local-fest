@@ -235,6 +235,30 @@
                             <div class="text-[11px] text-gray-400 py-1 px-4">Loading sections...</div>
                         </div>
                     </div>
+
+                        <div class="mb-1">
+                            <button onclick="toggleSubmenu('submenu-tm-programs')" class="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-brand-textMuted hover:bg-gray-50 hover:text-brand-textDark group transition-all text-left outline-none cursor-pointer">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-transparent group-hover:bg-white group-hover:shadow-sm transition-all"><i class="fi fi-rr-book-alt text-lg group-hover:text-brand-blue"></i></div>
+                                    <span class="text-[13px] font-semibold">Programs</span>
+                                </div>
+                                <i id="icon-submenu-tm-programs" class="fi fi-rr-angle-small-down text-xs opacity-50 group-hover:opacity-100 transition-transform duration-200"></i>
+                            </button>
+                            <div id="submenu-tm-programs" class="hidden flex-col mt-1 space-y-0.5 px-2">
+                                <div class="text-[11px] text-gray-400 py-1 px-4">Loading sections...</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-1">
+                            <button onclick="toggleTMTopicMenu('submenu-tm-topic')" class="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-brand-textMuted hover:bg-gray-50 hover:text-brand-textDark group transition-all text-left outline-none cursor-pointer">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-transparent group-hover:bg-white group-hover:shadow-sm transition-all"><i class="fi fi-rr-document-signed text-lg group-hover:text-purple-500"></i></div>
+                                    <span class="text-[13px] font-semibold">Topic Reg</span>
+                                </div>
+                                <i id="icon-submenu-tm-topic" class="fi fi-rr-lock text-xs text-red-400"></i>
+                            </button>
+                            <div id="submenu-tm-topic" class="hidden flex-col mt-1 space-y-0.5 px-2"></div>
+                        </div>
                 </nav>
             </div>
 
@@ -310,7 +334,7 @@
 
             <div class="flex-1 flex flex-col overflow-x-hidden overflow-y-auto p-4 md:p-6 lg:p-8 relative">
                 <!-- Dashboard Main Content -->
-                <div id="main-dashboard-content" class="max-w-[1400px] w-full mx-auto flex-1 flex flex-col">
+                <div id="main-dashboard-content" class="max-w-[1600px] w-full mx-auto flex-1 flex flex-col">
                     <div id="admin-dashboard-grid" class="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-6">
                         
                         <!-- LEFT COLUMN -->
@@ -444,7 +468,7 @@
                 </div>
 
                 <!-- Module Content Container -->
-                <div id="module-content-area" class="hidden max-w-[1400px] w-full mx-auto flex-1 flex flex-col h-full">
+                <div id="module-content-area" class="hidden max-w-[1600px] w-full mx-auto flex-1 flex flex-col h-full">
                     <div id="module-loader" class="flex items-center justify-center flex-1 min-h-[400px]">
                         <div class="w-10 h-10 border-4 border-gray-200 border-t-brand-blue rounded-full animate-spin">
                         </div>
@@ -732,6 +756,11 @@
             o.classList.toggle('hidden', s.classList.contains('-translate-x-full'));
         }
 
+        function toggleTMTopicMenu(id) {
+            if(!window.topicRegUnlocked) { return showToast("<b>🔒</b> Topic Registration is currently closed by the admin."); }
+            toggleSubmenu(id);
+        }
+
         function toggleSubmenu(id) {
             const role = (localStorage.getItem('userRole') || 'user').toLowerCase();
             const isAsst = localStorage.getItem('semiOwner') === 'true';
@@ -747,7 +776,7 @@
             
             // Add Accordion effect: Close all other submenus gracefully
             document.querySelectorAll('[id^="submenu-"]').forEach(sub => {
-                if (sub.id !== id && sub.id !== 'submenu-tm-candidate') {
+                if (sub.id !== id) {
                     sub.classList.add('hidden');
                     sub.classList.remove('flex');
                     const otherIcon = document.getElementById('icon-' + sub.id);
@@ -950,6 +979,111 @@
                 });
         };
 
+        function loadTMPrograms(sectionName) {
+            window.currentTMSection = sectionName;
+
+            const url = new URL(window.location);
+            url.searchParams.set('tab', 'tm-prog-' + sectionName);
+            window.history.pushState({}, '', url);
+
+            const dashboard = document.getElementById('main-dashboard-content');
+            const moduleArea = document.getElementById('module-content-area');
+            const loader = document.getElementById('module-loader');
+            const container = document.getElementById('module-injected-content');
+            const protectedView = document.getElementById('protected-view');
+
+            document.querySelectorAll('.module-injected-element').forEach(el => el.remove());
+
+            document.getElementById('main-dashboard-content').classList.add('hidden');
+            document.getElementById('protected-view').classList.add('hidden');
+            document.getElementById('module-content-area').classList.remove('hidden');
+            loader.classList.remove('hidden');
+            
+            container.className = "animate-in h-full flex flex-col pb-2 sm:pb-6";
+            container.innerHTML = '';
+
+            fetch('tmPrograms.html')
+                .then(r => {
+                    if (!r.ok) throw new Error("File not found or network error");
+                    return r.text();
+                })
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    container.innerHTML = doc.querySelector('body')?.innerHTML || html;
+
+                    const scripts = container.querySelectorAll('script');
+                    scripts.forEach(oldScript => {
+                        const newScript = document.createElement('script');
+                        Array.from(oldScript.attributes).forEach(a => newScript.setAttribute(a.name, a.value));
+                        newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                        oldScript.parentNode.replaceChild(newScript, oldScript);
+                    });
+
+                    // Update Breadcrumb
+                    document.getElementById('breadcrumb-separator-1')?.classList.remove('hidden');
+                    document.getElementById('breadcrumb-middle')?.classList.add('hidden');
+                    document.getElementById('breadcrumb-separator-2')?.classList.add('hidden');
+                    const currentCrumb = document.getElementById('breadcrumb-current');
+                    if (currentCrumb) { currentCrumb.classList.remove('hidden'); currentCrumb.innerText = sectionName + ' Programs'; }
+
+                    loader.classList.add('hidden');
+                    if (window.innerWidth < 1024) toggleSidebar();
+                })
+                .catch(e => {
+                    showToast("Failed to load programs dashboard.");
+                    loader.classList.add('hidden');
+                });
+        };
+
+        function loadTMTopicReg(sectionName) {
+            window.currentTMSection = sectionName;
+            
+            const url = new URL(window.location);
+            url.searchParams.set('tab', 'tm-topic-' + sectionName);
+            window.history.pushState({}, '', url);
+
+            const dashboard = document.getElementById('main-dashboard-content');
+            const moduleArea = document.getElementById('module-content-area');
+            const loader = document.getElementById('module-loader');
+            const container = document.getElementById('module-injected-content');
+            const protectedView = document.getElementById('protected-view');
+
+            document.querySelectorAll('.module-injected-element').forEach(el => el.remove());
+
+            document.getElementById('main-dashboard-content').classList.add('hidden');
+            document.getElementById('protected-view').classList.add('hidden');
+            document.getElementById('module-content-area').classList.remove('hidden');
+            loader.classList.remove('hidden');
+            
+            container.className = "animate-in h-full flex flex-col pb-2 sm:pb-6";
+            container.innerHTML = '';
+
+            fetch('tmTopicReg.html')
+                .then(r => { if (!r.ok) throw new Error("File not found or network error"); return r.text(); })
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    container.innerHTML = doc.querySelector('body')?.innerHTML || html;
+
+                    const scripts = container.querySelectorAll('script');
+                    scripts.forEach(oldScript => {
+                        const newScript = document.createElement('script');
+                        Array.from(oldScript.attributes).forEach(a => newScript.setAttribute(a.name, a.value));
+                        newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                        oldScript.parentNode.replaceChild(newScript, oldScript);
+                    });
+
+                    document.getElementById('breadcrumb-separator-1')?.classList.remove('hidden');
+                    document.getElementById('breadcrumb-middle')?.classList.add('hidden');
+                    document.getElementById('breadcrumb-separator-2')?.classList.add('hidden');
+                    const currentCrumb = document.getElementById('breadcrumb-current');
+                    if (currentCrumb) { currentCrumb.classList.remove('hidden'); currentCrumb.innerText = sectionName + ' Topics'; }
+                    loader.classList.add('hidden');
+                    if (window.innerWidth < 1024) toggleSidebar();
+                }).catch(e => { showToast("Failed to load topic dashboard."); loader.classList.add('hidden'); });
+        }
+
         function showDashboardHome() {
             // Clear the URL parameter when returning to the home dashboard
             const url = new URL(window.location);
@@ -1013,6 +1147,20 @@
                         </div>
                     `;
                 }).join('');
+            });
+        }
+
+        function setupTopicRegLock() {
+            db.collection('config').doc('topicReg').onSnapshot(doc => {
+                let unlocked = false;
+                if(doc.exists) {
+                    const data = doc.data(); const now = new Date();
+                    const start = data.start ? new Date(data.start) : null; const end = data.end ? new Date(data.end) : null;
+                    if(start && end && now >= start && now <= end) unlocked = true;
+                }
+                window.topicRegUnlocked = unlocked;
+                const icon = document.getElementById('icon-submenu-tm-topic');
+                if(icon) { icon.className = unlocked ? "fi fi-rr-angle-small-down text-xs opacity-50 transition-transform duration-200" : "fi fi-rr-lock text-xs text-red-400"; }
             });
         }
 
@@ -1101,6 +1249,7 @@
             updateUserDataUI(username);
             setupDashboardStats();
             setupFestUsersListener();
+            setupTopicRegLock();
 
             const role = localStorage.getItem('userRole');
             
@@ -1129,12 +1278,20 @@
 
                 db.collection('sections').where('isActive', '==', true).onSnapshot(snap => {
                     const tmSubmenu = document.getElementById('submenu-tm-candidate');
+                    const tmSubmenuProg = document.getElementById('submenu-tm-programs');
+                    const tmSubmenuTopic = document.getElementById('submenu-tm-topic');
                     let html = '';
+                    let htmlProg = '';
+                    let htmlTopic = '';
                     snap.forEach(doc => {
                         const sec = doc.data().name;
                         html += `<a href="#" onclick="event.preventDefault(); loadTMSection('${sec}')" class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item"><div class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors"></div> ${sec}</a>`;
+                        htmlProg += `<a href="#" onclick="event.preventDefault(); loadTMPrograms('${sec}')" class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item"><div class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors"></div> ${sec}</a>`;
+                        htmlTopic += `<a href="#" onclick="event.preventDefault(); loadTMTopicReg('${sec}')" class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item"><div class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors"></div> ${sec}</a>`;
                     });
                     if(tmSubmenu) tmSubmenu.innerHTML = html || '<div class="text-[11px] text-gray-400 py-1 px-4">No active sections</div>';
+                    if(tmSubmenuProg) tmSubmenuProg.innerHTML = htmlProg || '<div class="text-[11px] text-gray-400 py-1 px-4">No active sections</div>';
+                    if(tmSubmenuTopic) tmSubmenuTopic.innerHTML = htmlTopic || '<div class="text-[11px] text-gray-400 py-1 px-4">No active sections</div>';
                 });
             } else {
                 document.getElementById('admin-nav-menus').classList.remove('hidden');
@@ -1146,7 +1303,9 @@
             const tabParam = urlParams.get('tab');
             if (tabParam) {
                 if (tabParam.startsWith('tm-') && role === 'Team Manager') {
-                    loadTMSection(tabParam.substring(3));
+                    if (tabParam.startsWith('tm-prog-')) loadTMPrograms(tabParam.substring(8));
+                    else if (tabParam.startsWith('tm-topic-')) loadTMTopicReg(tabParam.substring(9));
+                    else loadTMSection(tabParam.substring(3));
                 } else {
                     loadModule(tabParam);
                 }
