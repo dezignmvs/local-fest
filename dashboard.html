@@ -6,6 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Festival Dashboard</title>
 
+    <!-- PWA Setup -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#134E8E">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel='stylesheet'
         href='https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
@@ -908,7 +912,7 @@
                             currentCrumb.innerText = localStorage.getItem('viewTeamName') || 'Team';
                         }
                     } else if (moduleName === 'viewProgramData') {
-                        if (mid) { mid.classList.remove('hidden'); mid.innerText = 'Programs'; mid.onclick = () => loadModule('allPrograms'); }
+                        if (mid) { mid.classList.remove('hidden'); mid.innerText = 'Program'; mid.onclick = () => loadModule('allPrograms'); }
                         if (sep2) sep2.classList.remove('hidden');
                         if (currentCrumb) {
                             currentCrumb.classList.remove('hidden');
@@ -1330,6 +1334,17 @@
                 if (c && d && !c.contains(e.target) && !d.classList.contains('hidden')) d.classList.add('hidden');
             };
         });
+    </script>
+
+    <!-- PWA Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('sw.js')
+            .then(reg => console.log('Service Worker registered successfully.', reg))
+            .catch(err => console.error('Service Worker registration failed:', err));
+        });
+      }
     </script>
 </body>
 
