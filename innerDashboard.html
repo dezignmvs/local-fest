@@ -125,7 +125,21 @@
                     </div>
                 </div>
 
-                <div class="px-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-6 mb-2">Access Control</div>
+                <div class="mb-1">
+                    <button onclick="toggleSubmenu('owner-submenu-bulk', 'owner-icon-submenu-bulk')"
+                        class="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-brand-textMuted hover:bg-gray-50 hover:text-brand-textDark group transition-all text-left outline-none cursor-pointer">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-transparent group-hover:bg-white group-hover:shadow-sm transition-all"><i class="fi fi-rr-file-upload text-lg group-hover:text-green-600"></i></div>
+                            <span class="text-[13px] font-semibold">Bulk Entry</span>
+                        </div>
+                        <i id="owner-icon-submenu-bulk" class="fi fi-rr-angle-small-down text-xs opacity-50 group-hover:opacity-100 transition-transform duration-200"></i>
+                    </button>
+                    <div id="owner-submenu-bulk" class="hidden flex-col mt-1 space-y-0.5 px-2">
+                        <a href="#" data-tab="bulk-candidates" onclick="event.preventDefault(); showOwnerTab('bulk-candidates')" class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item"><div class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors"></div> Candidate Data</a>
+                        <a href="#" data-tab="bulk-programs" onclick="event.preventDefault(); showOwnerTab('bulk-programs')" class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item"><div class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors"></div> Program Data</a>
+                    </div>
+                </div>
+
                 
                 <a href="#" data-tab="notify" onclick="event.preventDefault(); showOwnerTab('notify')"
                     class="flex items-center justify-between px-4 py-2.5 mb-1 rounded-xl text-brand-textMuted hover:bg-gray-50 hover:text-brand-textDark group transition-all">
@@ -385,7 +399,73 @@
                         </div>
                     </div>
                 </div>
-        </main>
+
+                <!-- ===== BULK ENTRY: Candidates ===== -->
+                <div id="tpl-bulk-candidates" class="hidden animate-in fade-in duration-500">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <h1 class="text-[1.35rem] font-bold text-gray-800 flex items-center gap-2"><i class="fi fi-rr-user-add text-brand-blue"></i> Bulk Candidate Import</h1>
+                            <p class="text-[13px] text-gray-500 mt-1">Download a CSV template, fill it in, then upload to add multiple candidates at once.</p>
+                        </div>
+                        <button onclick="downloadCandidateTemplate()" class="flex items-center gap-2 px-5 py-2.5 bg-green-600 text-white rounded-full text-[13px] font-bold hover:bg-green-700 shadow-md transition-all">
+                            <i class="fi fi-rr-file-download"></i> Download Template
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6 w-full mb-8">
+                        <label class="block text-sm font-bold text-gray-700 mb-4 text-center">Upload Filled CSV</label>
+                        <div class="max-w-2xl mx-auto border-2 border-dashed border-gray-200 rounded-xl p-8 sm:p-12 text-center cursor-pointer hover:border-brand-blue hover:bg-blue-50/30 transition-all" onclick="document.getElementById('bulk-cand-file').click()">
+                            <i class="fi fi-rr-upload text-4xl text-gray-300 mb-4"></i>
+                            <p class="text-[15px] font-semibold text-gray-600">Click to select CSV file</p>
+                            <p class="text-[13px] text-gray-400 mt-2">Only .csv files supported</p>
+                            <input type="file" id="bulk-cand-file" accept=".csv" class="hidden" onchange="handleCandidateCSV(this)">
+                        </div>
+                        <div id="bulk-cand-preview" class="mt-8 hidden">
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3">
+                                <h3 class="text-[14px] font-bold text-gray-700">Preview <span id="bulk-cand-count" class="text-brand-blue ml-2 font-medium"></span></h3>
+                                <button onclick="importCandidates()" id="btn-import-cands" class="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-brand-blue text-white rounded-xl text-[13px] font-bold hover:bg-opacity-90 shadow-md transition-all">
+                                    <i class="fi fi-rr-upload"></i> Import All Valid
+                                </button>
+                            </div>
+                            <div id="bulk-cand-errors" class="mb-4"></div>
+                            <div id="bulk-cand-table" class="overflow-x-auto rounded-xl border border-gray-100 w-full max-h-[400px]"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== BULK ENTRY: Programs ===== -->
+                <div id="tpl-bulk-programs" class="hidden animate-in fade-in duration-500">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <h1 class="text-[1.35rem] font-bold text-gray-800 flex items-center gap-2"><i class="fi fi-rr-apps text-brand-orange"></i> Bulk Program Import</h1>
+                            <p class="text-[13px] text-gray-500 mt-1">Download a CSV template, fill it in, then upload to add multiple programs at once.</p>
+                        </div>
+                        <button onclick="downloadProgramTemplate()" class="flex items-center gap-2 px-5 py-2.5 bg-green-600 text-white rounded-full text-[13px] font-bold hover:bg-green-700 shadow-md transition-all">
+                            <i class="fi fi-rr-file-download"></i> Download Template
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6 w-full mb-8">
+                        <label class="block text-sm font-bold text-gray-700 mb-4 text-center">Upload Filled CSV</label>
+                        <div class="max-w-2xl mx-auto border-2 border-dashed border-gray-200 rounded-xl p-8 sm:p-12 text-center cursor-pointer hover:border-brand-orange hover:bg-orange-50/30 transition-all" onclick="document.getElementById('bulk-prog-file').click()">
+                            <i class="fi fi-rr-upload text-4xl text-gray-300 mb-4"></i>
+                            <p class="text-[15px] font-semibold text-gray-600">Click to select CSV file</p>
+                            <p class="text-[13px] text-gray-400 mt-2">Only .csv files supported</p>
+                            <input type="file" id="bulk-prog-file" accept=".csv" class="hidden" onchange="handleProgramCSV(this)">
+                        </div>
+                        <div id="bulk-prog-preview" class="mt-8 hidden">
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3">
+                                <h3 class="text-[14px] font-bold text-gray-700">Preview <span id="bulk-prog-count" class="text-brand-orange ml-2 font-medium"></span></h3>
+                                <button onclick="importPrograms()" id="btn-import-progs" class="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-brand-blue text-white rounded-xl text-[13px] font-bold hover:bg-opacity-90 shadow-md transition-all">
+                                    <i class="fi fi-rr-upload"></i> Import All Valid
+                                </button>
+                            </div>
+                            <div id="bulk-prog-errors" class="mb-4"></div>
+                            <div id="bulk-prog-table" class="overflow-x-auto rounded-xl border border-gray-100 w-full max-h-[400px]"></div>
+                        </div>
+                    </div>
+                </div>
+
 
         <!-- Global Action Menu -->
         <div id="global-action-menu" class="hidden fixed w-48 bg-white rounded-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.15)] border border-gray-100 py-1.5 z-[100] dropdown-enter text-left overflow-hidden"></div>
@@ -1067,7 +1147,9 @@
                 'notify': 'Access Requests',
                 'token': 'Access Tokens',
                 'topic': 'Topic Registration',
-                'limits': 'Set Limits'
+                'limits': 'Set Limits',
+                'bulk-candidates': 'Bulk Candidate Import',
+                'bulk-programs': 'Bulk Program Import'
             };
             const title = map[tab] || (tab.charAt(0).toUpperCase() + tab.slice(1));
             const sep1 = document.getElementById('breadcrumb-separator-1');
@@ -1620,6 +1702,405 @@
             const tb = document.getElementById('limits-table-body');
             if(tb) { if(allLimits.length===0) tb.innerHTML = "<div class='text-center py-8 text-[13px] text-gray-400'>No sets defined.</div>"; else tb.innerHTML = allLimits.map(l => `<div class="grid grid-cols-12 gap-4 items-center p-3.5 bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-shadow"><div class="col-span-5 font-bold text-[13px] text-gray-800">${l.name}</div><div class="col-span-3 text-center text-[13px] font-medium text-gray-500">${l.minCount}</div><div class="col-span-3 text-center text-[13px] font-medium text-gray-500">${l.maxCount}</div><div class="col-span-1 flex gap-3 justify-end"><i class="fi fi-rr-edit text-gray-400 hover:text-brand-blue cursor-pointer transition-colors" onclick="openLimitSidebar('${l.id}')"></i><i class="fi fi-rr-trash text-gray-400 hover:text-red-500 cursor-pointer transition-colors" onclick="deleteLimit('${l.id}')"></i></div></div>`).join(''); }
         });
+
+        // ═══════════════════════════════════════════════════════════════
+        // SUBMENU TOGGLE
+        // ═══════════════════════════════════════════════════════════════
+        function toggleSubmenu(id, iconId) {
+            const el = document.getElementById(id);
+            const icon = document.getElementById(iconId);
+            if (!el) return;
+            const isHidden = el.classList.contains('hidden');
+            el.classList.toggle('hidden', !isHidden);
+            el.classList.toggle('flex', isHidden);
+            if (icon) icon.classList.toggle('rotate-180', isHidden);
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // BULK IMPORT — CANDIDATE DATA
+        // ═══════════════════════════════════════════════════════════════
+        const CAND_HEADERS = ['name','chestNo','team','section','class','dob'];
+        const PROG_HEADERS = ['code','name','section','type','maxParticipants','status'];
+
+        function downloadCandidateTemplate() {
+            const csv = CAND_HEADERS.join(',') + '\n';
+            downloadCSV(csv, 'candidate_template.csv');
+        }
+        function downloadProgramTemplate() {
+            const csv = PROG_HEADERS.join(',') + '\n';
+            downloadCSV(csv, 'program_template.csv');
+        }
+        function downloadCSV(content, filename) {
+            const a = document.createElement('a');
+            a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(content);
+            a.download = filename;
+            a.click();
+        }
+
+        // Shared CSV parser
+        function parseCSV(text) {
+            const lines = text.trim().split(/\r?\n/);
+            if (lines.length < 2) return { headers: [], rows: [] };
+            const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+            const rows = lines.slice(1).map(line => {
+                const vals = line.split(',').map(v => v.trim());
+                const obj = {};
+                headers.forEach((h, i) => obj[h] = vals[i] || '');
+                return obj;
+            }).filter(r => Object.values(r).some(v => v !== ''));
+            return { headers, rows };
+        }
+
+        let bulkCandidateRows = [];
+        let bulkCandidateValidSections = [];
+        let bulkCandidateValidTeams = [];
+
+        function validateCandidateRow(r) {
+            const errs = [];
+            const sec = (r.section || '').trim();
+            const team = (r.team || '').trim();
+            const chest = String(r.chestno || r.chestNo || '').trim();
+            if (!(r.name || '').trim()) errs.push('Name is required');
+            if (!chest) errs.push('Chest No is required');
+            else {
+                if (window.bulkExistingChests && window.bulkExistingChests.includes(chest.toLowerCase())) errs.push('Chest No already exists in database');
+                if (r._duplicateInCSV) errs.push('Duplicate Chest No in CSV');
+            }
+            if (!sec) errs.push('Section is required');
+            if (!team) errs.push('Team is required');
+            else if (!bulkCandidateValidSections.some(s => s.toLowerCase() === sec.toLowerCase())) errs.push('Unknown section "' + sec + '"');
+            else if (!bulkCandidateValidTeams.some(t => t.toLowerCase() === team.toLowerCase())) errs.push('Unknown team "' + team + '"');
+            r._errors = errs;
+            r._valid = errs.length === 0;
+        }
+
+        window.updateBulkCandidateRow = function(index, field, value) {
+            bulkCandidateRows[index][field] = value;
+            revalidateAllCandidateRows();
+        };
+
+        window.removeBulkCandidateRow = function(index) {
+            bulkCandidateRows.splice(index, 1);
+            bulkCandidateRows.forEach((r, i) => r._index = i);
+            revalidateAllCandidateRows();
+        };
+        
+        function revalidateAllCandidateRows() {
+            const seenChestsInCSV = new Set();
+            const duplicateChestsInCSV = new Set();
+            
+            bulkCandidateRows.forEach(r => {
+                const chest = String(r.chestno || r.chestNo || '').trim().toLowerCase();
+                if (chest) {
+                    if (seenChestsInCSV.has(chest)) duplicateChestsInCSV.add(chest);
+                    else seenChestsInCSV.add(chest);
+                }
+            });
+
+            bulkCandidateRows.forEach(r => {
+                const chest = String(r.chestno || r.chestNo || '').trim().toLowerCase();
+                r._duplicateInCSV = duplicateChestsInCSV.has(chest);
+                validateCandidateRow(r);
+            });
+            renderCandidatePreview();
+        }
+
+        function handleCandidateCSV(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const { headers, rows } = parseCSV(e.target.result);
+                const missingHeaders = CAND_HEADERS.filter(h => !headers.includes(h.toLowerCase()));
+                if (missingHeaders.length) {
+                    showToast('<b>❌</b> Missing columns: ' + missingHeaders.join(', '));
+                    return;
+                }
+                // Load valid sections + teams
+                const [secSnap, teamSnap, candSnap] = await Promise.all([
+                    db.collection('sections').where('isActive','==',true).get(),
+                    db.collection('teams').get(),
+                    db.collection('candidates').get()
+                ]);
+                bulkCandidateValidSections = secSnap.docs.map(d => (d.data().name||'').trim());
+                bulkCandidateValidTeams = teamSnap.docs.map(d => (d.data().name||'').trim());
+                window.bulkExistingChests = candSnap.docs.map(d => String(d.data().chestNo).trim().toLowerCase());
+
+                // Validate each row
+                bulkCandidateRows = rows.map((r, i) => {
+                    return { ...r, _index: i, _rowNum: i+2 };
+                });
+
+                revalidateAllCandidateRows();
+            };
+            reader.readAsText(file);
+            input.value = ''; // Reset file input
+        }
+
+        function getBulkCandidateField(r, h) {
+            const field = h.toLowerCase();
+            const val = (r[field] || '').replace(/"/g, '&quot;');
+            const valLower = (r[field] || '').toLowerCase().trim();
+            const borderClass = r._valid ? 'border-gray-200' : 'border-red-300';
+            const baseClass = `w-full bg-white border ${borderClass} rounded-lg px-2.5 py-1.5 text-[12px] text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-blue/20 transition-all`;
+
+            if (field === 'team') {
+                let opts = `<option value="">Select Team</option>`;
+                let matched = false;
+                bulkCandidateValidTeams.forEach(t => {
+                    if (t.toLowerCase() === valLower) matched = true;
+                    opts += `<option value="${t}" ${t.toLowerCase() === valLower ? 'selected' : ''}>${t}</option>`;
+                });
+                if (val && !matched) opts = `<option value="${val}" selected disabled class="text-red-500">Invalid: ${val}</option>` + opts;
+                return `<select class="${baseClass} cursor-pointer" onchange="updateBulkCandidateRow(${r._index}, '${field}', this.value)">${opts}</select>`;
+            }
+            if (field === 'section') {
+                let opts = `<option value="">Select Section</option>`;
+                let matched = false;
+                bulkCandidateValidSections.forEach(s => {
+                    if (s.toLowerCase() === valLower) matched = true;
+                    opts += `<option value="${s}" ${s.toLowerCase() === valLower ? 'selected' : ''}>${s}</option>`;
+                });
+                if (val && !matched) opts = `<option value="${val}" selected disabled class="text-red-500">Invalid: ${val}</option>` + opts;
+                return `<select class="${baseClass} cursor-pointer" onchange="updateBulkCandidateRow(${r._index}, '${field}', this.value)">${opts}</select>`;
+            }
+            return `<input type="text" class="${baseClass} placeholder-gray-300" value="${val}" placeholder="${h}" onchange="updateBulkCandidateRow(${r._index}, '${field}', this.value)">`;
+        }
+
+        function renderCandidatePreview() {
+            const preview = document.getElementById('bulk-cand-preview');
+            const errBox = document.getElementById('bulk-cand-errors');
+            const tableBox = document.getElementById('bulk-cand-table');
+            const countEl = document.getElementById('bulk-cand-count');
+            preview.classList.remove('hidden');
+            const totalValid = bulkCandidateRows.filter(r => r._valid).length;
+            const totalError = bulkCandidateRows.length - totalValid;
+            countEl.innerText = `(${bulkCandidateRows.length} rows — ${totalValid} valid, ${totalError} with errors)`;
+
+            const errorRows = bulkCandidateRows.filter(r => !r._valid);
+            errBox.innerHTML = errorRows.length ? `
+                <div class="bg-red-50 border border-red-100 rounded-xl p-4 space-y-1">
+                    <div class="text-[13px] font-bold text-red-600 mb-2"><i class="fi fi-rr-exclamation"></i> ${errorRows.length} row(s) have errors — they will be skipped during import:</div>
+                    ${errorRows.map(r => `<div class="text-[12px] text-red-500">Row ${r._rowNum}: ${r._errors.join(', ')}</div>`).join('')}
+                </div>` : '<div class="text-[13px] text-green-600 font-semibold p-3 bg-green-50 rounded-xl border border-green-100"><i class="fi fi-rr-check"></i> All rows are valid!</div>';
+
+            const headers = CAND_HEADERS;
+            tableBox.innerHTML = `
+                <table class="w-full text-left border-collapse whitespace-nowrap">
+                <thead class="bg-gray-50 text-[11px] font-bold text-gray-500 uppercase tracking-wide sticky top-0 shadow-sm z-10">
+                    <tr>${headers.map(h => `<th class="px-3 py-3 border-b border-gray-200">${h}</th>`).join('')}<th class="px-3 py-3 border-b border-gray-200 text-center">Status</th><th class="px-3 py-3 border-b border-gray-200 text-center">Action</th></tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                ${bulkCandidateRows.map(r => `
+                    <tr class="hover:bg-gray-50/50 transition-colors ${r._valid ? '' : 'bg-red-50/30'}">
+                        ${headers.map(h => `<td class="px-2 py-2">${getBulkCandidateField(r, h)}</td>`).join('')}
+                        <td class="px-3 py-2 text-center align-middle">${r._valid ? '<span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-100 text-green-600" title="Valid"><i class="fi fi-rr-check text-[10px]"></i></span>' : `<span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-100 text-red-600 cursor-help" title="${r._errors.join(', ')}"><i class="fi fi-rr-exclamation text-[10px]"></i></span>`}</td>
+                        <td class="px-3 py-2 text-center align-middle"><button onclick="removeBulkCandidateRow(${r._index})" class="w-6 h-6 rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"><i class="fi fi-rr-trash text-[10px]"></i></button></td>
+                    </tr>`).join('')}
+                </tbody>
+                </table>`;
+        }
+
+        function importCandidates() {
+            const validRows = bulkCandidateRows.filter(r => r._valid);
+            if (!validRows.length) { showToast('<b>⚠️</b> No valid rows to import.'); return; }
+            const btn = document.getElementById('btn-import-cands');
+            btn.disabled = true; btn.innerText = 'Importing...';
+            const batch = db.batch();
+            const ts = firebase.firestore.FieldValue.serverTimestamp();
+            validRows.forEach(r => {
+                const ref = db.collection('candidates').doc();
+                batch.set(ref, {
+                    name: r.name, chestNo: r.chestno || r.chestNo, team: r.team,
+                    section: r.section, class: r.class, dob: r.dob, active: true, createdAt: ts
+                });
+            });
+            batch.commit()
+                .then(() => { showToast('<b>✅</b> ' + validRows.length + ' candidates imported!'); btn.disabled = false; btn.innerHTML = '<i class="fi fi-rr-upload"></i> Import All Valid'; })
+                .catch(err => { showToast('<b>❌</b> ' + err.message); btn.disabled = false; btn.innerHTML = '<i class="fi fi-rr-upload"></i> Import All Valid'; });
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // BULK IMPORT — PROGRAM DATA
+        // ═══════════════════════════════════════════════════════════════
+        let bulkProgramRows = [];
+        let bulkProgramValidSections = [];
+
+        function validateProgramRow(r) {
+            const errs = [];
+            const sec = (r.section || '').trim();
+            const code = String(r.code || '').trim();
+            if (!(r.code || '').trim()) errs.push('Code is required');
+            else {
+                if (window.bulkExistingCodes && window.bulkExistingCodes.includes(code.toLowerCase())) errs.push('Program Code already exists in database');
+                if (r._duplicateInCSV) errs.push('Duplicate Code in CSV');
+            }
+            if (!(r.name || '').trim()) errs.push('Name is required');
+            if (!sec) errs.push('Section is required');
+            else if (!bulkProgramValidSections.some(s => s.toLowerCase() === sec.toLowerCase())) errs.push('Unknown section "' + sec + '"');
+            if (!['individual','group'].includes((r.type || '').trim().toLowerCase())) errs.push('Type must be Individual or Group');
+            r._errors = errs;
+            r._valid = errs.length === 0;
+        }
+
+        window.updateBulkProgramRow = function(index, field, value) {
+            bulkProgramRows[index][field] = value;
+            revalidateAllProgramRows();
+        };
+
+        window.removeBulkProgramRow = function(index) {
+            bulkProgramRows.splice(index, 1);
+            bulkProgramRows.forEach((r, i) => r._index = i);
+            revalidateAllProgramRows();
+        };
+        
+        function revalidateAllProgramRows() {
+            const seenCodesInCSV = new Set();
+            const duplicateCodesInCSV = new Set();
+            
+            bulkProgramRows.forEach(r => {
+                const code = String(r.code || '').trim().toLowerCase();
+                if (code) {
+                    if (seenCodesInCSV.has(code)) duplicateCodesInCSV.add(code);
+                    else seenCodesInCSV.add(code);
+                }
+            });
+
+            bulkProgramRows.forEach(r => {
+                const code = String(r.code || '').trim().toLowerCase();
+                r._duplicateInCSV = duplicateCodesInCSV.has(code);
+                validateProgramRow(r);
+            });
+            renderProgramPreview();
+        }
+
+        function handleProgramCSV(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const { headers, rows } = parseCSV(e.target.result);
+                const missingHeaders = PROG_HEADERS.filter(h => !headers.includes(h.toLowerCase()));
+                if (missingHeaders.length) {
+                    showToast('<b>❌</b> Missing columns: ' + missingHeaders.join(', '));
+                    return;
+                }
+                const [secSnap, progSnap] = await Promise.all([
+                    db.collection('sections').where('isActive','==',true).get(),
+                    db.collection('programs').get()
+                ]);
+                bulkProgramValidSections = secSnap.docs.map(d => (d.data().name||'').trim());
+                window.bulkExistingCodes = progSnap.docs.map(d => String(d.data().code).trim().toLowerCase());
+
+                bulkProgramRows = rows.map((r, i) => {
+                    return { ...r, _index: i, _rowNum: i+2 };
+                });
+
+                revalidateAllProgramRows();
+            };
+            reader.readAsText(file);
+            input.value = ''; // Reset file input
+        }
+
+        function getBulkProgramField(r, h) {
+            const field = h.toLowerCase();
+            const val = (r[field] || '').replace(/"/g, '&quot;');
+            const valLower = (r[field] || '').toLowerCase().trim();
+            const borderClass = r._valid ? 'border-gray-200' : 'border-red-300';
+            const baseClass = `w-full bg-white border ${borderClass} rounded-lg px-2.5 py-1.5 text-[12px] text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-blue/20 transition-all`;
+
+            if (field === 'section') {
+                let opts = `<option value="">Select Section</option>`;
+                let matched = false;
+                bulkProgramValidSections.forEach(s => {
+                    if (s.toLowerCase() === valLower) matched = true;
+                    opts += `<option value="${s}" ${s.toLowerCase() === valLower ? 'selected' : ''}>${s}</option>`;
+                });
+                if (val && !matched) opts = `<option value="${val}" selected disabled class="text-red-500">Invalid: ${val}</option>` + opts;
+                return `<select class="${baseClass} cursor-pointer" onchange="updateBulkProgramRow(${r._index}, '${field}', this.value)">${opts}</select>`;
+            }
+            if (field === 'type') {
+                let opts = `<option value="">Select Type</option>`;
+                let matched = false;
+                ['Individual', 'Group'].forEach(t => {
+                    if (t.toLowerCase() === valLower) matched = true;
+                    opts += `<option value="${t}" ${t.toLowerCase() === valLower ? 'selected' : ''}>${t}</option>`;
+                });
+                if (val && !matched) opts = `<option value="${val}" selected disabled class="text-red-500">Invalid: ${val}</option>` + opts;
+                return `<select class="${baseClass} cursor-pointer" onchange="updateBulkProgramRow(${r._index}, '${field}', this.value)">${opts}</select>`;
+            }
+            if (field === 'status') {
+                let opts = `<option value="">Select Status</option>`;
+                let matched = false;
+                ['Active', 'Inactive'].forEach(t => {
+                    if (t.toLowerCase() === valLower) matched = true;
+                    opts += `<option value="${t}" ${t.toLowerCase() === valLower ? 'selected' : ''}>${t}</option>`;
+                });
+                if (val && !matched) opts = `<option value="${val}" selected disabled class="text-red-500">Invalid: ${val}</option>` + opts;
+                return `<select class="${baseClass} cursor-pointer" onchange="updateBulkProgramRow(${r._index}, '${field}', this.value)">${opts}</select>`;
+            }
+            return `<input type="text" class="${baseClass} placeholder-gray-300" value="${val}" placeholder="${h}" onchange="updateBulkProgramRow(${r._index}, '${field}', this.value)">`;
+        }
+
+        function renderProgramPreview() {
+            const preview = document.getElementById('bulk-prog-preview');
+            const errBox = document.getElementById('bulk-prog-errors');
+            const tableBox = document.getElementById('bulk-prog-table');
+            const countEl = document.getElementById('bulk-prog-count');
+            preview.classList.remove('hidden');
+
+            const totalValid = bulkProgramRows.filter(r => r._valid).length;
+            const totalError = bulkProgramRows.length - totalValid;
+            countEl.innerText = `(${bulkProgramRows.length} rows — ${totalValid} valid, ${totalError} with errors)`;
+
+            const errorRows = bulkProgramRows.filter(r => !r._valid);
+            errBox.innerHTML = errorRows.length ? `
+                <div class="bg-red-50 border border-red-100 rounded-xl p-4 space-y-1">
+                    <div class="text-[13px] font-bold text-red-600 mb-2"><i class="fi fi-rr-exclamation"></i> ${errorRows.length} row(s) have errors — they will be skipped unless corrected:</div>
+                    ${errorRows.map(r => `<div class="text-[12px] text-red-500">Row ${r._rowNum}: ${r._errors.join(', ')}</div>`).join('')}
+                </div>` : '<div class="text-[13px] text-green-600 font-semibold p-3 bg-green-50 rounded-xl border border-green-100"><i class="fi fi-rr-check"></i> All rows are valid!</div>';
+
+            const headers = PROG_HEADERS;
+            tableBox.innerHTML = `
+                <table class="w-full text-left border-collapse whitespace-nowrap">
+                <thead class="bg-gray-50 text-[11px] font-bold text-gray-500 uppercase tracking-wide sticky top-0 shadow-sm z-10">
+                    <tr>${headers.map(h => `<th class="px-3 py-3 border-b border-gray-200">${h}</th>`).join('')}<th class="px-3 py-3 border-b border-gray-200 text-center">Status</th><th class="px-3 py-3 border-b border-gray-200 text-center">Action</th></tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                ${bulkProgramRows.map((r, i) => `
+                    <tr class="hover:bg-gray-50/50 transition-colors ${r._valid ? '' : 'bg-red-50/30'}">
+                        ${headers.map(h => `<td class="px-2 py-2">${getBulkProgramField(r, h)}</td>`).join('')}
+                        <td class="px-3 py-2 text-center align-middle">${r._valid ? '<span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-100 text-green-600" title="Valid"><i class="fi fi-rr-check text-[10px]"></i></span>' : `<span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-100 text-red-600 cursor-help" title="${r._errors.join(', ')}"><i class="fi fi-rr-exclamation text-[10px]"></i></span>`}</td>
+                        <td class="px-3 py-2 text-center align-middle"><button onclick="removeBulkProgramRow(${r._index})" class="w-6 h-6 rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"><i class="fi fi-rr-trash text-[10px]"></i></button></td>
+                    </tr>`).join('')}
+                </tbody>
+                </table>`;
+        }
+
+        function importPrograms() {
+            const validRows = bulkProgramRows.filter(r => r._valid);
+            if (!validRows.length) { showToast('<b>⚠️</b> No valid rows to import.'); return; }
+            const btn = document.getElementById('btn-import-progs');
+            btn.disabled = true; btn.innerText = 'Importing...';
+            const batch = db.batch();
+            const ts = firebase.firestore.FieldValue.serverTimestamp();
+            validRows.forEach(r => {
+                const ref = db.collection('programs').doc();
+                batch.set(ref, {
+                    code: (r.code||'').toUpperCase(),
+                    name: r.name,
+                    section: r.section,
+                    type: r.type,
+                    maxParticipants: parseInt(r.maxparticipants || r.maxParticipants) || 1,
+                    minParticipants: 1,
+                    status: (r.status||'active').toLowerCase() !== 'inactive',
+                    createdAt: ts
+                });
+            });
+            batch.commit()
+                .then(() => { showToast('<b>✅</b> ' + validRows.length + ' programs imported!'); btn.disabled = false; btn.innerHTML = '<i class="fi fi-rr-upload"></i> Import All Valid'; })
+                .catch(err => { showToast('<b>❌</b> ' + err.message); btn.disabled = false; btn.innerHTML = '<i class="fi fi-rr-upload"></i> Import All Valid'; });
+        }
 
         window.onclick = function(e) {
             const c = document.getElementById('ownerUserMenuContainer');

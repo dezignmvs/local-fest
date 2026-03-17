@@ -192,7 +192,14 @@
                 </div>
                 <div>
                     <label class="block text-[13px] font-medium text-gray-800 mb-1.5">Class</label>
-                    <input type="text" id="candClass" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-full text-[13px] focus:outline-none focus:ring-1 focus:ring-[#FFB33F] focus:border-[#FFB33F] transition-all">
+                    <div class="relative">
+                        <select id="candClass" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-full text-[13px] focus:outline-none focus:ring-1 focus:ring-[#FFB33F] focus:border-[#FFB33F] appearance-none cursor-pointer">
+                            <option value="" disabled selected>Select Class</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                            <i class="fi fi-rr-angle-small-down text-xs"></i>
+                        </div>
+                    </div>
                 </div>
                 <div>
                     <label class="block text-[13px] font-medium text-gray-800 mb-1.5">Team *</label>
@@ -208,7 +215,7 @@
                 <div>
                     <label class="block text-[13px] font-medium text-gray-800 mb-1.5">Section *</label>
                     <div class="relative">
-                        <select id="candSection" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-full text-[13px] focus:outline-none focus:ring-1 focus:ring-[#FFB33F] focus:border-[#FFB33F] appearance-none cursor-pointer">
+                        <select id="candSection" onchange="window.updateClassDropdown()" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-full text-[13px] focus:outline-none focus:ring-1 focus:ring-[#FFB33F] focus:border-[#FFB33F] appearance-none cursor-pointer">
                             <option value="" disabled selected>Select Section</option>
                         </select>
                         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
@@ -245,6 +252,7 @@
         var editingCandidateId = null;
         var activeDropdownId = null;
         var activeTeamsData = [];
+        var activeSectionsData = [];
 
         function getTeamColor(teamName) {
             const team = activeTeamsData.find(t => t.name === teamName);
@@ -517,6 +525,23 @@
             }
         }
 
+        window.updateClassDropdown = function(selectedClass = '') {
+            const sectionName = document.getElementById('candSection').value;
+            const classSelect = document.getElementById('candClass');
+            const section = activeSectionsData.find(s => s.name === sectionName);
+            
+            let optionsHTML = '<option value="" disabled selected>Select Class</option>';
+            if (section && section.classes && section.classes.length > 0) {
+                section.classes.forEach(c => {
+                    optionsHTML += `<option value="${c}">${c}</option>`;
+                });
+            } else {
+                optionsHTML += `<option value="" disabled>No classes available</option>`;
+            }
+            classSelect.innerHTML = optionsHTML;
+            if (selectedClass) classSelect.value = selectedClass;
+        }
+
         // SIDEBAR FORM LOGIC
         window.openCandidateSidebar = function() {
             editingCandidateId = null;
@@ -547,9 +572,9 @@
             document.getElementById('candChest').value = cand.chestNo;
             document.getElementById('candName').value = cand.name;
             document.getElementById('candAdmn').value = cand.admissionNo === 'N/A' ? '' : cand.admissionNo;
-            document.getElementById('candClass').value = cand.class || '';
             document.getElementById('candTeam').value = cand.team;
             document.getElementById('candSection').value = cand.section;
+            window.updateClassDropdown(cand.class || '');
             document.getElementById('candActive').checked = cand.active;
 
             document.getElementById('candidateOverlay').classList.remove('hidden');
@@ -593,7 +618,7 @@
                     window.closeCandidateSidebar();
                 });
             }
-        };
+        }
 
         // REAL-TIME LISTENERS (Candidates, Teams, Sections)
         if(window.candUnsub) window.candUnsub();
@@ -619,15 +644,18 @@
 
             // 2. Sections Listener (Only active)
             window.candSectionsUnsub = db.collection('sections').where('isActive', '==', true).onSnapshot(snap => {
+                activeSectionsData = snap.docs.map(doc => doc.data());
                 const sectionSelect = document.getElementById('candSection');
                 const currentVal = sectionSelect.value;
                 let optionsHTML = '<option value="" disabled selected>Select Section</option>';
-                snap.forEach(doc => {
-                    const section = doc.data();
+                activeSectionsData.forEach(section => {
                     optionsHTML += `<option value="${section.name}">${section.name}</option>`;
                 });
                 sectionSelect.innerHTML = optionsHTML;
-                if(currentVal) sectionSelect.value = currentVal;
+                if(currentVal) {
+                    sectionSelect.value = currentVal;
+                    window.updateClassDropdown();
+                }
             });
 
             // 3. Candidates Listener
