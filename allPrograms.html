@@ -228,11 +228,7 @@
                         <i id="icon-limits" class="fi fi-rr-angle-small-down text-gray-400 transition-transform duration-300"></i>
                     </button>
                     <div id="acc-limits" class="hidden p-6 border-t border-gray-100 bg-gray-50/30">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="block text-[13px] font-medium text-gray-800 mb-1.5">Minimum Participants</label>
-                                <input type="number" id="progMin" value="1" min="1" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-[13px] focus:outline-none focus:ring-1 focus:ring-[#FFB33F] focus:border-[#FFB33F] transition-all">
-                            </div>
+                        <div class="grid grid-cols-1 gap-6">
                             <div>
                                 <label class="block text-[13px] font-medium text-gray-800 mb-1.5">Maximum Participants</label>
                                 <input type="number" id="progMax" value="1" min="1" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-[13px] focus:outline-none focus:ring-1 focus:ring-[#FFB33F] focus:border-[#FFB33F] transition-all">
@@ -483,7 +479,6 @@
                 document.getElementById('progType').value = 'Individual';
                 document.getElementById('progStatus').value = 'active';
                 document.getElementById('progSet').value = '';
-                document.getElementById('progMin').value = '1';
                 document.getElementById('progMax').value = '1';
                 
                 document.getElementById('progTopicReg').checked = false;
@@ -503,7 +498,6 @@
                     document.getElementById('progStatus').value = p.status !== false ? 'active' : 'inactive';
                     document.getElementById('progSet').value = p.progSet || '';
                     
-                    document.getElementById('progMin').value = p.minParticipants || 1;
                     document.getElementById('progMax').value = p.maxParticipants || 1;
                     
                     document.getElementById('progTopicReg').checked = !!p.topicRegistration;
@@ -539,7 +533,7 @@
                 type: document.getElementById('progType').value,
                 progSet: document.getElementById('progSet').value,
                 status: document.getElementById('progStatus').value === 'active',
-                minParticipants: parseInt(document.getElementById('progMin').value) || 1,
+                minParticipants: 1,
                 maxParticipants: parseInt(document.getElementById('progMax').value) || 1,
                 topicRegistration: document.getElementById('progTopicReg').checked,
                 enableGrading: document.getElementById('progGrading').checked,
