@@ -58,8 +58,8 @@
 
             <div class="h-20 flex items-center justify-between px-6 border-b border-brand-border">
                 <div class="flex items-center gap-3">
-                    <div id="owner-sidebar-avatar"
-                        class="w-10 h-10 rounded-full bg-brand-yellow flex items-center justify-center text-brand-textDark font-semibold text-lg border border-yellow-200">S</div>
+                    <img id="owner-sidebar-avatar" src="logo-192.svg?v=4"
+                        class="w-10 h-10 rounded-full bg-white flex items-center justify-center border border-gray-100 shadow-sm object-contain p-1">
                     <div>
                         <h2 id="owner-sidebar-name" class="text-sm font-bold text-brand-textDark leading-none mb-1">Suhail</h2>
                         <span id="owner-sidebar-status" class="text-[11px] font-medium text-brand-blue bg-blue-50 px-2 py-0.5 rounded-full">Active</span>
@@ -664,7 +664,7 @@
         function updateFestDataUI(name, isActive) {
             const ch = name ? name.charAt(0).toUpperCase() : 'S';
             [['owner-sidebar-name', name]].forEach(([id, val]) => { const el=document.getElementById(id); if(el) el.innerText=val; });
-            [['owner-sidebar-avatar', ch]].forEach(([id, val]) => { const el=document.getElementById(id); if(el) el.innerText=val; });
+            [['owner-sidebar-avatar', ch]].forEach(([id, val]) => { const el=document.getElementById(id); if(el && el.tagName !== 'IMG') el.innerText=val; });
             const el = document.getElementById('owner-sidebar-status');
             if (el) { el.innerText = isActive ? 'Active' : 'Inactive'; el.className = isActive ? "text-[11px] font-medium text-brand-blue bg-blue-50 px-2 py-0.5 rounded-full" : "text-[11px] font-medium text-brand-red bg-red-50 px-2 py-0.5 rounded-full"; }
         }

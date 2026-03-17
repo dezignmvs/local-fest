@@ -606,6 +606,16 @@
     </div>
 
     <script>
+        // Toast helper — uses parent dashboard's showToast if available, else Toastify
+        function vpToast(msg, color) {
+            if (typeof showToast === 'function') { showToast(msg); return; }
+            if (typeof Toastify === 'function') {
+                var opts = { text: msg, duration: 3000, gravity: 'bottom', position: 'center' };
+                if (color) opts.style = { background: color };
+                Toastify(opts).showToast();
+            } else { alert(msg); }
+        }
+
         const tabs = ['overview', 'registrations', 'results', 'substitutions', 'gallery', 'settings'];
         function switchTab(tabId) {
             // Find all section content panels and tabs
@@ -668,31 +678,116 @@
         });
     </script>
 
-    <!-- Toastify JS -->
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-
-    <!-- Firebase SDK (Version 8) -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <!-- NOTE: Firebase & Toastify are loaded by the parent dashboard. No need to re-import here. -->
 
     <script>
         (function () {
-            // Firebase Initialization
-            const firebaseConfig = {
-                apiKey: "AIzaSyCKA0k_9UgoJX_RBgEsIeNdiW2w0Okko1o",
-                authDomain: "festie-s1u2h3.firebaseapp.com",
-                projectId: "festie-s1u2h3",
-                storageBucket: "festie-s1u2h3.firebasestorage.app",
-                messagingSenderId: "794049194885",
-                appId: "1:794049194885:web:8f75f0df4c15cde15eb2ec"
+            // ── window.* handlers are registered FIRST so the button onclick always works ──
+
+            // Save Settings
+            window.saveProgramSettings = function () {
+                // Get db at call-time (dashboard sets window.db after login)
+                var db = window.db;
+                var programId = localStorage.getItem('viewProgramId');
+                if (!db || !programId) { vpToast('❌ Not ready yet, please wait a moment and try again.'); return; }
+
+                var btn = document.getElementById('btn-save-program');
+                var code = document.getElementById('progCode').value.trim().toUpperCase();
+                var name = document.getElementById('progName').value.trim();
+                var section = document.getElementById('progSection').value;
+
+                if (!code || !name || !section) {
+                    vpToast('❌ Code, Name and Section are required');
+                    return;
+                }
+
+                var ts;
+                try { ts = firebase.firestore.FieldValue.serverTimestamp(); } catch(e) { ts = new Date(); }
+
+                var payload = {
+                    code: code, name: name, section: section,
+                    type: document.getElementById('progType').value,
+                    progSet: document.getElementById('progSet').value,
+                    status: document.getElementById('progStatus').value === 'active',
+                    minParticipants: 1,
+                    maxParticipants: parseInt(document.getElementById('progMax').value) || 1,
+                    topicRegistration: document.getElementById('progTopicReg').checked,
+                    enableGrading: document.getElementById('progGrading').checked,
+                    gradeTemplate: document.getElementById('progGrading').checked ? document.getElementById('progGradeTemplate').value : null,
+                    enableScoring: document.getElementById('progScoring').checked,
+                    positionTemplate: document.getElementById('progScoring').checked ? document.getElementById('progScoreTemplate').value : null,
+                    updatedAt: ts
+                };
+
+                if (btn) { btn.disabled = true; btn.querySelector('span').innerText = 'Saving...'; }
+
+                db.collection('programs').doc(programId).update(payload)
+                    .then(function() {
+                        vpToast('✅ Settings saved successfully', '#10B981');
+                        if (btn) { btn.disabled = false; btn.querySelector('span').innerText = 'Save Settings'; }
+                    })
+                    .catch(function(err) {
+                        vpToast('❌ Error: ' + err.message, '#EF4444');
+                        if (btn) { btn.disabled = false; btn.querySelector('span').innerText = 'Save Settings'; }
+                    });
             };
 
-            if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-            const db = firebase.firestore();
+            // Go Back
+            window.goBack = function () {
+                var role = localStorage.getItem('userRole') || '';
+                var isManager = role === 'Team Manager';
+                if (typeof loadModule === 'function') {
+                    loadModule(isManager ? 'tmPrograms' : 'allPrograms');
+                } else {
+                    window.location.href = isManager ? 'innerDashboard.html' : 'allPrograms.html';
+                }
+            };
 
-            const programId = localStorage.getItem('viewProgramId');
+            // Menu actions (Edit / Delete / etc.)
+            window.handleMenuAction = function (action) {
+                var db = window.db;
+                var programId = localStorage.getItem('viewProgramId');
+                var dropdown = document.getElementById('optionsDropdown');
+                if (dropdown) dropdown.classList.add('hidden');
 
-            if (!programId) {
+                if (action === 'edit') {
+                    switchTab('settings');
+                } else if (action === 'delete') {
+                    if (!db || !programId) { vpToast('❌ Not ready.'); return; }
+                    if (confirm("Are you sure you want to delete this program? This cannot be undone.")) {
+                        db.collection('programs').doc(programId).delete()
+                            .then(function() { vpToast('✅ Program deleted', '#10B981'); setTimeout(window.goBack, 1000); });
+                    }
+                } else {
+                    vpToast('Feature coming soon!');
+                }
+            };
+
+            // ── Now load data (safe to early-return after handlers are set) ──
+            var db = window.db;
+
+            if (!db) {
+                // Fallback: try initialising Firebase if loaded standalone
+                try {
+                    var firebaseConfig = {
+                        apiKey: "AIzaSyCKA0k_9UgoJX_RBgEsIeNdiW2w0Okko1o",
+                        authDomain: "festie-s1u2h3.firebaseapp.com",
+                        projectId: "festie-s1u2h3",
+                        storageBucket: "festie-s1u2h3.firebasestorage.app",
+                        messagingSenderId: "794049194885",
+                        appId: "1:794049194885:web:8f75f0df4c15cde15eb2ec"
+                    };
+                    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+                    db = firebase.firestore();
+                    window.db = db;
+                } catch(e) {
+                    console.error('viewProgramData: Could not initialise Firebase', e);
+                }
+            }
+
+            var programId = localStorage.getItem('viewProgramId');
+
+            if (!programId || !db) {
                 document.getElementById('vp-name').innerText = "No Program Selected";
                 return;
             }
@@ -823,66 +918,8 @@
                 });
             });
 
-            // Save Settings action
-            window.saveProgramSettings = function () {
-                const code = document.getElementById('progCode').value.trim().toUpperCase();
-                const name = document.getElementById('progName').value.trim();
-                const section = document.getElementById('progSection').value;
-
-                if (!code || !name || !section) {
-                    Toastify({ text: "❌ Code, Name and Section are required", duration: 3000, gravity: "bottom", position: "center" }).showToast();
-                    return;
-                }
-
-                const payload = {
-                    code, name, section,
-                    type: document.getElementById('progType').value,
-                    progSet: document.getElementById('progSet').value,
-                    status: document.getElementById('progStatus').value === 'active',
-                    minParticipants: 1,
-                    maxParticipants: parseInt(document.getElementById('progMax').value) || 1,
-                    topicRegistration: document.getElementById('progTopicReg').checked,
-                    enableGrading: document.getElementById('progGrading').checked,
-                    gradeTemplate: document.getElementById('progGrading').checked ? document.getElementById('progGradeTemplate').value : null,
-                    enableScoring: document.getElementById('progScoring').checked,
-                    positionTemplate: document.getElementById('progScoring').checked ? document.getElementById('progScoreTemplate').value : null,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                };
-
-                db.collection('programs').doc(programId).update(payload).then(() => {
-                    Toastify({ text: "✅ Settings saved successfully", duration: 3000, gravity: "bottom", position: "center", style: { background: "#10B981" } }).showToast();
-                }).catch(err => {
-                    Toastify({ text: "❌ Error: " + err.message, duration: 3000, gravity: "bottom", position: "center", style: { background: "#EF4444" } }).showToast();
-                });
-            };
-
-            window.goBack = function () {
-                if (typeof loadModule === 'function') {
-                    loadModule('allPrograms');
-                } else {
-                    window.location.href = 'allPrograms.html';
-                }
-            };
-
-            window.handleMenuAction = function (action) {
-                const dropdown = document.getElementById('optionsDropdown');
-                if (dropdown) dropdown.classList.add('hidden');
-
-                if (action === 'edit') {
-                    switchTab('settings');
-                } else if (action === 'delete') {
-                    if (confirm("Are you sure you want to delete this program? This cannot be undone.")) {
-                        db.collection('programs').doc(programId).delete().then(() => {
-                            Toastify({ text: "✅ Program deleted", duration: 3000, gravity: "bottom", position: "center" }).showToast();
-                            setTimeout(window.goBack, 1000);
-                        });
-                    }
-                } else {
-                    Toastify({ text: "Feature coming soon!", duration: 2000, gravity: "bottom", position: "center" }).showToast();
-                }
-            };
-
         })();
+    
     </script>
 </body>
 
