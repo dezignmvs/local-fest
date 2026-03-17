@@ -306,10 +306,7 @@
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
                         <h2 class="text-[12px] font-black text-gray-400 uppercase tracking-widest">INDIVIDUAL
                             REGISTRATIONS</h2>
-                        <button id="add-reg-btn"
-                            class="px-5 py-2.5 border border-gray-200 shadow-sm rounded-full text-sm font-semibold flex items-center gap-2 hover:bg-gray-50 text-gray-700 transition-colors hidden">
-                            <i class="fi fi-rr-plus text-xs"></i> Add Registration
-                        </button>
+
                     </div>
 
                     <div id="registrations-list-container">
@@ -786,10 +783,7 @@
                 db.collection('registrations').where('programId', '==', programId).onSnapshot(regSnap => {
                     const regs = regSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     const regContainer = document.getElementById('registrations-list-container');
-                    const addRegBtn = document.getElementById('add-reg-btn');
-
                     if (regs.length === 0) {
-                        addRegBtn.classList.remove('hidden');
                         regContainer.innerHTML = `
                         <div class="flex flex-col items-center justify-center py-32 opacity-40">
                           <i class="fi fi-rr-users text-5xl mb-4 text-gray-400"></i>
@@ -797,7 +791,6 @@
                         </div>
                       `;
                     } else {
-                        addRegBtn.classList.add('hidden');
                         let html = '<div class="space-y-4">';
 
                         regs.forEach(reg => {
