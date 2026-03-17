@@ -136,8 +136,8 @@
             <!-- Logo Pill -->
             <div
                 class="mx-auto flex items-center justify-center gap-2 bg-white/10 border border-white/20 backdrop-blur-sm py-2 px-5 rounded-full w-max relative z-20">
-                <div class="bg-white/20 rounded p-1.5 flex items-center justify-center">
-                    <i class="fi fi-rr-computer text-white text-sm flex items-center justify-center"></i>
+                <div class="bg-white/20 rounded p-1 flex items-center justify-center overflow-hidden">
+                    <img src="logo-192.svg" class="w-6 h-6 object-contain" alt="Logo">
                 </div>
                 <span class="fest-name-display text-white font-bold text-lg tracking-wide">ArtFest'26</span>
             </div>
@@ -186,8 +186,8 @@
             <!-- Mobile Logo Backup -->
             <div class="lg:hidden flex justify-center mb-6">
                 <div class="flex items-center gap-2 bg-palette-blue py-2 px-6 rounded-full shadow-sm">
-                    <div class="bg-white/20 rounded p-1.5 flex items-center justify-center">
-                        <i class="fi fi-rr-computer text-white text-sm flex items-center justify-center"></i>
+                    <div class="bg-white/20 rounded p-1 flex items-center justify-center overflow-hidden">
+                        <img src="logo-192.svg" class="w-6 h-6 object-contain" alt="Logo">
                     </div>
                     <span class="fest-name-display text-white font-bold text-lg tracking-wide">ArtFest'26</span>
                 </div>
@@ -489,11 +489,63 @@
 
     <!-- PWA Service Worker Registration & Install Logic -->
     <script>
+      // This function will be called when a new SW is waiting.
+      function showUpdateBar(worker) {
+          const toast = Toastify({
+              text: `
+                  <div class="flex items-center justify-between w-full">
+                      <span class="font-semibold">A new version is available!</span>
+                      <button id="sw-update-button" class="ml-4 px-3 py-1 bg-[#134E8E] text-white rounded-lg text-xs font-bold hover:bg-opacity-80 transition-opacity">Reload</button>
+                  </div>
+              `,
+              duration: -1, // Sticky
+              gravity: "bottom",
+              position: "center",
+              style: {
+                  background: "#fff",
+                  color: "#333",
+                  boxShadow: "0 10px 40px -10px rgba(0,0,0,0.1)",
+                  borderRadius: "1.5rem",
+                  border: "1px solid #eaeaea",
+                  padding: "16px 24px",
+                  fontSize: "13px",
+                  fontFamily: "'Inter', sans-serif"
+              },
+              escapeMarkup: false,
+              close: true,
+          }).showToast();
+
+          document.body.addEventListener('click', function onBodyClick(e) {
+              if (e.target && e.target.id === 'sw-update-button') {
+                  worker.postMessage({ type: 'SKIP_WAITING' });
+                  toast.hideToast();
+                  document.body.removeEventListener('click', onBodyClick);
+              }
+          });
+      }
+
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('sw.js')
-            .then(reg => console.log('Service Worker registered successfully.', reg))
+            .then(reg => {
+                console.log('Service Worker registered successfully.', reg);
+                reg.addEventListener('updatefound', () => {
+                    const newWorker = reg.installing;
+                    newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            showUpdateBar(newWorker);
+                        }
+                    });
+                });
+            })
             .catch(err => console.error('Service Worker registration failed:', err));
+
+            let refreshing;
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (refreshing) return;
+                window.location.reload();
+                refreshing = true;
+            });
         });
       }
 

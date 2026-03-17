@@ -59,10 +59,12 @@
         .custom-scrollbar::-webkit-scrollbar {
             height: 4px;
         }
+
         .custom-scrollbar::-webkit-scrollbar-track {
             background: #f8f9fc;
             border-radius: 4px;
         }
+
         .custom-scrollbar::-webkit-scrollbar-thumb {
             background: #e5e7eb;
             border-radius: 4px;
@@ -92,10 +94,21 @@
         }
 
         /* Dropdown animation */
-        .dropdown-enter { animation: drop-in 0.15s ease-out forwards; transform-origin: top right; }
+        .dropdown-enter {
+            animation: drop-in 0.15s ease-out forwards;
+            transform-origin: top right;
+        }
+
         @keyframes drop-in {
-            0% { opacity: 0; transform: scale(0.95) translateY(-5px); }
-            100% { opacity: 1; transform: scale(1) translateY(0); }
+            0% {
+                opacity: 0;
+                transform: scale(0.95) translateY(-5px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
         }
     </style>
 </head>
@@ -112,163 +125,285 @@
 
             <div class="p-6 border-b border-gray-100 flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <div id="sidebar-fest-avatar"
-                        class="w-10 h-10 rounded-full bg-brand-blue/10 flex items-center justify-center text-brand-blue font-bold text-lg border border-white shadow-sm uppercase">
-                        F</div>
+                    <img id="sidebar-fest-avatar" src="logo-192.svg"
+                        class="w-10 h-10 rounded-full bg-white flex items-center justify-center border border-gray-100 shadow-sm object-contain p-1">
                     <div>
-                        <h2 id="sidebar-fest-name" class="text-[13px] font-bold text-brand-textDark leading-none mb-1 capitalize">Festival Name</h2>
-                        <span id="sidebar-fest-status" class="text-[10px] text-green-500 font-bold uppercase tracking-wider">Active</span>
+                        <h2 id="sidebar-fest-name"
+                            class="text-[13px] font-bold text-brand-textDark leading-none mb-1 capitalize">Festival Name
+                        </h2>
+                        <span id="sidebar-fest-status"
+                            class="text-[10px] text-green-500 font-bold uppercase tracking-wider">Active</span>
                     </div>
                 </div>
             </div>
 
             <div class="flex-1 overflow-y-auto pt-6 px-4">
                 <div class="px-2 text-[10px] font-bold text-gray-400 uppercase tracking-[0.1em] mb-4">Menu</div>
-                
+
                 <nav id="admin-nav-menus" class="space-y-1">
-                    <a href="#" onclick="showDashboardHome()" class="flex items-center gap-3 px-4 py-2.5 mb-3 rounded-xl text-brand-blue bg-blue-50/80 font-bold transition-all group">
-                        <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-white shadow-sm text-brand-blue"><i class="fi fi-rr-home text-lg"></i></div>
+                    <a href="#" onclick="showDashboardHome()"
+                        class="flex items-center gap-3 px-4 py-2.5 mb-3 rounded-xl text-brand-blue bg-blue-50/80 font-bold transition-all group">
+                        <div
+                            class="w-8 h-8 rounded-lg flex items-center justify-center bg-white shadow-sm text-brand-blue">
+                            <i class="fi fi-rr-home text-lg"></i></div>
                         <span class="text-[13px]">Dashboard</span>
                     </a>
 
                     <!-- Candidate Submenu -->
                     <div class="mb-1">
-                        <button onclick="toggleSubmenu('submenu-candidate')" class="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-brand-textMuted hover:bg-gray-50 hover:text-brand-textDark group transition-all text-left outline-none cursor-pointer">
+                        <button onclick="toggleSubmenu('submenu-candidate')"
+                            class="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-brand-textMuted hover:bg-gray-50 hover:text-brand-textDark group transition-all text-left outline-none cursor-pointer">
                             <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-transparent group-hover:bg-white group-hover:shadow-sm transition-all"><i class="fi fi-rr-users text-lg group-hover:text-brand-orange"></i></div>
+                                <div
+                                    class="w-8 h-8 rounded-lg flex items-center justify-center bg-transparent group-hover:bg-white group-hover:shadow-sm transition-all">
+                                    <i class="fi fi-rr-users text-lg group-hover:text-brand-orange"></i></div>
                                 <span class="text-[13px] font-semibold">Candidate</span>
                             </div>
-                            <i id="icon-submenu-candidate" class="fi fi-rr-angle-small-down text-xs opacity-50 group-hover:opacity-100 transition-transform duration-200"></i>
+                            <i id="icon-submenu-candidate"
+                                class="fi fi-rr-angle-small-down text-xs opacity-50 group-hover:opacity-100 transition-transform duration-200"></i>
                         </button>
                         <div id="submenu-candidate" class="hidden flex-col mt-1 space-y-0.5 px-2">
-                            <a href="#" onclick="event.preventDefault(); loadModule('allCandidates')" class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item"><div class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors"></div> All candidates</a>
-                            <a href="#" onclick="event.preventDefault(); loadModule('addSection')" class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item"><div class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors"></div> Section</a>
-                            <a href="#" onclick="event.preventDefault(); loadModule('addTeam')" class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item"><div class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors"></div> Team</a>
+                            <a href="#" onclick="event.preventDefault(); loadModule('allCandidates')"
+                                class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item">
+                                <div
+                                    class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors">
+                                </div> All candidates
+                            </a>
+                            <a href="#" onclick="event.preventDefault(); loadModule('addSection')"
+                                class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item">
+                                <div
+                                    class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors">
+                                </div> Section
+                            </a>
+                            <a href="#" onclick="event.preventDefault(); loadModule('addTeam')"
+                                class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item">
+                                <div
+                                    class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors">
+                                </div> Team
+                            </a>
                         </div>
                     </div>
 
                     <!-- Programme Submenu -->
                     <div class="mb-1">
-                        <button onclick="toggleSubmenu('submenu-programme')" class="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-brand-textMuted hover:bg-gray-50 hover:text-brand-textDark group transition-all text-left outline-none cursor-pointer">
+                        <button onclick="toggleSubmenu('submenu-programme')"
+                            class="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-brand-textMuted hover:bg-gray-50 hover:text-brand-textDark group transition-all text-left outline-none cursor-pointer">
                             <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-transparent group-hover:bg-white group-hover:shadow-sm transition-all"><i class="fi fi-rr-book-alt text-lg group-hover:text-brand-blue"></i></div>
+                                <div
+                                    class="w-8 h-8 rounded-lg flex items-center justify-center bg-transparent group-hover:bg-white group-hover:shadow-sm transition-all">
+                                    <i class="fi fi-rr-book-alt text-lg group-hover:text-brand-blue"></i></div>
                                 <span class="text-[13px] font-semibold">Programme</span>
                             </div>
-                            <i id="icon-submenu-programme" class="fi fi-rr-angle-small-down text-xs opacity-50 group-hover:opacity-100 transition-transform duration-200"></i>
+                            <i id="icon-submenu-programme"
+                                class="fi fi-rr-angle-small-down text-xs opacity-50 group-hover:opacity-100 transition-transform duration-200"></i>
                         </button>
                         <div id="submenu-programme" class="hidden flex-col mt-1 space-y-0.5 px-2">
-                            <a href="#" onclick="event.preventDefault(); loadModule('allPrograms')" class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item"><div class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors"></div> All Programs</a>
-                            <a href="#" onclick="event.preventDefault(); loadModule('registrdProgram')" class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item"><div class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors"></div> Registration</a>
-                            <a href="#" onclick="event.preventDefault(); loadModule('substitutions')" class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item"><div class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors"></div> Substitutions</a>
+                            <a href="#" onclick="event.preventDefault(); loadModule('allPrograms')"
+                                class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item">
+                                <div
+                                    class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors">
+                                </div> All Programs
+                            </a>
+                            <a href="#" onclick="event.preventDefault(); loadModule('registrdProgram')"
+                                class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item">
+                                <div
+                                    class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors">
+                                </div> Registration
+                            </a>
+                            <a href="#" onclick="event.preventDefault(); loadModule('substitutions')"
+                                class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item">
+                                <div
+                                    class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors">
+                                </div> Substitutions
+                            </a>
                         </div>
                     </div>
 
                     <!-- Schedule Submenu -->
                     <div class="mb-1">
-                        <button onclick="toggleSubmenu('submenu-schedule')" class="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-brand-textMuted hover:bg-gray-50 hover:text-brand-textDark group transition-all text-left outline-none cursor-pointer">
+                        <button onclick="toggleSubmenu('submenu-schedule')"
+                            class="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-brand-textMuted hover:bg-gray-50 hover:text-brand-textDark group transition-all text-left outline-none cursor-pointer">
                             <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-transparent group-hover:bg-white group-hover:shadow-sm transition-all"><i class="fi fi-rr-calendar text-lg group-hover:text-brand-red"></i></div>
+                                <div
+                                    class="w-8 h-8 rounded-lg flex items-center justify-center bg-transparent group-hover:bg-white group-hover:shadow-sm transition-all">
+                                    <i class="fi fi-rr-calendar text-lg group-hover:text-brand-red"></i></div>
                                 <span class="text-[13px] font-semibold">Schedule</span>
                             </div>
-                            <i id="icon-submenu-schedule" class="fi fi-rr-angle-small-down text-xs opacity-50 group-hover:opacity-100 transition-transform duration-200"></i>
+                            <i id="icon-submenu-schedule"
+                                class="fi fi-rr-angle-small-down text-xs opacity-50 group-hover:opacity-100 transition-transform duration-200"></i>
                         </button>
                         <div id="submenu-schedule" class="hidden flex-col mt-1 space-y-0.5 px-2">
-                            <a href="#" onclick="event.preventDefault(); loadModule('allSchedules')" class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item"><div class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors"></div> All schedules</a>
-                            <a href="#" onclick="event.preventDefault(); loadModule('judges')" class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item"><div class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors"></div> Judges</a>
-                            <a href="#" onclick="event.preventDefault(); loadModule('venues')" class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item"><div class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors"></div> Venues</a>
+                            <a href="#" onclick="event.preventDefault(); loadModule('allSchedules')"
+                                class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item">
+                                <div
+                                    class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors">
+                                </div> All schedules
+                            </a>
+                            <a href="#" onclick="event.preventDefault(); loadModule('judges')"
+                                class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item">
+                                <div
+                                    class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors">
+                                </div> Judges
+                            </a>
+                            <a href="#" onclick="event.preventDefault(); loadModule('venues')"
+                                class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item">
+                                <div
+                                    class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors">
+                                </div> Venues
+                            </a>
                         </div>
                     </div>
 
                     <!-- Result Submenu -->
                     <div class="mb-1">
-                        <button onclick="toggleSubmenu('submenu-result')" class="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-brand-textMuted hover:bg-gray-50 hover:text-brand-textDark group transition-all text-left outline-none cursor-pointer">
+                        <button onclick="toggleSubmenu('submenu-result')"
+                            class="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-brand-textMuted hover:bg-gray-50 hover:text-brand-textDark group transition-all text-left outline-none cursor-pointer">
                             <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-transparent group-hover:bg-white group-hover:shadow-sm transition-all"><i class="fi fi-rr-trophy text-lg group-hover:text-yellow-500"></i></div>
+                                <div
+                                    class="w-8 h-8 rounded-lg flex items-center justify-center bg-transparent group-hover:bg-white group-hover:shadow-sm transition-all">
+                                    <i class="fi fi-rr-trophy text-lg group-hover:text-yellow-500"></i></div>
                                 <span class="text-[13px] font-semibold">Result</span>
                             </div>
-                            <i id="icon-submenu-result" class="fi fi-rr-angle-small-down text-xs opacity-50 group-hover:opacity-100 transition-transform duration-200"></i>
+                            <i id="icon-submenu-result"
+                                class="fi fi-rr-angle-small-down text-xs opacity-50 group-hover:opacity-100 transition-transform duration-200"></i>
                         </button>
                         <div id="submenu-result" class="hidden flex-col mt-1 space-y-0.5 px-2">
-                            <a href="#" onclick="event.preventDefault(); loadModule('allResult')" class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item"><div class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors"></div> All Results</a>
-                            <a href="#" class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item"><div class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors"></div> Negative Marks</a>
+                            <a href="#" onclick="event.preventDefault(); loadModule('allResult')"
+                                class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item">
+                                <div
+                                    class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors">
+                                </div> All Results
+                            </a>
+                            <a href="#"
+                                class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item">
+                                <div
+                                    class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors">
+                                </div> Negative Marks
+                            </a>
                         </div>
                     </div>
 
                     <!-- Content Submenu -->
                     <div class="mb-1">
-                        <button onclick="toggleSubmenu('submenu-content')" class="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-brand-textMuted hover:bg-gray-50 hover:text-brand-textDark group transition-all text-left outline-none cursor-pointer">
+                        <button onclick="toggleSubmenu('submenu-content')"
+                            class="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-brand-textMuted hover:bg-gray-50 hover:text-brand-textDark group transition-all text-left outline-none cursor-pointer">
                             <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-transparent group-hover:bg-white group-hover:shadow-sm transition-all"><i class="fi fi-rr-document text-lg group-hover:text-purple-500"></i></div>
+                                <div
+                                    class="w-8 h-8 rounded-lg flex items-center justify-center bg-transparent group-hover:bg-white group-hover:shadow-sm transition-all">
+                                    <i class="fi fi-rr-document text-lg group-hover:text-purple-500"></i></div>
                                 <span class="text-[13px] font-semibold">Content</span>
                             </div>
-                            <i id="icon-submenu-content" class="fi fi-rr-angle-small-down text-xs opacity-50 group-hover:opacity-100 transition-transform duration-200"></i>
+                            <i id="icon-submenu-content"
+                                class="fi fi-rr-angle-small-down text-xs opacity-50 group-hover:opacity-100 transition-transform duration-200"></i>
                         </button>
                         <div id="submenu-content" class="hidden flex-col mt-1 space-y-0.5 px-2">
-                            <a href="#" onclick="event.preventDefault(); loadModule('contentFile')" class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item"><div class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors"></div> File</a>
-                            <a href="#" onclick="event.preventDefault(); loadModule('gallery')" class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item"><div class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors"></div> Gallery</a>
-                            <a href="#" onclick="event.preventDefault(); loadModule('downloads')" class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item"><div class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors"></div> Downloads</a>
+                            <a href="#" onclick="event.preventDefault(); loadModule('contentFile')"
+                                class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item">
+                                <div
+                                    class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors">
+                                </div> File
+                            </a>
+                            <a href="#" onclick="event.preventDefault(); loadModule('gallery')"
+                                class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item">
+                                <div
+                                    class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors">
+                                </div> Gallery
+                            </a>
+                            <a href="#" onclick="event.preventDefault(); loadModule('downloads')"
+                                class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item">
+                                <div
+                                    class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors">
+                                </div> Downloads
+                            </a>
                         </div>
                     </div>
 
                     <!-- Analytics Submenu -->
                     <div class="mb-1">
-                        <button onclick="toggleSubmenu('submenu-analytics')" class="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-brand-textMuted hover:bg-gray-50 hover:text-brand-textDark group transition-all text-left outline-none cursor-pointer">
+                        <button onclick="toggleSubmenu('submenu-analytics')"
+                            class="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-brand-textMuted hover:bg-gray-50 hover:text-brand-textDark group transition-all text-left outline-none cursor-pointer">
                             <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-transparent group-hover:bg-white group-hover:shadow-sm transition-all"><i class="fi fi-rr-chart-histogram text-lg group-hover:text-brand-blue"></i></div>
+                                <div
+                                    class="w-8 h-8 rounded-lg flex items-center justify-center bg-transparent group-hover:bg-white group-hover:shadow-sm transition-all">
+                                    <i class="fi fi-rr-chart-histogram text-lg group-hover:text-brand-blue"></i></div>
                                 <span class="text-[13px] font-semibold">Analytics</span>
                             </div>
-                            <i id="icon-submenu-analytics" class="fi fi-rr-angle-small-down text-xs opacity-50 group-hover:opacity-100 transition-transform duration-200"></i>
+                            <i id="icon-submenu-analytics"
+                                class="fi fi-rr-angle-small-down text-xs opacity-50 group-hover:opacity-100 transition-transform duration-200"></i>
                         </button>
                         <div id="submenu-analytics" class="hidden flex-col mt-1 space-y-0.5 px-2">
-                            <a href="#" onclick="event.preventDefault(); loadModule('teamToppers')" class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item"><div class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors"></div> Team Toppers</a>
-                            <a href="#" onclick="event.preventDefault(); loadModule('candidateToppers')" class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item"><div class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors"></div> Candidate Toppers</a>
+                            <a href="#" onclick="event.preventDefault(); loadModule('teamToppers')"
+                                class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item">
+                                <div
+                                    class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors">
+                                </div> Team Toppers
+                            </a>
+                            <a href="#" onclick="event.preventDefault(); loadModule('candidateToppers')"
+                                class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item">
+                                <div
+                                    class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors">
+                                </div> Candidate Toppers
+                            </a>
                         </div>
                     </div>
                 </nav>
 
                 <nav id="tm-nav-menus" class="hidden space-y-1">
                     <div class="mb-1">
-                        <button onclick="toggleSubmenu('submenu-tm-candidate')" class="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-brand-textMuted hover:bg-gray-50 hover:text-brand-textDark group transition-all text-left outline-none cursor-pointer">
+                        <button onclick="toggleSubmenu('submenu-tm-candidate')"
+                            class="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-brand-textMuted hover:bg-gray-50 hover:text-brand-textDark group transition-all text-left outline-none cursor-pointer">
                             <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-transparent group-hover:bg-white group-hover:shadow-sm transition-all"><i class="fi fi-rr-users text-lg group-hover:text-brand-orange"></i></div>
+                                <div
+                                    class="w-8 h-8 rounded-lg flex items-center justify-center bg-transparent group-hover:bg-white group-hover:shadow-sm transition-all">
+                                    <i class="fi fi-rr-users text-lg group-hover:text-brand-orange"></i></div>
                                 <span class="text-[13px] font-semibold">Candidates</span>
                             </div>
-                            <i id="icon-submenu-tm-candidate" class="fi fi-rr-angle-small-down text-xs opacity-50 group-hover:opacity-100 transition-transform duration-200 rotate-180"></i>
+                            <i id="icon-submenu-tm-candidate"
+                                class="fi fi-rr-angle-small-down text-xs opacity-50 group-hover:opacity-100 transition-transform duration-200 rotate-180"></i>
                         </button>
                         <div id="submenu-tm-candidate" class="flex-col mt-1 space-y-0.5 px-2 flex">
                             <div class="text-[11px] text-gray-400 py-1 px-4">Loading sections...</div>
                         </div>
                     </div>
 
-                        <div class="mb-1">
-                            <button onclick="toggleSubmenu('submenu-tm-programs')" class="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-brand-textMuted hover:bg-gray-50 hover:text-brand-textDark group transition-all text-left outline-none cursor-pointer">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-transparent group-hover:bg-white group-hover:shadow-sm transition-all"><i class="fi fi-rr-book-alt text-lg group-hover:text-brand-blue"></i></div>
-                                    <span class="text-[13px] font-semibold">Programs</span>
-                                </div>
-                                <i id="icon-submenu-tm-programs" class="fi fi-rr-angle-small-down text-xs opacity-50 group-hover:opacity-100 transition-transform duration-200"></i>
-                            </button>
-                            <div id="submenu-tm-programs" class="hidden flex-col mt-1 space-y-0.5 px-2">
-                                <div class="text-[11px] text-gray-400 py-1 px-4">Loading sections...</div>
+                    <div class="mb-1">
+                        <button onclick="toggleSubmenu('submenu-tm-programs')"
+                            class="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-brand-textMuted hover:bg-gray-50 hover:text-brand-textDark group transition-all text-left outline-none cursor-pointer">
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="w-8 h-8 rounded-lg flex items-center justify-center bg-transparent group-hover:bg-white group-hover:shadow-sm transition-all">
+                                    <i class="fi fi-rr-book-alt text-lg group-hover:text-brand-blue"></i></div>
+                                <span class="text-[13px] font-semibold">Programs</span>
                             </div>
+                            <i id="icon-submenu-tm-programs"
+                                class="fi fi-rr-angle-small-down text-xs opacity-50 group-hover:opacity-100 transition-transform duration-200"></i>
+                        </button>
+                        <div id="submenu-tm-programs" class="hidden flex-col mt-1 space-y-0.5 px-2">
+                            <div class="text-[11px] text-gray-400 py-1 px-4">Loading sections...</div>
                         </div>
+                    </div>
 
-                        <div class="mb-1">
-                            <button onclick="toggleTMTopicMenu('submenu-tm-topic')" class="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-brand-textMuted hover:bg-gray-50 hover:text-brand-textDark group transition-all text-left outline-none cursor-pointer">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-transparent group-hover:bg-white group-hover:shadow-sm transition-all"><i class="fi fi-rr-document-signed text-lg group-hover:text-purple-500"></i></div>
-                                    <span class="text-[13px] font-semibold">Topic Reg</span>
-                                </div>
-                                <i id="icon-submenu-tm-topic" class="fi fi-rr-lock text-xs text-red-400"></i>
-                            </button>
-                            <div id="submenu-tm-topic" class="hidden flex-col mt-1 space-y-0.5 px-2"></div>
-                        </div>
+                    <div class="mb-1">
+                        <button onclick="toggleTMTopicMenu('submenu-tm-topic')"
+                            class="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-brand-textMuted hover:bg-gray-50 hover:text-brand-textDark group transition-all text-left outline-none cursor-pointer">
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="w-8 h-8 rounded-lg flex items-center justify-center bg-transparent group-hover:bg-white group-hover:shadow-sm transition-all">
+                                    <i class="fi fi-rr-document-signed text-lg group-hover:text-purple-500"></i></div>
+                                <span class="text-[13px] font-semibold">Topic Reg</span>
+                            </div>
+                            <i id="icon-submenu-tm-topic" class="fi fi-rr-lock text-xs text-red-400"></i>
+                        </button>
+                        <div id="submenu-tm-topic" class="hidden flex-col mt-1 space-y-0.5 px-2"></div>
+                    </div>
                 </nav>
             </div>
 
             <div id="sidebar-settings-link" class="p-4 border-t border-gray-100 mt-auto">
-                <a href="innerDashboard.html?tab=users" class="flex items-center gap-3 px-3 py-2 rounded-lg text-brand-textMuted hover:bg-gray-50 hover:text-brand-textDark transition-colors group">
-                    <i class="fi fi-rr-settings-sliders text-lg text-gray-500 group-hover:text-brand-blue transition-colors"></i>
+                <a href="innerDashboard.html?tab=users"
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg text-brand-textMuted hover:bg-gray-50 hover:text-brand-textDark transition-colors group">
+                    <i
+                        class="fi fi-rr-settings-sliders text-lg text-gray-500 group-hover:text-brand-blue transition-colors"></i>
                     <span class="text-sm font-semibold text-gray-700">Go to Settings</span>
                 </a>
             </div>
@@ -276,7 +411,8 @@
 
         <main class="flex-1 flex flex-col h-full overflow-hidden relative">
 
-            <header class="h-16 bg-brand-bg flex items-center justify-between px-6 shrink-0 border-b border-transparent">
+            <header
+                class="h-16 bg-brand-bg flex items-center justify-between px-6 shrink-0 border-b border-transparent">
                 <div class="flex items-center gap-6">
                     <!-- Kept button for mobile only so sidebar can still be opened, hidden on large screens as requested -->
                     <button class="text-gray-400 hover:text-gray-800 block lg:hidden" onclick="toggleSidebar()">
@@ -284,9 +420,13 @@
                     </button>
                     <div class="flex items-center gap-2 text-gray-400" id="breadcrumb-trail">
                         <i class="fi fi-rr-home text-xs"></i>
-                        <span id="breadcrumb-base" class="text-[13px] font-medium cursor-pointer hover:text-gray-600 transition-colors" onclick="showDashboardHome()">Admin</span>
+                        <span id="breadcrumb-base"
+                            class="text-[13px] font-medium cursor-pointer hover:text-gray-600 transition-colors"
+                            onclick="showDashboardHome()">Admin</span>
                         <i class="fi fi-rr-angle-small-right text-[10px] hidden" id="breadcrumb-separator-1"></i>
-                        <span class="text-[13px] font-medium cursor-pointer hover:text-gray-600 transition-colors hidden" id="breadcrumb-middle"></span>
+                        <span
+                            class="text-[13px] font-medium cursor-pointer hover:text-gray-600 transition-colors hidden"
+                            id="breadcrumb-middle"></span>
                         <i class="fi fi-rr-angle-small-right text-[10px] hidden" id="breadcrumb-separator-2"></i>
                         <span class="text-[13px] font-bold text-gray-800 hidden" id="breadcrumb-current"></span>
                     </div>
@@ -296,8 +436,11 @@
                     <!-- Removed Upgrade Button as requested by Red Marker -->
                     <div class="flex items-center gap-3 cursor-pointer group" onclick="toggleDropdown()">
                         <!-- Uppercase for Top Avatar and Name (Green Marker) -->
-                        <div id="top-avatar" class="w-8 h-8 rounded-full bg-[#FFB33F] flex items-center justify-center text-gray-900 font-bold text-xs ring-2 ring-white shadow-sm uppercase">U</div>
-                        <span id="top-name" class="text-sm font-semibold hidden md:block text-brand-textDark transition-colors uppercase tracking-tight">UIUID</span>
+                        <div id="top-avatar"
+                            class="w-8 h-8 rounded-full bg-[#FFB33F] flex items-center justify-center text-gray-900 font-bold text-xs ring-2 ring-white shadow-sm uppercase">
+                            U</div>
+                        <span id="top-name"
+                            class="text-sm font-semibold hidden md:block text-brand-textDark transition-colors uppercase tracking-tight">UIUID</span>
                         <i class="fi fi-rr-angle-small-down text-gray-400"></i>
                     </div>
 
@@ -310,8 +453,10 @@
                                 U</div>
                             <div>
                                 <div class="flex items-center gap-2">
-                                    <span id="dropdown-name" class="font-bold text-brand-textDark leading-none">UIUID</span>
-                                    <span id="dropdown-role" class="text-[9px] font-bold text-gray-500 border border-gray-200 px-2 py-0.5 rounded-full tracking-wider bg-white uppercase">OWNER</span>
+                                    <span id="dropdown-name"
+                                        class="font-bold text-brand-textDark leading-none">UIUID</span>
+                                    <span id="dropdown-role"
+                                        class="text-[9px] font-bold text-gray-500 border border-gray-200 px-2 py-0.5 rounded-full tracking-wider bg-white uppercase">OWNER</span>
                                 </div>
                             </div>
                         </div>
@@ -344,44 +489,60 @@
                 <!-- Dashboard Main Content -->
                 <div id="main-dashboard-content" class="max-w-[1600px] w-full mx-auto flex-1 flex flex-col">
                     <div id="admin-dashboard-grid" class="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-6">
-                        
+
                         <!-- LEFT COLUMN -->
                         <div class="space-y-6">
                             <!-- Welcome Banner -->
-                            <div class="bg-white rounded-2xl p-8 border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] flex flex-col justify-center min-h-[180px]">
+                            <div
+                                class="bg-white rounded-2xl p-8 border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] flex flex-col justify-center min-h-[180px]">
                                 <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-2 leading-tight">
                                     Welcome to <br />
-                                    <span id="fest-name-display-banner" class="text-gray-900 capitalize">Your Festival Dashboard</span>
+                                    <span id="fest-name-display-banner" class="text-gray-900 capitalize">Your Festival
+                                        Dashboard</span>
                                 </h1>
-                                <p class="text-gray-500 text-[13px] leading-relaxed max-w-sm mt-1">Manage your events, track participants, and monitor results all in one place.</p>
+                                <p class="text-gray-500 text-[13px] leading-relaxed max-w-sm mt-1">Manage your events,
+                                    track participants, and monitor results all in one place.</p>
                             </div>
 
                             <!-- Quick Access -->
                             <div>
-                                <h2 class="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-4 ml-1">Quick Access</h2>
+                                <h2 class="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-4 ml-1">
+                                    Quick Access</h2>
                                 <div class="grid grid-cols-2 gap-4">
-                                    <button onclick="loadModule('allCandidates')" class="flex flex-col items-center justify-center py-6 bg-white border border-gray-100 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] hover:shadow-md hover:border-gray-200 transition-all group">
-                                        <i class="fi fi-rr-users text-2xl text-gray-400 mb-3 group-hover:text-gray-600 transition-colors"></i>
+                                    <button onclick="loadModule('allCandidates')"
+                                        class="flex flex-col items-center justify-center py-6 bg-white border border-gray-100 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] hover:shadow-md hover:border-gray-200 transition-all group">
+                                        <i
+                                            class="fi fi-rr-users text-2xl text-gray-400 mb-3 group-hover:text-gray-600 transition-colors"></i>
                                         <span class="text-[13px] font-semibold text-gray-800">Add Candidates</span>
                                     </button>
-                                    <button onclick="loadModule('allPrograms')" class="flex flex-col items-center justify-center py-6 bg-white border border-gray-100 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] hover:shadow-md hover:border-gray-200 transition-all group">
-                                        <i class="fi fi-rr-book-alt text-2xl text-gray-400 mb-3 group-hover:text-gray-600 transition-colors"></i>
+                                    <button onclick="loadModule('allPrograms')"
+                                        class="flex flex-col items-center justify-center py-6 bg-white border border-gray-100 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] hover:shadow-md hover:border-gray-200 transition-all group">
+                                        <i
+                                            class="fi fi-rr-book-alt text-2xl text-gray-400 mb-3 group-hover:text-gray-600 transition-colors"></i>
                                         <span class="text-[13px] font-semibold text-gray-800">Add Programs</span>
                                     </button>
-                                    <button onclick="loadModule('allResult')" class="flex flex-col items-center justify-center py-6 bg-white border border-gray-100 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] hover:shadow-md hover:border-gray-200 transition-all group">
-                                        <i class="fi fi-rr-trophy text-2xl text-gray-400 mb-3 group-hover:text-gray-600 transition-colors"></i>
+                                    <button onclick="loadModule('allResult')"
+                                        class="flex flex-col items-center justify-center py-6 bg-white border border-gray-100 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] hover:shadow-md hover:border-gray-200 transition-all group">
+                                        <i
+                                            class="fi fi-rr-trophy text-2xl text-gray-400 mb-3 group-hover:text-gray-600 transition-colors"></i>
                                         <span class="text-[13px] font-semibold text-gray-800">Publish Results</span>
                                     </button>
-                                    <button onclick="loadModule('allSchedules')" class="flex flex-col items-center justify-center py-6 bg-white border border-gray-100 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] hover:shadow-md hover:border-gray-200 transition-all group">
-                                        <i class="fi fi-rr-calendar text-2xl text-gray-400 mb-3 group-hover:text-gray-600 transition-colors"></i>
+                                    <button onclick="loadModule('allSchedules')"
+                                        class="flex flex-col items-center justify-center py-6 bg-white border border-gray-100 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] hover:shadow-md hover:border-gray-200 transition-all group">
+                                        <i
+                                            class="fi fi-rr-calendar text-2xl text-gray-400 mb-3 group-hover:text-gray-600 transition-colors"></i>
                                         <span class="text-[13px] font-semibold text-gray-800">Manage Schedules</span>
                                     </button>
-                                    <button onclick="loadModule('gallery')" class="flex flex-col items-center justify-center py-6 bg-white border border-gray-100 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] hover:shadow-md hover:border-gray-200 transition-all group">
-                                        <i class="fi fi-rr-picture text-2xl text-gray-400 mb-3 group-hover:text-gray-600 transition-colors"></i>
+                                    <button onclick="loadModule('gallery')"
+                                        class="flex flex-col items-center justify-center py-6 bg-white border border-gray-100 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] hover:shadow-md hover:border-gray-200 transition-all group">
+                                        <i
+                                            class="fi fi-rr-picture text-2xl text-gray-400 mb-3 group-hover:text-gray-600 transition-colors"></i>
                                         <span class="text-[13px] font-semibold text-gray-800">Manage Gallery</span>
                                     </button>
-                                    <button onclick="loadModule('downloads')" class="flex flex-col items-center justify-center py-6 bg-white border border-gray-100 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] hover:shadow-md hover:border-gray-200 transition-all group">
-                                        <i class="fi fi-rr-folder-download text-2xl text-gray-400 mb-3 group-hover:text-gray-600 transition-colors"></i>
+                                    <button onclick="loadModule('downloads')"
+                                        class="flex flex-col items-center justify-center py-6 bg-white border border-gray-100 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] hover:shadow-md hover:border-gray-200 transition-all group">
+                                        <i
+                                            class="fi fi-rr-folder-download text-2xl text-gray-400 mb-3 group-hover:text-gray-600 transition-colors"></i>
                                         <span class="text-[13px] font-semibold text-gray-800">Manage Downloads</span>
                                     </button>
                                 </div>
@@ -392,73 +553,97 @@
                         <div class="space-y-6 flex flex-col">
                             <!-- Stats Grid -->
                             <div class="grid grid-cols-2 gap-4">
-                                <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] flex flex-col justify-between">
+                                <div
+                                    class="bg-white rounded-2xl p-5 border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] flex flex-col justify-between">
                                     <div class="flex justify-between items-center mb-4">
-                                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total Candidates</span>
-                                        <div class="w-8 h-8 rounded-full bg-blue-50/80 text-blue-500 flex items-center justify-center shrink-0">
+                                        <span
+                                            class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total
+                                            Candidates</span>
+                                        <div
+                                            class="w-8 h-8 rounded-full bg-blue-50/80 text-blue-500 flex items-center justify-center shrink-0">
                                             <i class="fi fi-rr-users text-sm"></i>
                                         </div>
                                     </div>
                                     <div>
-                                        <div id="stat-candidates" class="text-3xl font-black text-gray-900 mb-0.5 leading-none">0</div>
+                                        <div id="stat-candidates"
+                                            class="text-3xl font-black text-gray-900 mb-0.5 leading-none">0</div>
                                         <p class="text-[11px] text-gray-400">Registered participants</p>
                                     </div>
                                 </div>
 
-                                <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] flex flex-col justify-between">
+                                <div
+                                    class="bg-white rounded-2xl p-5 border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] flex flex-col justify-between">
                                     <div class="flex justify-between items-center mb-4">
-                                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total Programs</span>
-                                        <div class="w-8 h-8 rounded-full bg-green-50/80 text-green-500 flex items-center justify-center shrink-0">
+                                        <span
+                                            class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total
+                                            Programs</span>
+                                        <div
+                                            class="w-8 h-8 rounded-full bg-green-50/80 text-green-500 flex items-center justify-center shrink-0">
                                             <i class="fi fi-rr-calendar text-sm"></i>
                                         </div>
                                     </div>
                                     <div>
-                                        <div id="stat-programs" class="text-3xl font-black text-gray-900 mb-0.5 leading-none">0</div>
+                                        <div id="stat-programs"
+                                            class="text-3xl font-black text-gray-900 mb-0.5 leading-none">0</div>
                                         <p class="text-[11px] text-gray-400">Active events</p>
                                     </div>
                                 </div>
 
                                 <!-- Changed from Published Content to Fest Users Count (Orange Marker) -->
-                                <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] flex flex-col justify-between">
+                                <div
+                                    class="bg-white rounded-2xl p-5 border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] flex flex-col justify-between">
                                     <div class="flex justify-between items-center mb-4">
-                                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total Users</span>
-                                        <div class="w-8 h-8 rounded-full bg-purple-50/80 text-purple-500 flex items-center justify-center shrink-0">
+                                        <span
+                                            class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total
+                                            Users</span>
+                                        <div
+                                            class="w-8 h-8 rounded-full bg-purple-50/80 text-purple-500 flex items-center justify-center shrink-0">
                                             <i class="fi fi-rr-user text-sm"></i>
                                         </div>
                                     </div>
                                     <div>
-                                        <div id="stat-users" class="text-3xl font-black text-gray-900 mb-0.5 leading-none">0</div>
+                                        <div id="stat-users"
+                                            class="text-3xl font-black text-gray-900 mb-0.5 leading-none">0</div>
                                         <p class="text-[11px] text-gray-400">Account managers & admins</p>
                                     </div>
                                 </div>
 
-                                <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] flex flex-col justify-between">
+                                <div
+                                    class="bg-white rounded-2xl p-5 border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] flex flex-col justify-between">
                                     <div class="flex justify-between items-center mb-4">
-                                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Results Uploaded</span>
-                                        <div class="w-8 h-8 rounded-full bg-orange-50/80 text-orange-500 flex items-center justify-center shrink-0">
+                                        <span
+                                            class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Results
+                                            Uploaded</span>
+                                        <div
+                                            class="w-8 h-8 rounded-full bg-orange-50/80 text-orange-500 flex items-center justify-center shrink-0">
                                             <i class="fi fi-rr-trophy text-sm"></i>
                                         </div>
                                     </div>
                                     <div>
-                                        <div id="stat-results" class="text-3xl font-black text-gray-900 mb-0.5 leading-none">0</div>
+                                        <div id="stat-results"
+                                            class="text-3xl font-black text-gray-900 mb-0.5 leading-none">0</div>
                                         <p class="text-[11px] text-gray-400">Completed evaluations</p>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Fest Users Card -->
-                            <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] flex-1 flex flex-col min-h-[180px]">
+                            <div
+                                class="bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] flex-1 flex flex-col min-h-[180px]">
                                 <div class="flex items-center justify-between mb-6">
                                     <div class="flex items-center gap-2 text-gray-400">
                                         <i class="fi fi-rr-users text-sm"></i>
-                                        <h2 class="text-[11px] font-bold uppercase tracking-widest text-gray-500">Fest Users</h2>
+                                        <h2 class="text-[11px] font-bold uppercase tracking-widest text-gray-500">Fest
+                                            Users</h2>
                                     </div>
-                                    <button onclick="location.href='innerDashboard.html?tab=users'" class="bg-[#FFB33F] text-gray-900 px-4 py-1.5 rounded-full text-[11px] font-bold hover:bg-[#FFB33F]/90 transition-colors flex items-center justify-center gap-2">
+                                    <button onclick="location.href='innerDashboard.html?tab=users'"
+                                        class="bg-[#FFB33F] text-gray-900 px-4 py-1.5 rounded-full text-[11px] font-bold hover:bg-[#FFB33F]/90 transition-colors flex items-center justify-center gap-2">
                                         <i class="fi fi-rr-user-add text-[10px]"></i> Manage
                                     </button>
                                 </div>
-                                
-                                <div id="dashboard-fest-users-container" class="flex gap-4 overflow-x-auto pb-2 custom-scrollbar">
+
+                                <div id="dashboard-fest-users-container"
+                                    class="flex gap-4 overflow-x-auto pb-2 custom-scrollbar">
                                     <!-- User cards injected here -->
                                 </div>
                             </div>
@@ -466,12 +651,15 @@
                     </div>
 
                     <!-- Team Manager Dedicated Welcome -->
-                    <div id="tm-dashboard-welcome" class="hidden bg-white rounded-2xl p-8 border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] flex-col justify-center min-h-[180px]">
+                    <div id="tm-dashboard-welcome"
+                        class="hidden bg-white rounded-2xl p-8 border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] flex-col justify-center min-h-[180px]">
                         <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-2 leading-tight">
                             Welcome back, <br />
                             <span id="tm-welcome-name" class="text-brand-blue capitalize">Manager</span>
                         </h1>
-                        <p class="text-gray-500 text-[13px] mt-1">You are managing the <span id="tm-welcome-team" class="font-bold text-gray-700">Team</span> team. Select a section from the sidebar to view candidates.</p>
+                        <p class="text-gray-500 text-[13px] mt-1">You are managing the <span id="tm-welcome-team"
+                                class="font-bold text-gray-700">Team</span> team. Select a section from the sidebar to
+                            view candidates.</p>
                     </div>
                 </div>
 
@@ -657,11 +845,11 @@
             db.collection('festUsers').doc(currId).onSnapshot(doc => {
                 if (doc.exists) {
                     const d = doc.data();
-                    if (d.isActive === false) { 
-                        logoutUser(); 
-                        return; 
+                    if (d.isActive === false) {
+                        logoutUser();
+                        return;
                     }
-                    
+
                     const newRole = d.role || 'user';
                     // Force reload layout if access level fundamentally changes
                     if (currRole !== newRole) {
@@ -713,7 +901,7 @@
             const role = localStorage.getItem('userRole') || 'USER';
             const name = localStorage.getItem('festUserName') || username || 'User';
             const ch = name.charAt(0).toUpperCase();
-            
+
             // Setting UI names to uppercase per requirements
             const upperName = name.toUpperCase();
 
@@ -739,11 +927,11 @@
             const sbStatus = document.getElementById('sidebar-fest-status');
 
             if (sbName) sbName.innerText = name || 'Festival Name';
-            if (sbAvatar) sbAvatar.innerText = (name || 'F').charAt(0).toUpperCase();
+            if (sbAvatar && sbAvatar.tagName !== 'IMG') sbAvatar.innerText = (name || 'F').charAt(0).toUpperCase();
             if (sbStatus) {
                 sbStatus.innerText = isActive ? 'Active' : 'Inactive';
-                sbStatus.className = isActive 
-                    ? 'text-[10px] text-green-500 font-bold uppercase tracking-wider' 
+                sbStatus.className = isActive
+                    ? 'text-[10px] text-green-500 font-bold uppercase tracking-wider'
                     : 'text-[10px] text-red-500 font-bold uppercase tracking-wider';
             }
         }
@@ -765,7 +953,7 @@
         }
 
         function toggleTMTopicMenu(id) {
-            if(!window.topicRegUnlocked) { return showToast("<b>🔒</b> Topic Registration is currently closed by the admin."); }
+            if (!window.topicRegUnlocked) { return showToast("<b>🔒</b> Topic Registration is currently closed by the admin."); }
             toggleSubmenu(id);
         }
 
@@ -781,7 +969,7 @@
 
             const el = document.getElementById(id);
             const icon = document.getElementById('icon-' + id);
-            
+
             // Add Accordion effect: Close all other submenus gracefully
             document.querySelectorAll('[id^="submenu-"]').forEach(sub => {
                 if (sub.id !== id) {
@@ -862,7 +1050,7 @@
                     });
 
                     loader.classList.add('hidden');
-                    
+
                     // Remove animate-in after it finishes so it drops its transform styling completely
                     container.classList.remove('animate-in');
                     void container.offsetWidth; // trigger reflow
@@ -892,14 +1080,14 @@
                         'viewProgramData': 'Program Details'
                     };
                     const title = map[moduleName] || moduleName;
-                    
+
                     const sep1 = document.getElementById('breadcrumb-separator-1');
                     const mid = document.getElementById('breadcrumb-middle');
                     const sep2 = document.getElementById('breadcrumb-separator-2');
                     const currentCrumb = document.getElementById('breadcrumb-current');
-                    
+
                     if (sep1) sep1.classList.remove('hidden');
-                    
+
                     if (moduleName === 'viewSectionData') {
                         if (mid) { mid.classList.remove('hidden'); mid.innerText = 'Sections'; mid.onclick = () => loadModule('addSection'); }
                         if (sep2) sep2.classList.remove('hidden');
@@ -969,7 +1157,7 @@
             document.getElementById('protected-view').classList.add('hidden');
             document.getElementById('module-content-area').classList.remove('hidden');
             loader.classList.remove('hidden');
-            
+
             container.className = "animate-in h-full flex flex-col pb-2 sm:pb-6";
             container.innerHTML = '';
 
@@ -1032,7 +1220,7 @@
             document.getElementById('protected-view').classList.add('hidden');
             document.getElementById('module-content-area').classList.remove('hidden');
             loader.classList.remove('hidden');
-            
+
             container.className = "animate-in h-full flex flex-col pb-2 sm:pb-6";
             container.innerHTML = '';
 
@@ -1078,7 +1266,7 @@
             }
 
             window.currentTMSection = sectionName;
-            
+
             const url = new URL(window.location);
             url.searchParams.set('tab', 'tm-topic-' + sectionName);
             window.history.pushState({}, '', url);
@@ -1095,7 +1283,7 @@
             document.getElementById('protected-view').classList.add('hidden');
             document.getElementById('module-content-area').classList.remove('hidden');
             loader.classList.remove('hidden');
-            
+
             container.className = "animate-in h-full flex flex-col pb-2 sm:pb-6";
             container.innerHTML = '';
 
@@ -1133,7 +1321,7 @@
             document.getElementById('main-dashboard-content').classList.remove('hidden');
             document.getElementById('module-content-area').classList.add('hidden');
             document.getElementById('protected-view').classList.add('hidden');
-            
+
             // Reset Breadcrumb
             document.getElementById('breadcrumb-separator-1')?.classList.add('hidden');
             document.getElementById('breadcrumb-middle')?.classList.add('hidden');
@@ -1150,7 +1338,7 @@
             statsUnsub.push(db.collection('festUsers').onSnapshot(s => {
                 // Modified stat card to show Total Users instead of Published Content (Orange circle)
                 const statUsersEl = document.getElementById('stat-users');
-                if(statUsersEl) statUsersEl.innerText = s.size;
+                if (statUsersEl) statUsersEl.innerText = s.size;
                 localStorage.setItem('festUserCount', s.size);
             }));
 
@@ -1162,7 +1350,7 @@
 
         function setupFestUsersListener() {
             const container = document.getElementById('dashboard-fest-users-container');
-            if(!container) return;
+            if (!container) return;
 
             db.collection('festUsers').limit(6).onSnapshot(snap => {
                 if (snap.empty) {
@@ -1175,7 +1363,7 @@
                     const isMe = doc.id === localStorage.getItem('festUserId');
                     const isSemi = d.permissions?.semiOwner === true;
                     const displayRole = (d.role === 'Admin' && isSemi) ? 'Asst. Owner' : (d.role || 'User');
-                    
+
                     // Enforce Uppercase initial character for cards as well (Green marker)
                     const upperInit = (d.name || 'U').charAt(0).toUpperCase();
 
@@ -1193,14 +1381,14 @@
         function setupTopicRegLock() {
             db.collection('config').doc('topicReg').onSnapshot(doc => {
                 let unlocked = false;
-                if(doc.exists) {
+                if (doc.exists) {
                     const data = doc.data(); const now = new Date();
                     const start = data.start ? new Date(data.start) : null; const end = data.end ? new Date(data.end) : null;
-                    if(start && end && now >= start && now <= end) unlocked = true;
+                    if (start && end && now >= start && now <= end) unlocked = true;
                 }
                 window.topicRegUnlocked = unlocked;
                 const icon = document.getElementById('icon-submenu-tm-topic');
-                if(icon) { icon.className = unlocked ? "fi fi-rr-angle-small-down text-xs opacity-50 transition-transform duration-200" : "fi fi-rr-lock text-xs text-red-400"; }
+                if (icon) { icon.className = unlocked ? "fi fi-rr-angle-small-down text-xs opacity-50 transition-transform duration-200" : "fi fi-rr-lock text-xs text-red-400"; }
             });
         }
 
@@ -1292,7 +1480,7 @@
             setupTopicRegLock();
 
             const role = localStorage.getItem('userRole');
-            
+
             const bcBase = document.getElementById('breadcrumb-base');
             if (bcBase) {
                 if (role === 'owner') bcBase.innerText = 'Owner';
@@ -1309,12 +1497,12 @@
                 const tmWelcome = document.getElementById('tm-dashboard-welcome');
                 tmWelcome.classList.remove('hidden');
                 tmWelcome.classList.add('flex');
-                
+
                 document.getElementById('tm-welcome-name').innerText = localStorage.getItem('festUserName') || 'Manager';
                 document.getElementById('tm-welcome-team').innerText = localStorage.getItem('managerTeam') || 'Unassigned';
-                
+
                 const setLink = document.getElementById('sidebar-settings-link');
-                if(setLink) setLink.classList.add('hidden');
+                if (setLink) setLink.classList.add('hidden');
 
                 db.collection('sections').where('isActive', '==', true).onSnapshot(snap => {
                     const tmSubmenu = document.getElementById('submenu-tm-candidate');
@@ -1329,9 +1517,9 @@
                         htmlProg += `<a href="#" onclick="event.preventDefault(); loadTMPrograms('${sec}')" class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item"><div class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors"></div> ${sec}</a>`;
                         htmlTopic += `<a href="#" onclick="event.preventDefault(); loadTMTopicReg('${sec}')" class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item"><div class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors"></div> ${sec}</a>`;
                     });
-                    if(tmSubmenu) tmSubmenu.innerHTML = html || '<div class="text-[11px] text-gray-400 py-1 px-4">No active sections</div>';
-                    if(tmSubmenuProg) tmSubmenuProg.innerHTML = htmlProg || '<div class="text-[11px] text-gray-400 py-1 px-4">No active sections</div>';
-                    if(tmSubmenuTopic) tmSubmenuTopic.innerHTML = htmlTopic || '<div class="text-[11px] text-gray-400 py-1 px-4">No active sections</div>';
+                    if (tmSubmenu) tmSubmenu.innerHTML = html || '<div class="text-[11px] text-gray-400 py-1 px-4">No active sections</div>';
+                    if (tmSubmenuProg) tmSubmenuProg.innerHTML = htmlProg || '<div class="text-[11px] text-gray-400 py-1 px-4">No active sections</div>';
+                    if (tmSubmenuTopic) tmSubmenuTopic.innerHTML = htmlTopic || '<div class="text-[11px] text-gray-400 py-1 px-4">No active sections</div>';
                 });
             } else {
                 document.getElementById('admin-nav-menus').classList.remove('hidden');
@@ -1366,108 +1554,108 @@
 
     <!-- PWA Service Worker Registration & Install Logic -->
     <script>
-      // This function will be called when a new SW is waiting.
-      function showUpdateBar(worker) {
-          const toast = Toastify({
-              text: `
+        // This function will be called when a new SW is waiting.
+        function showUpdateBar(worker) {
+            const toast = Toastify({
+                text: `
                   <div class="flex items-center justify-between w-full">
                       <span class="font-semibold">A new version is available!</span>
                       <button id="sw-update-button" class="ml-4 px-3 py-1 bg-brand-blue text-white rounded-lg text-xs font-bold hover:bg-opacity-80 transition-opacity">Reload</button>
                   </div>
               `,
-              duration: -1, // Sticky
-              gravity: "bottom",
-              position: "center",
-              style: {
-                  background: "#fff",
-                  color: "#333",
-                  boxShadow: "0 10px 40px -10px rgba(0,0,0,0.1)",
-                  borderRadius: "1.5rem",
-                  border: "1px solid #eaeaea",
-                  padding: "16px 24px",
-                  fontSize: "13px",
-                  fontFamily: "'Inter', sans-serif"
-              },
-              escapeMarkup: false,
-              close: true,
-          }).showToast();
+                duration: -1, // Sticky
+                gravity: "bottom",
+                position: "center",
+                style: {
+                    background: "#fff",
+                    color: "#333",
+                    boxShadow: "0 10px 40px -10px rgba(0,0,0,0.1)",
+                    borderRadius: "1.5rem",
+                    border: "1px solid #eaeaea",
+                    padding: "16px 24px",
+                    fontSize: "13px",
+                    fontFamily: "'Inter', sans-serif"
+                },
+                escapeMarkup: false,
+                close: true,
+            }).showToast();
 
-          // Since Toastify adds and removes elements, we listen on the body for the button click.
-          document.body.addEventListener('click', function onBodyClick(e) {
-              if (e.target && e.target.id === 'sw-update-button') {
-                  worker.postMessage({ type: 'SKIP_WAITING' });
-                  toast.hideToast();
-                  // Clean up the listener
-                  document.body.removeEventListener('click', onBodyClick);
-              }
-          });
-      }
-
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('sw.js')
-            .then(reg => {
-                console.log('Service Worker registered successfully.', reg);
-                reg.addEventListener('updatefound', () => {
-                    const newWorker = reg.installing;
-                    console.log('Service Worker: New version found.', newWorker);
-                    newWorker.addEventListener('statechange', () => {
-                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                            console.log('Service Worker: New version is ready to install.');
-                            showUpdateBar(newWorker);
-                        }
-                    });
-                });
-            })
-            .catch(err => console.error('Service Worker registration failed:', err));
-
-            let refreshing;
-            navigator.serviceWorker.addEventListener('controllerchange', () => {
-                if (refreshing) return;
-                console.log('Service Worker: Controller changed, reloading page.');
-                window.location.reload();
-                refreshing = true;
+            // Since Toastify adds and removes elements, we listen on the body for the button click.
+            document.body.addEventListener('click', function onBodyClick(e) {
+                if (e.target && e.target.id === 'sw-update-button') {
+                    worker.postMessage({ type: 'SKIP_WAITING' });
+                    toast.hideToast();
+                    // Clean up the listener
+                    document.body.removeEventListener('click', onBodyClick);
+                }
             });
+        }
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => {
+                        console.log('Service Worker registered successfully.', reg);
+                        reg.addEventListener('updatefound', () => {
+                            const newWorker = reg.installing;
+                            console.log('Service Worker: New version found.', newWorker);
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    console.log('Service Worker: New version is ready to install.');
+                                    showUpdateBar(newWorker);
+                                }
+                            });
+                        });
+                    })
+                    .catch(err => console.error('Service Worker registration failed:', err));
+
+                let refreshing;
+                navigator.serviceWorker.addEventListener('controllerchange', () => {
+                    if (refreshing) return;
+                    console.log('Service Worker: Controller changed, reloading page.');
+                    window.location.reload();
+                    refreshing = true;
+                });
+            });
+        }
+
+        let deferredPrompt;
+        const installAppBtn = document.getElementById('installAppBtn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent the mini-infobar from appearing on mobile
+            e.preventDefault();
+            // Stash the event so it can be triggered later.
+            deferredPrompt = e;
+            // Update UI notify the user they can install the PWA
+            if (installAppBtn) installAppBtn.style.display = 'flex';
         });
-      }
 
-      let deferredPrompt;
-      const installAppBtn = document.getElementById('installAppBtn');
+        if (installAppBtn) {
+            installAppBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                if (deferredPrompt) {
+                    // Show the install prompt
+                    deferredPrompt.prompt();
+                    // Wait for the user to respond to the prompt
+                    const { outcome } = await deferredPrompt.userChoice;
+                    if (outcome === 'accepted') {
+                        console.log('User accepted the install prompt');
+                    } else {
+                        console.log('User dismissed the install prompt');
+                    }
+                    // We've used the prompt, and can't use it again, throw it away
+                    deferredPrompt = null;
+                    installAppBtn.style.display = 'none';
+                }
+            });
+        }
 
-      window.addEventListener('beforeinstallprompt', (e) => {
-        // Prevent the mini-infobar from appearing on mobile
-        e.preventDefault();
-        // Stash the event so it can be triggered later.
-        deferredPrompt = e;
-        // Update UI notify the user they can install the PWA
-        if (installAppBtn) installAppBtn.style.display = 'flex';
-      });
-
-      if(installAppBtn) {
-        installAppBtn.addEventListener('click', async (e) => {
-          e.preventDefault();
-          if (deferredPrompt) {
-            // Show the install prompt
-            deferredPrompt.prompt();
-            // Wait for the user to respond to the prompt
-            const { outcome } = await deferredPrompt.userChoice;
-            if (outcome === 'accepted') {
-              console.log('User accepted the install prompt');
-            } else {
-              console.log('User dismissed the install prompt');
-            }
-            // We've used the prompt, and can't use it again, throw it away
-            deferredPrompt = null;
-            installAppBtn.style.display = 'none';
-          }
+        window.addEventListener('appinstalled', (evt) => {
+            // Log install to analytics
+            console.log('INSTALL: Success');
+            if (installAppBtn) installAppBtn.style.display = 'none';
         });
-      }
-
-      window.addEventListener('appinstalled', (evt) => {
-        // Log install to analytics
-        console.log('INSTALL: Success');
-        if(installAppBtn) installAppBtn.style.display = 'none';
-      });
     </script>
 </body>
 

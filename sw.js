@@ -1,4 +1,4 @@
-const CACHE_NAME = 'festie-cache-v1'; // Change this on update to trigger the update process
+const CACHE_NAME = 'festie-cache-v3'; // Increment this to force update
 const URLS_TO_CACHE = [
     '/',
     'index.html',
@@ -17,7 +17,9 @@ const URLS_TO_CACHE = [
     'teamDash.html',
     'tmPrograms.html',
     'tmTopicReg.html',
-    // Add other important assets like CSS, JS, and fonts
+    'logo-192.svg',
+    'logo-512.svg',
+    'manifest.json',
     'https://cdn.tailwindcss.com',
     'https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-rounded/css/uicons-regular-rounded.css',
     'https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css',
@@ -28,13 +30,19 @@ const URLS_TO_CACHE = [
     'https://cdn.jsdelivr.net/npm/toastify-js'
 ];
 
+// Add version to URLs to bypass browser HTTP cache when updating the service worker cache
+const VERSIONED_URLS = URLS_TO_CACHE.map(url => {
+    if (url.startsWith('http') || url === '/') return url;
+    return `${url}?v=${CACHE_NAME}`;
+});
+
 // Install event: cache the app shell
 self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(cache => {
-                console.log('Service Worker: Caching App Shell');
-                return cache.addAll(URLS_TO_CACHE);
+                console.log('Service Worker: Caching App Shell with cache busting');
+                return cache.addAll(VERSIONED_URLS);
             })
     );
 });
