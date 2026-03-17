@@ -1,25 +1,25 @@
-const CACHE_NAME = 'festie-cache-v3'; // Increment this to force update
+const CACHE_NAME = 'festie-cache-v4'; // Increment this to force update
 const URLS_TO_CACHE = [
-    '/',
-    'index.html',
-    'dashboard.html',
-    'innerDashboard.html',
-    'allCandidates.html',
-    'allPrograms.html',
-    'addSection.html',
-    'addTeam.html',
-    'addUser.html',
-    'registrdProgram.html',
-    'viewCandidateData.html',
-    'viewProgramData.html',
-    'viewSectionData.html',
-    'viewTeamData.html',
-    'teamDash.html',
-    'tmPrograms.html',
-    'tmTopicReg.html',
-    'logo-192.svg',
-    'logo-512.svg',
-    'manifest.json',
+    './',
+    './index.html',
+    './dashboard.html',
+    './innerDashboard.html',
+    './allCandidates.html',
+    './allPrograms.html',
+    './addSection.html',
+    './addTeam.html',
+    './addUser.html',
+    './registrdProgram.html',
+    './viewCandidateData.html',
+    './viewProgramData.html',
+    './viewSectionData.html',
+    './viewTeamData.html',
+    './teamDash.html',
+    './tmPrograms.html',
+    './tmTopicReg.html',
+    './logo-192.svg',
+    './logo-512.svg',
+    './manifest.json',
     'https://cdn.tailwindcss.com',
     'https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-rounded/css/uicons-regular-rounded.css',
     'https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css',
@@ -32,7 +32,7 @@ const URLS_TO_CACHE = [
 
 // Add version to URLs to bypass browser HTTP cache when updating the service worker cache
 const VERSIONED_URLS = URLS_TO_CACHE.map(url => {
-    if (url.startsWith('http') || url === '/') return url;
+    if (url.startsWith('http') || url === './') return url;
     return `${url}?v=${CACHE_NAME}`;
 });
 
@@ -66,7 +66,9 @@ self.addEventListener('activate', event => {
 // Fetch event: serve from cache, fallback to network
 self.addEventListener('fetch', event => {
     event.respondWith(
-        caches.match(event.request).then(response => response || fetch(event.request))
+        caches.match(event.request, { ignoreSearch: true }).then(response => {
+            return response || fetch(event.request);
+        })
     );
 });
 
