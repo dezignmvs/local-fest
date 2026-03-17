@@ -154,7 +154,7 @@
                         </button>
                         <div id="submenu-programme" class="hidden flex-col mt-1 space-y-0.5 px-2">
                             <a href="#" onclick="event.preventDefault(); loadModule('allPrograms')" class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item"><div class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors"></div> All Programs</a>
-                            <a href="#" onclick="event.preventDefault(); loadModule('registration')" class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item"><div class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors"></div> Registration</a>
+                            <a href="#" onclick="event.preventDefault(); loadModule('registrdProgram')" class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item"><div class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors"></div> Registration</a>
                             <a href="#" onclick="event.preventDefault(); loadModule('substitutions')" class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item"><div class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors"></div> Substitutions</a>
                         </div>
                     </div>
@@ -861,7 +861,7 @@
                         'addSection': 'Sections',
                         'addTeam': 'Teams',
                         'allPrograms': 'All Programs',
-                        'registration': 'Registration',
+                        'registrdProgram': 'Registration',
                         'substitutions': 'Substitutions',
                         'allSchedules': 'All Schedules',
                         'judges': 'Judges',
@@ -874,7 +874,8 @@
                         'candidateToppers': 'Candidate Toppers',
                         'viewCandidateData': 'Candidate Profile',
                         'viewTeamData': 'Team Overview',
-                        'viewSectionData': 'Section Overview'
+                        'viewSectionData': 'Section Overview',
+                        'viewProgramData': 'Program Details'
                     };
                     const title = map[moduleName] || moduleName;
                     
@@ -905,6 +906,13 @@
                         if (currentCrumb) {
                             currentCrumb.classList.remove('hidden');
                             currentCrumb.innerText = localStorage.getItem('viewTeamName') || 'Team';
+                        }
+                    } else if (moduleName === 'viewProgramData') {
+                        if (mid) { mid.classList.remove('hidden'); mid.innerText = 'Programs'; mid.onclick = () => loadModule('allPrograms'); }
+                        if (sep2) sep2.classList.remove('hidden');
+                        if (currentCrumb) {
+                            currentCrumb.classList.remove('hidden');
+                            currentCrumb.innerText = localStorage.getItem('viewProgramName') || 'Program';
                         }
                     } else {
                         if (mid) mid.classList.add('hidden');

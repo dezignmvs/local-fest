@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Program Data</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Uicons -->
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Toastify -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            bg: '#f8f9fc'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #FAFAFA; }
+        .tab-active { background-color: #FEF9C3; color: #CA8A04; font-weight: 600; }
+        .tab-inactive { color: #6B7280; font-weight: 500; }
+        .tab-inactive:hover { background-color: #F3F4F6; }
+    </style>
+</head>
+<body class="text-gray-800 p-4 sm:p-6 lg:p-8 min-h-screen">
+  <!-- Container -->
+  <div class="max-w-[1400px] w-full mx-auto space-y-6">
+    <!-- Top Header -->
+    <div class="flex items-start md:items-center justify-between">
+      <div class="flex items-center gap-3 w-full">
+        <button onclick="goBack()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-200 transition-colors shrink-0">
+          <i class="fi fi-rr-arrow-left text-sm text-gray-700"></i>
+        </button>
+        <div class="w-12 h-12 bg-yellow-50 text-yellow-500 rounded-2xl flex items-center justify-center text-xl border border-yellow-100 shadow-sm shrink-0">
+          <i class="fi fi-rr-trophy"></i>
+        </div>
+        <div class="flex flex-col flex-1 truncate">
+          <div class="flex items-center gap-2 flex-wrap">
+            <h1 id="vp-name" class="text-xl font-bold text-gray-900 tracking-tight truncate max-w-[160px] md:max-w-[300px]">Loading...</h1>
+            <span id="vp-head-status" class="text-[9px] bg-white border border-gray-200 text-gray-700 font-bold px-2 py-0.5 rounded-full uppercase tracking-widest shadow-sm">...</span>
+          </div>
+          <div class="text-xs text-gray-400 font-medium flex items-center gap-1.5 mt-0.5">
+            <span id="vp-code" class="truncate max-w-[50px] md:max-w-none">---</span>
+            <span class="text-[8px]">&bull;</span>
+            <span id="vp-type" class="text-[9px] bg-white border border-gray-200 text-gray-700 font-bold px-2 py-0.5 rounded-full uppercase tracking-widest shadow-sm">---</span>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 shrink-0">
+        <button onclick="Toastify({text: 'Coming soon', duration: 2000, gravity: 'bottom', position: 'center'}).showToast()" class="hidden md:flex px-4 py-2 bg-white border border-gray-200 shadow-sm rounded-full text-sm items-center gap-2 hover:bg-gray-50 font-medium text-gray-700 transition-colors">
+          <i class="fi fi-rr-download text-gray-500"></i> Judge Sheet
+        </button>
+        <div class="relative">
+           <button onclick="toggleDropdown(event)" id="dropdownButton" class="w-9 h-9 border border-gray-200 bg-white shadow-sm rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors text-gray-500">
+             <i class="fi fi-rr-menu-dots-vertical text-sm"></i>
+           </button>
+           
+           <!-- Dropdown Menu -->
+           <div id="optionsDropdown" class="hidden absolute right-0 mt-2 w-56 bg-white border border-gray-100 rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] z-[100] py-2 overflow-hidden">
+              <button onclick="handleMenuAction('edit')" class="w-full text-left px-4 py-3 md:py-2.5 text-[13px] font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition-colors">
+                 <i class="fi fi-rr-edit text-gray-500"></i> Edit Program
+              </button>
+              <button onclick="handleMenuAction('export_part')" class="w-full text-left px-4 py-3 md:py-2.5 text-[13px] font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition-colors">
+                 <i class="fi fi-rr-file-download text-gray-500"></i> Export Participants
+              </button>
+              <button onclick="handleMenuAction('export_topic')" class="w-full text-left px-4 py-3 md:py-2.5 text-[13px] font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition-colors">
+                 <i class="fi fi-rr-file-download text-gray-500"></i> Export Topic Lists
+              </button>
+              <button onclick="handleMenuAction('add_results')" class="w-full text-left px-4 py-3 md:py-2.5 text-[13px] font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition-colors">
+                 <i class="fi fi-rr-trophy text-gray-500"></i> Add Results
+              </button>
+              <button onclick="handleMenuAction('assign_cat')" class="w-full text-left px-4 py-3 md:py-2.5 text-[13px] font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition-colors">
+                 <i class="fi fi-rr-settings text-gray-500"></i> Assign to Category
+              </button>
+              <button onclick="handleMenuAction('share')" class="w-full text-left px-4 py-3 md:py-2.5 text-[13px] font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition-colors">
+                 <i class="fi fi-rr-share-square text-gray-500"></i> Share Program
+              </button>
+              <button onclick="handleMenuAction('delete')" class="w-full text-left px-4 py-3 md:py-2.5 text-[13px] font-medium text-orange-500 hover:bg-orange-50 flex items-center gap-3 transition-colors">
+                 <i class="fi fi-rr-trash text-orange-500"></i> Delete
+              </button>
+           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+      <!-- Total Registrations -->
+      <div class="bg-white p-4 md:p-5 rounded-3xl border border-gray-100 shadow-sm flex items-center justify-between">
+         <div>
+            <div class="text-[10px] md:text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 md:mb-2">TOTAL REGISTRATIONS</div>
+            <div class="text-xl md:text-2xl font-black text-gray-900 leading-none">0</div>
+         </div>
+         <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center shrink-0"><i class="fi fi-rr-users"></i></div>
+      </div>
+      <!-- Results Status -->
+      <div class="bg-white p-4 md:p-5 rounded-3xl border border-gray-100 shadow-sm flex items-center justify-between">
+         <div class="truncate pr-2">
+            <div class="text-[10px] md:text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 md:mb-2 truncate">RESULTS STATUS</div>
+            <div class="text-lg md:text-xl font-black text-gray-900 tracking-tight leading-none truncate">No Results</div>
+         </div>
+         <div class="w-10 h-10 rounded-full bg-green-50 text-green-500 flex items-center justify-center shrink-0"><i class="fi fi-rr-trophy"></i></div>
+      </div>
+      <!-- Rules -->
+      <div class="bg-white p-4 md:p-5 rounded-3xl border border-gray-100 shadow-sm flex items-center justify-between">
+         <div>
+            <div class="text-[10px] md:text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 md:mb-2">RULES</div>
+            <div class="text-xl md:text-2xl font-black text-gray-900 leading-none">0</div>
+         </div>
+         <div class="w-10 h-10 rounded-full bg-purple-50 text-purple-500 flex items-center justify-center shrink-0"><i class="fi fi-rr-calendar-lines"></i></div>
+      </div>
+      <!-- Gallery Images -->
+      <div class="bg-white p-4 md:p-5 rounded-3xl border border-gray-100 shadow-sm flex items-center justify-between">
+         <div>
+            <div class="text-[10px] md:text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 md:mb-2">GALLERY IMAGES</div>
+            <div class="text-xl md:text-2xl font-black text-gray-900 leading-none">0</div>
+         </div>
+         <div class="w-10 h-10 rounded-full bg-orange-50 text-orange-400 flex items-center justify-center shrink-0"><i class="fi fi-rr-picture"></i></div>
+      </div>
+    </div>
+
+    <!-- Main Section with Sidebar -->
+    <div class="flex flex-col lg:flex-row gap-5 lg:gap-6 mt-2 lg:mt-6">
+      
+      <!-- Tab Navigation (Mobile: Horizontal Scroll, Desktop: Vertical Sidebar) -->
+      <div class="w-full lg:w-64 shrink-0 p-1 lg:p-4 bg-transparent lg:bg-white rounded-none lg:rounded-2xl border-none lg:border lg:border-gray-100 shadow-none lg:shadow-sm flex flex-row lg:flex-col gap-1.5 lg:gap-1.5 h-max overflow-x-auto no-scrollbar md:custom-scrollbar">
+         
+         <button onclick="switchTab('overview')" id="tab-overview" class="tab-active flex-col lg:flex-row flex items-center justify-center lg:justify-start gap-1 lg:gap-3 px-4 lg:px-4 py-3 lg:py-3 rounded-xl lg:rounded-xl text-[11px] lg:text-[14px] transition-colors whitespace-nowrap min-w-[75px] border border-transparent">
+            <i class="fi fi-rr-book-alt text-[16px] lg:text-[inherit]"></i> <span class="tracking-tight lg:tracking-normal">Overview</span>
+         </button>
+         <button onclick="switchTab('registrations')" id="tab-registrations" class="tab-inactive flex-col lg:flex-row flex items-center justify-center lg:justify-start gap-1 lg:gap-3 px-4 lg:px-4 py-3 lg:py-3 rounded-xl lg:rounded-xl text-[11px] lg:text-[14px] transition-colors whitespace-nowrap min-w-[75px] border border-transparent">
+            <i class="fi fi-rr-users text-[16px] lg:text-[inherit]"></i> <span class="tracking-tight lg:tracking-normal">Registrations</span>
+         </button>
+         <button onclick="switchTab('results')" id="tab-results" class="tab-inactive flex-col lg:flex-row flex items-center justify-center lg:justify-start gap-1 lg:gap-3 px-4 lg:px-4 py-3 lg:py-3 rounded-xl lg:rounded-xl text-[11px] lg:text-[14px] transition-colors whitespace-nowrap min-w-[75px] border border-transparent">
+            <i class="fi fi-rr-trophy text-[16px] lg:text-[inherit]"></i> <span class="tracking-tight lg:tracking-normal">Results</span>
+         </button>
+         <button onclick="switchTab('rules')" id="tab-rules" class="tab-inactive flex-col lg:flex-row flex items-center justify-center lg:justify-start gap-1 lg:gap-3 px-4 lg:px-4 py-3 lg:py-3 rounded-xl lg:rounded-xl text-[11px] lg:text-[14px] transition-colors whitespace-nowrap min-w-[75px] border border-transparent">
+            <i class="fi fi-rr-calendar-lines text-[16px] lg:text-[inherit]"></i> <span class="tracking-tight lg:tracking-normal">Rules</span>
+         </button>
+         <button onclick="switchTab('substitutions')" id="tab-substitutions" class="tab-inactive flex-col lg:flex-row flex items-center justify-center lg:justify-start gap-1 lg:gap-3 px-4 lg:px-4 py-3 lg:py-3 rounded-xl lg:rounded-xl text-[11px] lg:text-[14px] transition-colors whitespace-nowrap min-w-[75px] border border-transparent">
+            <i class="fi fi-rr-user-minus text-[16px] lg:text-[inherit]"></i> <span class="tracking-tight lg:tracking-normal">Substitutions</span>
+         </button>
+         <button onclick="switchTab('gallery')" id="tab-gallery" class="tab-inactive hidden lg:flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-1 lg:gap-3 px-4 lg:px-4 py-3 lg:py-3 rounded-xl lg:rounded-xl text-[11px] lg:text-[14px] transition-colors whitespace-nowrap min-w-[75px] border border-transparent">
+            <i class="fi fi-rr-picture text-[16px] lg:text-[inherit]"></i> <span class="tracking-tight lg:tracking-normal">Gallery</span>
+         </button>
+         <button onclick="switchTab('settings')" id="tab-settings" class="tab-inactive hidden lg:flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-1 lg:gap-3 px-4 lg:px-4 py-3 lg:py-3 rounded-xl lg:rounded-xl text-[11px] lg:text-[14px] transition-colors whitespace-nowrap min-w-[75px] border border-transparent">
+            <i class="fi fi-rr-settings text-[16px] lg:text-[inherit]"></i> <span class="tracking-tight lg:tracking-normal">Settings</span>
+         </button>
+      </div>
+
+      <!-- Tab Contents -->
+      <div class="flex-1 bg-white rounded-2xl border border-gray-100 shadow-sm min-h-[500px]">
+        
+        <!-- Overview Tab -->
+        <div id="content-overview" class="p-8 block">
+
+           <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+              <!-- Left Column: Program Details -->
+              <div>
+                  <h2 class="text-[12px] font-black text-gray-400 uppercase tracking-widest mb-5">PROGRAM DETAILS</h2>
+                 <div class="space-y-6">
+                    <div>
+                       <div class="text-[13px] text-gray-500 font-medium mb-1 border-b border-transparent">Description</div>
+                       <div id="vp-desc" class="text-[13.5px] text-gray-400">No description available</div>
+                    </div>
+                    
+                    <div class="border border-gray-100 rounded-2xl p-6 space-y-6 bg-[#FAFAFA]/50 shadow-sm mt-4">
+                       <div class="flex items-start gap-4">
+                          <div class="w-9 h-9 rounded-full bg-blue-50 flex flex-shrink-0 items-center justify-center border border-blue-100/50"><i class="fi fi-rr-users-alt text-blue-500 text-sm"></i></div>
+                          <div class="pt-0.5">
+                             <div class="text-[11px] text-gray-500 uppercase font-bold tracking-widest">Section</div>
+                             <div id="vp-section" class="text-[14px] font-bold mt-0.5 text-gray-900">—</div>
+                          </div>
+                       </div>
+                       <div class="flex items-start gap-4">
+                          <div class="w-9 h-9 rounded-full bg-gray-100 flex flex-shrink-0 items-center justify-center border border-gray-200/50"><i class="fi fi-rr-calendar text-gray-500 text-sm"></i></div>
+                          <div class="pt-0.5">
+                             <div class="text-[11px] text-gray-500 uppercase font-bold tracking-widest">Schedule</div>
+                             <div id="vp-schedule" class="text-[14px] font-bold mt-0.5 text-gray-900">Not scheduled yet</div>
+                          </div>
+                       </div>
+                       <div class="flex items-start gap-4">
+                          <div class="w-9 h-9 rounded-full bg-gray-100 flex flex-shrink-0 items-center justify-center border border-gray-200/50"><i class="fi fi-rr-marker text-gray-500 text-sm"></i></div>
+                          <div class="pt-0.5">
+                             <div class="text-[11px] text-gray-500 uppercase font-bold tracking-widest">Venue</div>
+                             <div id="vp-venue" class="text-[14px] font-bold mt-0.5 text-gray-900">No venue assigned</div>
+                          </div>
+                       </div>
+                       <div class="flex items-start gap-4">
+                          <div class="w-9 h-9 rounded-full bg-orange-50 flex flex-shrink-0 items-center justify-center border border-orange-100/50"><i class="fi fi-rr-trophy text-orange-500 text-sm"></i></div>
+                          <div class="pt-0.5">
+                             <div class="text-[11px] text-gray-500 uppercase font-bold tracking-widest">Status</div>
+                             <div id="vp-det-status" class="text-[14px] font-bold mt-0.5 text-gray-900">—</div>
+                          </div>
+                       </div>
+                    </div>
+                 </div>
+              </div>
+
+              <!-- Right Column: Judges Panel -->
+              <div>
+                 <h2 class="text-[12px] font-black text-gray-400 uppercase tracking-widest mb-5">JUDGES PANEL</h2>
+                 <div class="flex items-center gap-4 mb-8 border border-gray-100 py-3 px-4 rounded-xl bg-[#FAFAFA]/50 shadow-sm">
+                    <div class="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center"><i class="fi fi-rr-users text-green-500"></i></div>
+                    <div>
+                       <div class="text-[11px] text-gray-500 uppercase font-bold tracking-widest">Assigned Judges</div>
+                       <div class="text-[14px] font-black text-gray-900 mt-0.5">0 Panel Members</div>
+                    </div>
+                 </div>
+                 
+                 <div class="flex flex-col items-center justify-center py-24 opacity-40">
+                    <i class="fi fi-rr-users-alt text-4xl mb-4 text-gray-500"></i>
+                    <p class="text-[13px] font-medium text-gray-500">No judges assigned yet</p>
+                 </div>
+              </div>
+           </div>
+        </div>
+
+        <!-- Registrations Tab -->
+        <div id="content-registrations" class="p-8 hidden">
+           <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
+              <h2 class="text-[12px] font-black text-gray-400 uppercase tracking-widest">INDIVIDUAL REGISTRATIONS</h2>
+              <button id="add-reg-btn" class="px-5 py-2.5 border border-gray-200 shadow-sm rounded-full text-sm font-semibold flex items-center gap-2 hover:bg-gray-50 text-gray-700 transition-colors hidden">
+                 <i class="fi fi-rr-plus text-xs"></i> Add Registration
+              </button>
+           </div>
+           
+           <div id="registrations-list-container">
+               <div class="flex flex-col items-center justify-center py-32 opacity-40">
+                  <i class="fi fi-rr-users text-5xl mb-4 text-gray-400"></i>
+                  <p class="text-[14px] font-medium text-gray-500">Loading registrations...</p>
+               </div>
+           </div>
+        </div>
+
+        <!-- Results Tab -->
+        <div id="content-results" class="p-8 hidden">
+           <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-10 gap-4">
+              <h2 class="text-[12px] font-black text-gray-400 uppercase tracking-widest">RESULTS OVERVIEW</h2>
+              <span class="px-3 py-1.5 border border-gray-200 shadow-sm rounded-full text-[11px] font-black text-gray-700 bg-white">No Results</span>
+           </div>
+           
+           <div class="flex flex-col items-center justify-center py-20">
+              <i class="fi fi-rr-trophy text-5xl mb-4 text-gray-300"></i>
+              <p class="text-[14px] font-medium text-gray-500 mb-8 opacity-60">No results available yet</p>
+              <button class="bg-[#EEDA51] hover:bg-[#E0CC4B] text-yellow-950 px-6 py-2.5 rounded-full text-sm font-semibold transition-colors shadow-sm flex items-center gap-2">
+                 <i class="fi fi-rr-plus text-xs"></i> Add Results
+              </button>
+           </div>
+        </div>
+
+        <!-- Substitutions Tab -->
+        <div id="content-substitutions" class="p-8 hidden">
+           <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-10 gap-4">
+              <h2 class="text-[12px] font-black text-gray-400 uppercase tracking-widest">SUBSTITUTIONS</h2>
+              <div class="flex items-center gap-3">
+                 <span class="px-3 py-1.5 border border-gray-200 shadow-sm rounded-full text-[12px] font-bold text-gray-700 bg-white">0 Requests</span>
+                 <button class="px-4 py-1.5 border border-gray-200 shadow-sm rounded-full text-[13px] font-semibold flex items-center gap-2 hover:bg-gray-50 text-gray-700 transition-colors">
+                    <i class="fi fi-rr-plus text-xs"></i> Create
+                 </button>
+                 <button class="px-4 py-1.5 border border-gray-200 shadow-sm rounded-full text-[13px] font-semibold hover:bg-gray-50 text-gray-700 transition-colors">
+                    Refresh
+                 </button>
+              </div>
+           </div>
+           
+           <div class="flex flex-col items-center justify-center py-32 opacity-40">
+              <i class="fi fi-rr-user-minus text-5xl mb-4 text-gray-400"></i>
+              <p class="text-[14px] font-medium text-gray-500">No substitution requests for this program</p>
+           </div>
+        </div>
+
+        <!-- Gallery Tab -->
+        <div id="content-gallery" class="p-8 hidden">
+           <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-10 gap-4">
+              <h2 class="text-[12px] font-black text-gray-400 uppercase tracking-widest">GALLERY IMAGES</h2>
+              <span class="px-3 py-1.5 border border-gray-200 shadow-sm rounded-full text-[12px] font-bold text-gray-700 bg-white">0 Images</span>
+           </div>
+           
+           <div class="flex flex-col items-center justify-center py-32 opacity-40">
+              <i class="fi fi-rr-picture text-5xl mb-4 text-gray-400"></i>
+              <p class="text-[14px] font-medium text-gray-500">No gallery images found</p>
+           </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="content-settings" class="p-8 hidden">
+           <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
+              <h2 class="text-[12px] font-black text-gray-400 uppercase tracking-widest">PROGRAM SETTINGS</h2>
+           </div>
+           
+           <div class="space-y-4 max-w-4xl">
+                <!-- Accordion 1: Basic Details -->
+                <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                    <button onclick="toggleAccordion('acc-basic', 'icon-basic')" class="w-full flex justify-between items-center p-5 bg-white hover:bg-gray-50 transition-colors focus:outline-none">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-blue-50 text-brand-blue flex items-center justify-center"><i class="fi fi-rr-info"></i></div>
+                            <h3 class="text-[15px] font-bold text-gray-800">Basic Details</h3>
+                        </div>
+                        <i id="icon-basic" class="fi fi-rr-angle-small-down text-gray-400 transition-transform duration-300 rotate-180"></i>
+                    </button>
+                    <div id="acc-basic" class="p-6 border-t border-gray-100 bg-gray-50/30">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-[13px] font-medium text-gray-800 mb-1.5">Program Code *</label>
+                                <input type="text" id="progCode" placeholder="e.g. PRG-01" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-[13px] focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all font-mono-custom uppercase">
+                            </div>
+                            <div>
+                                <label class="block text-[13px] font-medium text-gray-800 mb-1.5">Program Name *</label>
+                                <input type="text" id="progName" placeholder="e.g. Solo Dance" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-[13px] focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-[13px] font-medium text-gray-800 mb-1.5">Section *</label>
+                                <div class="relative">
+                                    <select id="progSection" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-[13px] focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 appearance-none cursor-pointer">
+                                        <option value="" disabled selected>Select Section</option>
+                                    </select>
+                                    <i class="fi fi-rr-angle-small-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-[13px] font-medium text-gray-800 mb-1.5">Program Type *</label>
+                                <div class="relative">
+                                    <select id="progType" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-[13px] focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 appearance-none cursor-pointer">
+                                        <option value="Individual">Individual</option>
+                                        <option value="Group">Group</option>
+                                    </select>
+                                    <i class="fi fi-rr-angle-small-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-[13px] font-medium text-gray-800 mb-1.5">Program Set Limit</label>
+                                <div class="relative">
+                                    <select id="progSet" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-[13px] focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 appearance-none cursor-pointer">
+                                        <option value="">No Limit Set</option>
+                                    </select>
+                                    <i class="fi fi-rr-angle-small-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                                </div>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-[13px] font-medium text-gray-800 mb-1.5">Status</label>
+                                <div class="relative w-full md:w-1/2">
+                                    <select id="progStatus" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-[13px] focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 appearance-none cursor-pointer">
+                                        <option value="active">Active</option>
+                                        <option value="inactive">Inactive</option>
+                                    </select>
+                                    <i class="fi fi-rr-angle-small-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Accordion 2: Participation Limits -->
+                <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                    <button onclick="toggleAccordion('acc-limits', 'icon-limits')" class="w-full flex justify-between items-center p-5 bg-white hover:bg-gray-50 transition-colors focus:outline-none">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-orange-50 text-orange-500 flex items-center justify-center"><i class="fi fi-rr-users"></i></div>
+                            <h3 class="text-[15px] font-bold text-gray-800">Participation Limits</h3>
+                        </div>
+                        <i id="icon-limits" class="fi fi-rr-angle-small-down text-gray-400 transition-transform duration-300"></i>
+                    </button>
+                    <div id="acc-limits" class="hidden p-6 border-t border-gray-100 bg-gray-50/30">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-[13px] font-medium text-gray-800 mb-1.5">Minimum Participants</label>
+                                <input type="number" id="progMin" value="1" min="1" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-[13px] focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-[13px] font-medium text-gray-800 mb-1.5">Maximum Participants</label>
+                                <input type="number" id="progMax" value="1" min="1" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-[13px] focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Accordion 3: Registration Settings -->
+                <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                    <button onclick="toggleAccordion('acc-reg', 'icon-reg')" class="w-full flex justify-between items-center p-5 bg-white hover:bg-gray-50 transition-colors focus:outline-none">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center"><i class="fi fi-rr-document-signed"></i></div>
+                            <h3 class="text-[15px] font-bold text-gray-800">Registration Settings</h3>
+                        </div>
+                        <i id="icon-reg" class="fi fi-rr-angle-small-down text-gray-400 transition-transform duration-300"></i>
+                    </button>
+                    <div id="acc-reg" class="hidden p-6 border-t border-gray-100 bg-gray-50/30">
+                        <div class="flex items-center justify-between bg-white p-4 rounded-lg border border-gray-200">
+                            <div>
+                                <h4 class="text-[14px] font-semibold text-gray-800">Topic Registration</h4>
+                                <p class="text-[12px] text-gray-500 mt-0.5">Require participants to provide a topic/subject name during registration.</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="progTopicReg" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Accordion 4: Scoring & Templates -->
+                <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                    <button onclick="toggleAccordion('acc-score', 'icon-score')" class="w-full flex justify-between items-center p-5 bg-white hover:bg-gray-50 transition-colors focus:outline-none">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-green-50 text-green-600 flex items-center justify-center"><i class="fi fi-rr-trophy"></i></div>
+                            <h3 class="text-[15px] font-bold text-gray-800">Scoring & Templates</h3>
+                        </div>
+                        <i id="icon-score" class="fi fi-rr-angle-small-down text-gray-400 transition-transform duration-300"></i>
+                    </button>
+                    <div id="acc-score" class="hidden p-6 border-t border-gray-100 bg-gray-50/30 space-y-6">
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="flex items-center justify-between bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                                <div class="font-semibold text-[14px] text-gray-800">Enable Grading</div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="progGrading" class="sr-only peer" onchange="toggleTemplateState('progGrading', 'progGradeTemplate', 'icon-grade-template')">
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+                                </label>
+                            </div>
+
+                            <div class="flex items-center justify-between bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                                <div class="font-semibold text-[14px] text-gray-800">Enable Scoring</div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="progScoring" class="sr-only peer" onchange="toggleTemplateState('progScoring', 'progScoreTemplate', 'icon-score-template')">
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div id="grade-container">
+                                <label class="block text-[13px] font-medium text-gray-800 mb-1.5">Grade Template</label>
+                                <div class="relative w-full">
+                                    <select id="progGradeTemplate" disabled class="w-full px-4 py-2.5 bg-gray-100 text-gray-500 border border-gray-200 rounded-lg text-[13px] focus:outline-none transition-all appearance-none cursor-not-allowed">
+                                        <option value="Standard">Standard Grade Template</option>
+                                        <option value="Custom1">Custom Rules A</option>
+                                    </select>
+                                    <i id="icon-grade-template" class="fi fi-rr-lock absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none transition-colors"></i>
+                                </div>
+                            </div>
+
+                            <div id="score-container">
+                                <label class="block text-[13px] font-medium text-gray-800 mb-1.5">Position Template</label>
+                                <div class="relative w-full">
+                                    <select id="progScoreTemplate" disabled class="w-full px-4 py-2.5 bg-gray-100 text-gray-500 border border-gray-200 rounded-lg text-[13px] focus:outline-none transition-all appearance-none cursor-not-allowed">
+                                        <option value="Top3">Top 3 Winners</option>
+                                        <option value="Top5">Top 5 Winners</option>
+                                    </select>
+                                    <i id="icon-score-template" class="fi fi-rr-lock absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none transition-colors"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="flex justify-end mt-4">
+                    <button onclick="saveProgramSettings()" id="btn-save-program" class="flex items-center justify-center gap-2 px-8 py-2.5 bg-blue-600 text-white rounded-lg text-[14px] font-bold hover:bg-opacity-90 transition-all shadow-md"><i class="fi fi-rr-disk text-sm"></i> <span>Save Settings</span></button>
+                </div>
+           </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const tabs = ['overview', 'registrations', 'results', 'substitutions', 'gallery', 'settings'];
+     function switchTab(tabId) {
+        // Find all section content panels and tabs
+        const contents = document.querySelectorAll('div[id^="content-"]');
+        const tabs = document.querySelectorAll('button[id^="tab-"]');
+        
+        // Hide all contents and reset tabs styles
+        contents.forEach(content => content.classList.add('hidden'));
+        tabs.forEach(tab => {
+            tab.className = "tab-inactive flex-col lg:flex-row flex items-center justify-center lg:justify-start gap-1 lg:gap-3 px-4 py-3 rounded-xl text-[11px] lg:text-[14px] transition-colors whitespace-nowrap min-w-[75px] border border-transparent";
+        });
+        
+        // Show active content and set active tab styles
+        document.getElementById('content-' + tabId).classList.remove('hidden');
+        document.getElementById('content-' + tabId).classList.add('block');
+        const activeTab = document.getElementById('tab-' + tabId);
+        activeTab.className = "tab-active flex-col lg:flex-row flex items-center justify-center lg:justify-start gap-1 lg:gap-3 px-4 py-3 rounded-xl text-[11px] lg:text-[14px] transition-colors whitespace-nowrap min-w-[75px] border border-[#fef08a]";
+    }
+
+    function toggleDropdown(event) {
+        if(event) event.stopPropagation();
+        const dropdown = document.getElementById('optionsDropdown');
+        dropdown.classList.toggle('hidden');
+    }
+
+    function toggleAccordion(id, iconId) {
+        const content = document.getElementById(id);
+        const icon = document.getElementById(iconId);
+        content.classList.toggle('hidden');
+        if(icon) icon.classList.toggle('rotate-180');
+    }
+
+    function toggleTemplateState(toggleId, selectId, iconId) {
+        const isChecked = document.getElementById(toggleId).checked;
+        const selectEl = document.getElementById(selectId);
+        const iconEl = document.getElementById(iconId);
+
+        if (isChecked) {
+            selectEl.disabled = false;
+            selectEl.classList.remove('bg-gray-100', 'text-gray-500', 'border-gray-200', 'cursor-not-allowed');
+            selectEl.classList.add('bg-white', 'text-gray-900', 'border-gray-300', 'focus:ring-1', 'focus:ring-blue-500', 'focus:border-blue-500', 'cursor-pointer');
+            iconEl.className = 'fi fi-rr-angle-small-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none transition-colors';
+        } else {
+            selectEl.disabled = true;
+            selectEl.classList.add('bg-gray-100', 'text-gray-500', 'border-gray-200', 'cursor-not-allowed');
+            selectEl.classList.remove('bg-white', 'text-gray-900', 'border-gray-300', 'focus:ring-1', 'focus:ring-blue-500', 'focus:border-blue-500', 'cursor-pointer');
+            iconEl.className = 'fi fi-rr-lock absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none transition-colors';
+        }
+    }
+
+    // Close when clicking outside
+    document.addEventListener('click', function(event) {
+        const dropdown = document.getElementById('optionsDropdown');
+        const button = document.getElementById('dropdownButton');
+        if (dropdown && !dropdown.classList.contains('hidden')) {
+            if (!dropdown.contains(event.target) && !button.contains(event.target)) {
+                dropdown.classList.add('hidden');
+            }
+        }
+    });
+  </script>
+
+  <!-- Toastify JS -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+  <!-- Firebase SDK (Version 8) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+  <script>
+      (function() {
+          // Firebase Initialization
+          const firebaseConfig = {
+              apiKey: "AIzaSyCKA0k_9UgoJX_RBgEsIeNdiW2w0Okko1o",
+              authDomain: "festie-s1u2h3.firebaseapp.com",
+              projectId: "festie-s1u2h3",
+              storageBucket: "festie-s1u2h3.firebasestorage.app",
+              messagingSenderId: "794049194885",
+              appId: "1:794049194885:web:8f75f0df4c15cde15eb2ec"
+          };
+          
+          if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+          const db = firebase.firestore();
+
+          const programId = localStorage.getItem('viewProgramId');
+
+          if (!programId) {
+              document.getElementById('vp-name').innerText = "No Program Selected";
+              return;
+          }
+
+          // Fetch dropdown data
+          db.collection('sections').where('isActive', '==', true).onSnapshot(snap => {
+              const secSelect = document.getElementById('progSection');
+              const current = secSelect.value;
+              let opts = '<option value="" disabled selected>Select Section</option>';
+              snap.forEach(doc => {
+                  const d = doc.data();
+                  opts += `<option value="${d.name}">${d.name}</option>`;
+              });
+              secSelect.innerHTML = opts;
+              if(current) secSelect.value = current;
+          });
+          
+          db.collection('programSets').onSnapshot(snap => {
+              const el = document.getElementById('progSet');
+              const cur = el ? el.value : '';
+              if(el) {
+                  let html = '<option value="">No Limit Set</option>';
+                  snap.forEach(d => { html += `<option value="${d.data().name}">${d.data().name}</option>`; });
+                  el.innerHTML = html;
+                  if(cur) el.value = cur;
+              }
+          });
+
+          // Fetch Program Details
+          db.collection('programs').doc(programId).onSnapshot(doc => {
+              if (doc.exists) {
+                  const p = doc.data();
+                  
+                  document.getElementById('vp-name').innerText = p.name || 'Unnamed Program';
+                  document.getElementById('vp-code').innerText = p.code || '---';
+                  document.getElementById('vp-type').innerText = p.type || 'UNKNOWN';
+                  
+                  const statusDisplay = (p.status !== false) ? 'ACTIVE' : 'INACTIVE';
+                  
+                  const headStatusParams = (p.status !== false)
+                    ? 'bg-blue-50 border-blue-200 text-blue-700'
+                    : 'bg-red-50 border-red-200 text-red-700';
+                  
+                  const statusEl = document.getElementById('vp-head-status');
+                  statusEl.innerText = statusDisplay;
+                  statusEl.className = `text-[10px] border font-bold px-2 py-0.5 rounded-full uppercase tracking-wider shadow-sm ${headStatusParams}`;
+                  
+                  // Detail Overview
+                  document.getElementById('vp-desc').innerText = p.description || 'No description available';
+                  document.getElementById('vp-section').innerText = p.section || '—';
+                  if(p.venue) document.getElementById('vp-venue').innerText = p.venue;
+                  if(p.schedule) document.getElementById('vp-schedule').innerText = p.schedule;
+                  document.getElementById('vp-det-status').innerText = statusDisplay;
+
+                  // Bind to form inputs
+                  document.getElementById('progCode').value = p.code || '';
+                  document.getElementById('progName').value = p.name || '';
+                  if(p.section) document.getElementById('progSection').value = p.section;
+                  document.getElementById('progType').value = p.type || 'Individual';
+                  document.getElementById('progStatus').value = p.status !== false ? 'active' : 'inactive';
+                  if(p.progSet) document.getElementById('progSet').value = p.progSet;
+                  
+                  document.getElementById('progMin').value = p.minParticipants || 1;
+                  document.getElementById('progMax').value = p.maxParticipants || 1;
+                  
+                  document.getElementById('progTopicReg').checked = !!p.topicRegistration;
+                  document.getElementById('progGrading').checked = !!p.enableGrading;
+                  if(p.enableGrading && p.gradeTemplate) document.getElementById('progGradeTemplate').value = p.gradeTemplate;
+                  
+                  document.getElementById('progScoring').checked = !!p.enableScoring;
+                  if(p.enableScoring && p.positionTemplate) document.getElementById('progScoreTemplate').value = p.positionTemplate;
+
+                  toggleTemplateState('progGrading', 'progGradeTemplate', 'icon-grade-template');
+                  toggleTemplateState('progScoring', 'progScoreTemplate', 'icon-score-template');
+              }
+          });
+
+          // Fetch Registrations & Candidates for this Program
+          db.collection('candidates').get().then(candSnap => {
+              const allCandidates = candSnap.docs.map(doc => ({id: doc.id, ...doc.data()}));
+              
+              db.collection('registrations').where('programId', '==', programId).onSnapshot(regSnap => {
+                  const regs = regSnap.docs.map(doc => ({id: doc.id, ...doc.data()}));
+                  const regContainer = document.getElementById('registrations-list-container');
+                  const addRegBtn = document.getElementById('add-reg-btn');
+                  
+                  if(regs.length === 0) {
+                      addRegBtn.classList.remove('hidden');
+                      regContainer.innerHTML = `
+                        <div class="flex flex-col items-center justify-center py-32 opacity-40">
+                          <i class="fi fi-rr-users text-5xl mb-4 text-gray-400"></i>
+                          <p class="text-[14px] font-medium text-gray-500">No individual registrations found</p>
+                        </div>
+                      `;
+                  } else {
+                      addRegBtn.classList.add('hidden');
+                      let html = '<div class="space-y-4">';
+                      
+                      regs.forEach(reg => {
+                          const teamName = reg.team || 'Unknown Team';
+                          let teamCands = '';
+                          
+                          if (reg.chestNumbers && reg.chestNumbers.length > 0) {
+                              reg.chestNumbers.forEach(chest => {
+                                  const cand = allCandidates.find(c => c.chestNo === chest && c.team === reg.team);
+                                  const cName = cand ? cand.name : 'Unknown Candidate';
+                                  
+                                  teamCands += `
+                                      <div class="flex items-center justify-between py-3 border-b border-gray-100 last:border-0 hover:bg-gray-50/50 px-2 transition-colors rounded-lg">
+                                          <div class="flex items-center gap-3 overflow-hidden pr-2">
+                                              <div class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 font-bold flex items-center justify-center shrink-0 border border-blue-100/50 text-[13px] uppercase">${cName.charAt(0)}</div>
+                                              <span class="text-[14px] font-medium text-gray-800 truncate">${cName}</span>
+                                          </div>
+                                          <span class="text-[12px] font-mono-custom font-bold text-gray-600 bg-gray-100 border border-gray-200 px-2 py-1 rounded shadow-sm shrink-0">CHEST: ${chest}</span>
+                                      </div>
+                                  `;
+                              });
+                          }
+                          
+                          html += `
+                          <div class="bg-white border border-gray-200 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] rounded-2xl p-5 hover:shadow-md transition-shadow">
+                              <div class="flex items-center justify-between mb-3">
+                                <div class="text-[11px] font-bold text-orange-500 uppercase tracking-wider flex items-center gap-1.5 bg-orange-50 border border-orange-100 px-2 py-0.5 rounded shadow-sm self-start"><i class="fi fi-rr-users text-[10px]"></i> ${teamName}</div>
+                                <span class="text-[12px] font-semibold text-gray-500">${reg.chestNumbers ? reg.chestNumbers.length : 0} Candidates</span>
+                              </div>
+                              <div class="mt-2 pl-2">${teamCands || '<span class="text-[13px] text-gray-400 italic">No candidates added yet</span>'}</div>
+                          </div>`;
+                      });
+                      
+                      html += '</div>';
+                      regContainer.innerHTML = html;
+                  }
+              });
+          });
+
+          // Save Settings action
+          window.saveProgramSettings = function() {
+              const code = document.getElementById('progCode').value.trim().toUpperCase();
+              const name = document.getElementById('progName').value.trim();
+              const section = document.getElementById('progSection').value;
+              
+              if(!code || !name || !section) {
+                  Toastify({ text: "❌ Code, Name and Section are required", duration: 3000, gravity: "bottom", position: "center" }).showToast();
+                  return;
+              }
+
+              const payload = {
+                  code, name, section,
+                  type: document.getElementById('progType').value,
+                  progSet: document.getElementById('progSet').value,
+                  status: document.getElementById('progStatus').value === 'active',
+                  minParticipants: parseInt(document.getElementById('progMin').value) || 1,
+                  maxParticipants: parseInt(document.getElementById('progMax').value) || 1,
+                  topicRegistration: document.getElementById('progTopicReg').checked,
+                  enableGrading: document.getElementById('progGrading').checked,
+                  gradeTemplate: document.getElementById('progGrading').checked ? document.getElementById('progGradeTemplate').value : null,
+                  enableScoring: document.getElementById('progScoring').checked,
+                  positionTemplate: document.getElementById('progScoring').checked ? document.getElementById('progScoreTemplate').value : null,
+                  updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+              };
+
+              db.collection('programs').doc(programId).update(payload).then(() => {
+                  Toastify({ text: "✅ Settings saved successfully", duration: 3000, gravity: "bottom", position: "center", style: { background: "#10B981" } }).showToast();
+              }).catch(err => {
+                  Toastify({ text: "❌ Error: " + err.message, duration: 3000, gravity: "bottom", position: "center", style: { background: "#EF4444" } }).showToast();
+              });
+          };
+
+          window.goBack = function() {
+              if (typeof loadModule === 'function') {
+                  loadModule('allPrograms');
+              } else {
+                  window.location.href = 'allPrograms.html';
+              }
+          };
+
+          window.handleMenuAction = function(action) {
+              const dropdown = document.getElementById('optionsDropdown');
+              if(dropdown) dropdown.classList.add('hidden');
+
+              if (action === 'edit') {
+                  switchTab('settings');
+              } else if (action === 'delete') {
+                  if (confirm("Are you sure you want to delete this program? This cannot be undone.")) {
+                      db.collection('programs').doc(programId).delete().then(() => {
+                          Toastify({ text: "✅ Program deleted", duration: 3000, gravity: "bottom", position: "center" }).showToast();
+                          setTimeout(window.goBack, 1000);
+                      });
+                  }
+              } else {
+                  Toastify({ text: "Feature coming soon!", duration: 2000, gravity: "bottom", position: "center" }).showToast();
+              }
+          };
+
+      })();
+  </script>
+</body>
+</html>
