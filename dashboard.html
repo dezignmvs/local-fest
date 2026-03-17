@@ -326,6 +326,10 @@
                             </a>
                         </div>
                         <div class="py-2 border-t border-gray-50 bg-gray-50/30">
+                            <a href="#" id="installAppBtn" style="display: none;"
+                                class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-brand-blue hover:bg-blue-50 transition-colors">
+                                <i class="fi fi-rr-download text-brand-blue text-base"></i> Install App
+                            </a>
                             <!-- Proper Logout Attached -->
                             <a href="#" onclick="logoutUser(event)" id="logoutBtn"
                                 class="flex items-center gap-3 px-4 py-2 text-sm font-medium text-brand-red hover:bg-red-50 transition-colors">
@@ -1336,7 +1340,7 @@
         });
     </script>
 
-    <!-- PWA Service Worker Registration -->
+    <!-- PWA Service Worker Registration & Install Logic -->
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
@@ -1345,6 +1349,44 @@
             .catch(err => console.error('Service Worker registration failed:', err));
         });
       }
+
+      let deferredPrompt;
+      const installAppBtn = document.getElementById('installAppBtn');
+
+      window.addEventListener('beforeinstallprompt', (e) => {
+        // Prevent the mini-infobar from appearing on mobile
+        e.preventDefault();
+        // Stash the event so it can be triggered later.
+        deferredPrompt = e;
+        // Update UI notify the user they can install the PWA
+        if (installAppBtn) installAppBtn.style.display = 'flex';
+      });
+
+      if(installAppBtn) {
+        installAppBtn.addEventListener('click', async (e) => {
+          e.preventDefault();
+          if (deferredPrompt) {
+            // Show the install prompt
+            deferredPrompt.prompt();
+            // Wait for the user to respond to the prompt
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+              console.log('User accepted the install prompt');
+            } else {
+              console.log('User dismissed the install prompt');
+            }
+            // We've used the prompt, and can't use it again, throw it away
+            deferredPrompt = null;
+            installAppBtn.style.display = 'none';
+          }
+        });
+      }
+
+      window.addEventListener('appinstalled', (evt) => {
+        // Log install to analytics
+        console.log('INSTALL: Success');
+        if(installAppBtn) installAppBtn.style.display = 'none';
+      });
     </script>
 </body>
 
