@@ -1056,7 +1056,10 @@
             document.querySelectorAll('[id^="tpl-"]').forEach(p => p.classList.add('hidden'));
             const panel = document.getElementById('tpl-' + tab);
             if (panel) panel.classList.remove('hidden');
-            if (window.innerWidth < 1024) toggleSidebar();
+            const sidebar = document.getElementById('ownerSidebar');
+            if (window.innerWidth < 1024 && sidebar && !sidebar.classList.contains('-translate-x-full')) {
+                toggleSidebar();
+            }
 
             // Update Breadcrumb
             const map = {

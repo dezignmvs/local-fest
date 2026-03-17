@@ -806,11 +806,17 @@
             document.getElementById('main-dashboard-content').classList.add('hidden');
             document.getElementById('module-content-area').classList.add('hidden');
             document.getElementById('protected-view').classList.remove('hidden');
-            if (window.innerWidth < 1024) toggleSidebar();
+
         }
 
         // ── Module System ──────────────────────────────────────────────
         function loadModule(moduleName) {
+            // Close sidebar on mobile after selection
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth < 1024 && sidebar && !sidebar.classList.contains('-translate-x-full')) {
+                toggleSidebar();
+            }
+
             // Update the URL so refreshing keeps the current module active
             const url = new URL(window.location);
             url.searchParams.set('tab', moduleName);
@@ -928,7 +934,7 @@
                         if (currentCrumb) { currentCrumb.classList.remove('hidden'); currentCrumb.innerText = title; }
                     }
 
-                    if (window.innerWidth < 1024) toggleSidebar();
+
                 })
                 .catch(e => {
                     showToast("Failed to load module.");
@@ -938,6 +944,12 @@
 
         // ── TM Dedicated Table Loading ─────────────────────────────────
         function loadTMSection(sectionName) {
+            // Close sidebar on mobile after selection
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth < 1024 && sidebar && !sidebar.classList.contains('-translate-x-full')) {
+                toggleSidebar();
+            }
+
             window.currentTMSection = sectionName; // Make section globally available to the module
 
             const url = new URL(window.location);
@@ -987,7 +999,7 @@
                     if (currentCrumb) { currentCrumb.classList.remove('hidden'); currentCrumb.innerText = sectionName + ' Candidates'; }
 
                     loader.classList.add('hidden');
-                    if (window.innerWidth < 1024) toggleSidebar();
+
                 })
                 .catch(e => {
                     showToast("Failed to load team dashboard.");
@@ -996,6 +1008,12 @@
         };
 
         function loadTMPrograms(sectionName) {
+            // Close sidebar on mobile after selection
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth < 1024 && sidebar && !sidebar.classList.contains('-translate-x-full')) {
+                toggleSidebar();
+            }
+
             window.currentTMSection = sectionName;
 
             const url = new URL(window.location);
@@ -1044,7 +1062,7 @@
                     if (currentCrumb) { currentCrumb.classList.remove('hidden'); currentCrumb.innerText = sectionName + ' Programs'; }
 
                     loader.classList.add('hidden');
-                    if (window.innerWidth < 1024) toggleSidebar();
+
                 })
                 .catch(e => {
                     showToast("Failed to load programs dashboard.");
@@ -1053,6 +1071,12 @@
         };
 
         function loadTMTopicReg(sectionName) {
+            // Close sidebar on mobile after selection
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth < 1024 && sidebar && !sidebar.classList.contains('-translate-x-full')) {
+                toggleSidebar();
+            }
+
             window.currentTMSection = sectionName;
             
             const url = new URL(window.location);
@@ -1096,7 +1120,7 @@
                     const currentCrumb = document.getElementById('breadcrumb-current');
                     if (currentCrumb) { currentCrumb.classList.remove('hidden'); currentCrumb.innerText = sectionName + ' Topics'; }
                     loader.classList.add('hidden');
-                    if (window.innerWidth < 1024) toggleSidebar();
+
                 }).catch(e => { showToast("Failed to load topic dashboard."); loader.classList.add('hidden'); });
         }
 
