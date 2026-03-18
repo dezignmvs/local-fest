@@ -434,6 +434,13 @@
             // Real-time listener for Programs
             window.progUnsub = db.collection('programs').orderBy('createdAt', 'desc').onSnapshot(snap => {
                 programsData = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                // Sort by extracted number from program code
+                programsData.sort((a, b) => {
+                    const numA = parseInt(String(a.code || '').replace(/\D/g, ''), 10) || 0;
+                    const numB = parseInt(String(b.code || '').replace(/\D/g, ''), 10) || 0;
+                    if (numA !== numB) return numA - numB;
+                    return String(a.code || '').localeCompare(String(b.code || ''), undefined, { numeric: true, sensitivity: 'base' });
+                });
                 renderProgsUI();
             });
         }

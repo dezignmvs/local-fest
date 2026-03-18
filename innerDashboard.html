@@ -1719,7 +1719,7 @@
         // ═══════════════════════════════════════════════════════════════
         // BULK IMPORT — CANDIDATE DATA
         // ═══════════════════════════════════════════════════════════════
-        const CAND_HEADERS = ['name','chestNo','team','section','class','dob'];
+        const CAND_HEADERS = ['name','team','section','admissionNo','class','status'];
         const PROG_HEADERS = ['code','name','section','type','maxParticipants','status'];
 
         function downloadCandidateTemplate() {
@@ -1759,13 +1759,7 @@
             const errs = [];
             const sec = (r.section || '').trim();
             const team = (r.team || '').trim();
-            const chest = String(r.chestno || r.chestNo || '').trim();
             if (!(r.name || '').trim()) errs.push('Name is required');
-            if (!chest) errs.push('Chest No is required');
-            else {
-                if (window.bulkExistingChests && window.bulkExistingChests.includes(chest.toLowerCase())) errs.push('Chest No already exists in database');
-                if (r._duplicateInCSV) errs.push('Duplicate Chest No in CSV');
-            }
             if (!sec) errs.push('Section is required');
             if (!team) errs.push('Team is required');
             else if (!bulkCandidateValidSections.some(s => s.toLowerCase() === sec.toLowerCase())) errs.push('Unknown section "' + sec + '"');
@@ -1786,20 +1780,7 @@
         };
         
         function revalidateAllCandidateRows() {
-            const seenChestsInCSV = new Set();
-            const duplicateChestsInCSV = new Set();
-            
             bulkCandidateRows.forEach(r => {
-                const chest = String(r.chestno || r.chestNo || '').trim().toLowerCase();
-                if (chest) {
-                    if (seenChestsInCSV.has(chest)) duplicateChestsInCSV.add(chest);
-                    else seenChestsInCSV.add(chest);
-                }
-            });
-
-            bulkCandidateRows.forEach(r => {
-                const chest = String(r.chestno || r.chestNo || '').trim().toLowerCase();
-                r._duplicateInCSV = duplicateChestsInCSV.has(chest);
                 validateCandidateRow(r);
             });
             renderCandidatePreview();
@@ -1823,8 +1804,19 @@
                     db.collection('candidates').get()
                 ]);
                 bulkCandidateValidSections = secSnap.docs.map(d => (d.data().name||'').trim());
-                bulkCandidateValidTeams = teamSnap.docs.map(d => (d.data().name||'').trim());
-                window.bulkExistingChests = candSnap.docs.map(d => String(d.data().chestNo).trim().toLowerCase());
+                
+                // Sort teams by creation order to ensure consistent chest numbering (1st Team = 100, 2nd Team = 200)
+                const teamsRaw = teamSnap.docs.map(d => d.data());
+                teamsRaw.sort((a, b) => {
+                    const tA = a.createdAt && typeof a.createdAt.toMillis === 'function' ? a.createdAt.toMillis() : 0;
+                    const tB = b.createdAt && typeof b.createdAt.toMillis === 'function' ? b.createdAt.toMillis() : 0;
+                    if (tA !== tB) return tA - tB;
+                    return (a.name || '').localeCompare(b.name || '');
+                });
+                window.bulkTeamsData = teamsRaw; // Store full data for series logic
+                bulkCandidateValidTeams = teamsRaw.map(d => (d.name || '').trim());
+                
+                window.bulkExistingCandidates = candSnap.docs.map(d => d.data());
 
                 // Validate each row
                 bulkCandidateRows = rows.map((r, i) => {
@@ -1860,6 +1852,16 @@
                 bulkCandidateValidSections.forEach(s => {
                     if (s.toLowerCase() === valLower) matched = true;
                     opts += `<option value="${s}" ${s.toLowerCase() === valLower ? 'selected' : ''}>${s}</option>`;
+                });
+                if (val && !matched) opts = `<option value="${val}" selected disabled class="text-red-500">Invalid: ${val}</option>` + opts;
+                return `<select class="${baseClass} cursor-pointer" onchange="updateBulkCandidateRow(${r._index}, '${field}', this.value)">${opts}</select>`;
+            }
+            if (field === 'status') {
+                let opts = `<option value="">Select Status</option>`;
+                let matched = false;
+                ['Active', 'Inactive'].forEach(t => {
+                    if (t.toLowerCase() === valLower) matched = true;
+                    opts += `<option value="${t}" ${t.toLowerCase() === valLower ? 'selected' : ''}>${t}</option>`;
                 });
                 if (val && !matched) opts = `<option value="${val}" selected disabled class="text-red-500">Invalid: ${val}</option>` + opts;
                 return `<select class="${baseClass} cursor-pointer" onchange="updateBulkCandidateRow(${r._index}, '${field}', this.value)">${opts}</select>`;
@@ -1906,17 +1908,55 @@
             if (!validRows.length) { showToast('<b>⚠️</b> No valid rows to import.'); return; }
             const btn = document.getElementById('btn-import-cands');
             btn.disabled = true; btn.innerText = 'Importing...';
+            
+            // Pre-calculate max chest numbers for each Team
+            let maxChestPerTeam = {};
+            if (window.bulkExistingCandidates) {
+                window.bulkExistingCandidates.forEach(c => {
+                    let teamKey = (c.team || '').trim().toLowerCase();
+                    let num = parseInt(String(c.chestNo).replace(/\D/g, ''), 10) || 0;
+                    if (!maxChestPerTeam[teamKey] || num > maxChestPerTeam[teamKey]) {
+                        maxChestPerTeam[teamKey] = num;
+                    }
+                });
+            }
+
             const batch = db.batch();
             const ts = firebase.firestore.FieldValue.serverTimestamp();
             validRows.forEach(r => {
+                let teamKey = (r.team || '').trim().toLowerCase();
+                
+                // Find team object to get series or index
+                const teamData = window.bulkTeamsData.find(t => (t.name || '').toLowerCase() === teamKey);
+                if (teamData && teamData.chestNoSeries > 0) {
+                    if (!maxChestPerTeam[teamKey] || maxChestPerTeam[teamKey] < teamData.chestNoSeries) {
+                        maxChestPerTeam[teamKey] = teamData.chestNoSeries;
+                    } else {
+                        maxChestPerTeam[teamKey]++;
+                    }
+                } else {
+                    // Fallback to original creation order logic
+                    let teamIndex = window.bulkTeamsData.findIndex(t => (t.name || '').toLowerCase() === teamKey);
+                    if (teamIndex === -1) teamIndex = 0; // Fallback
+                    let teamBase = (teamIndex + 1) * 100;
+                    
+                    if (!maxChestPerTeam[teamKey] || maxChestPerTeam[teamKey] < teamBase) {
+                        maxChestPerTeam[teamKey] = teamBase;
+                    }
+                    maxChestPerTeam[teamKey]++;
+                }
+
+                let generatedChestNo = maxChestPerTeam[teamKey].toString();
+
                 const ref = db.collection('candidates').doc();
                 batch.set(ref, {
-                    name: r.name, chestNo: r.chestno || r.chestNo, team: r.team,
-                    section: r.section, class: r.class, dob: r.dob, active: true, createdAt: ts
+                    name: r.name, chestNo: generatedChestNo, team: r.team,
+                    section: r.section, class: r.class || '', admissionNo: r.admissionno || r.admissionNo || '', 
+                    active: (r.status || 'active').toLowerCase() !== 'inactive', createdAt: ts
                 });
             });
             batch.commit()
-                .then(() => { showToast('<b>✅</b> ' + validRows.length + ' candidates imported!'); btn.disabled = false; btn.innerHTML = '<i class="fi fi-rr-upload"></i> Import All Valid'; })
+                .then(() => { showToast('<b>✅</b> ' + validRows.length + ' candidates imported!'); btn.disabled = false; btn.innerHTML = '<i class="fi fi-rr-upload"></i> Import All Valid'; bulkCandidateRows = []; renderCandidatePreview(); })
                 .catch(err => { showToast('<b>❌</b> ' + err.message); btn.disabled = false; btn.innerHTML = '<i class="fi fi-rr-upload"></i> Import All Valid'; });
         }
 
