@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sections UI - Toggle Views</title>
+    <link rel="icon" type="image/svg+xml" href="logo-192.svg?v=4">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
@@ -140,10 +141,10 @@
                     <span id="results-count">Showing results</span>
                     <span class="text-gray-300 text-[10px] hidden sm:inline">●</span>
                     <div class="relative ml-2 sm:ml-0">
-                        <select class="appearance-none border border-gray-200 rounded-md py-1 pl-2 pr-6 bg-white text-gray-700 outline-none hover:border-gray-300 cursor-pointer">
-                            <option>15</option>
-                            <option>30</option>
-                            <option>50</option>
+                        <select id="sec-per-page" onchange="changeSecPerPage(this.value)" class="appearance-none border border-gray-200 rounded-md py-1 pl-2 pr-6 bg-white text-gray-700 outline-none hover:border-gray-300 cursor-pointer">
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
                         </select>
                         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
                             <i class="fi fi-rr-angle-small-down text-[10px]"></i>
@@ -152,11 +153,11 @@
                 </div>
 
                 <div class="flex items-center space-x-3 sm:space-x-4">
-                    <button class="w-7 h-7 flex items-center justify-center rounded-md border border-gray-200 text-gray-400 cursor-not-allowed bg-gray-50/50">
+                    <button id="sec-prev-page" onclick="changeSecPage(-1)" class="w-7 h-7 flex items-center justify-center rounded-md border border-gray-200 text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                         <i class="fi fi-rr-angle-small-left text-xs"></i>
                     </button>
-                    <span class="text-gray-600 text-[12px] sm:text-[13px]">Page 1 of 0</span>
-                    <button class="w-7 h-7 flex items-center justify-center rounded-md border border-gray-200 text-gray-400 cursor-not-allowed bg-gray-50/50">
+                    <span id="sec-page-info" class="text-gray-600 text-[12px] sm:text-[13px]">Page 1 of 1</span>
+                    <button id="sec-next-page" onclick="changeSecPage(1)" class="w-7 h-7 flex items-center justify-center rounded-md border border-gray-200 text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                         <i class="fi fi-rr-angle-small-right text-xs"></i>
                     </button>
                 </div>
@@ -229,6 +230,8 @@
         var selectedSectionIds = new Set();
         var editingSectionId = null;
         var activeSectionDropdownId = null;
+        var secCurrentPage = 1;
+        var secItemsPerPage = 25;
 
         window.switchView = function(viewName) {
             const viewTable = document.getElementById('view-table');
@@ -273,8 +276,20 @@
         // FILTERING & SEARCH LOGIC
         var sectionSearchQuery = '';
         
+        window.changeSecPage = function(dir) {
+            secCurrentPage += dir;
+            renderSectionsUI();
+        };
+        
+        window.changeSecPerPage = function(val) {
+            secItemsPerPage = parseInt(val);
+            secCurrentPage = 1;
+            renderSectionsUI();
+        };
+
         function applySectionFilters() {
             sectionSearchQuery = document.getElementById('search-sections').value.toLowerCase().trim();
+            secCurrentPage = 1;
             renderSectionsUI();
         }
 
@@ -292,7 +307,19 @@
             const blkHeader = document.getElementById('bulk-header');
             
             const filteredData = getFilteredSections();
-            document.getElementById('results-count').innerText = `Showing 1 to ${filteredData.length} of ${filteredData.length} results`;
+            
+            const totalItems = filteredData.length;
+            const totalPages = Math.ceil(totalItems / secItemsPerPage) || 1;
+            if (secCurrentPage > totalPages) secCurrentPage = totalPages;
+            if (secCurrentPage < 1) secCurrentPage = 1;
+            const startIndex = (secCurrentPage - 1) * secItemsPerPage;
+            const endIndex = Math.min(startIndex + secItemsPerPage, totalItems);
+            const paginatedData = filteredData.slice(startIndex, endIndex);
+
+            document.getElementById('results-count').innerText = `Showing ${totalItems > 0 ? startIndex + 1 : 0} to ${endIndex} of ${totalItems} results`;
+            document.getElementById('sec-page-info').innerText = `Page ${secCurrentPage} of ${totalPages}`;
+            document.getElementById('sec-prev-page').disabled = secCurrentPage === 1;
+            document.getElementById('sec-next-page').disabled = secCurrentPage === totalPages;
 
             if(selectedSectionIds.size > 0) {
                 stdHeader.classList.add('hidden');
@@ -313,7 +340,7 @@
             let tableHTML = '';
             let cardsHTML = '';
 
-            filteredData.forEach(d => {
+            paginatedData.forEach(d => {
                 const isSelected = selectedSectionIds.has(d.id);
                 const cardBorder = isSelected ? 'border-2 border-[#FFC107]' : 'border border-gray-200';
                 const rowBg = isSelected ? 'bg-blue-50/20' : 'bg-white hover:bg-gray-50';

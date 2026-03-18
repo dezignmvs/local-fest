@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Users Management — Festival Dashboard</title>
+    <link rel="icon" type="image/svg+xml" href="logo-192.svg?v=4">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
@@ -109,6 +110,23 @@
             <div class="flex flex-col sm:flex-row justify-between items-center py-3 px-4 sm:px-6 bg-white border-t border-gray-100 text-[13px] text-gray-600">
                 <div class="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-0">
                     <span id="pagination-label">Showing 0 results</span>
+                    <span class="text-gray-300 text-[10px] hidden sm:inline">●</span>
+                    <div class="relative ml-2 sm:ml-0">
+                        <select id="user-per-page" onchange="changeUserPerPage(this.value)" class="appearance-none border border-gray-200 rounded-md py-1 pl-2 pr-6 bg-white outline-none hover:border-gray-300 focus:border-gray-400 cursor-pointer">
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                            <option value="250">250</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                            <i class="fi fi-rr-angle-small-down text-[10px]"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3 sm:space-x-4">
+                    <button id="user-prev-page" onclick="changeUserPage(-1)" class="w-7 h-7 flex items-center justify-center rounded-md border border-gray-200 text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"><i class="fi fi-rr-angle-small-left text-xs"></i></button>
+                    <span id="user-page-info" class="text-gray-600 text-[12px] sm:text-[13px]">Page 1 of 1</span>
+                    <button id="user-next-page" onclick="changeUserPage(1)" class="w-7 h-7 flex items-center justify-center rounded-md border border-gray-200 text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"><i class="fi fi-rr-angle-small-right text-xs"></i></button>
                 </div>
             </div>
         </div>
@@ -452,6 +470,19 @@
         let festUsersList = [];
         let allUsers = [];
         let searchQuery = '';
+        let userCurrentPage = 1;
+        let userItemsPerPage = 25;
+
+        window.changeUserPage = function(dir) {
+            userCurrentPage += dir;
+            renderCombine();
+        };
+        
+        window.changeUserPerPage = function(val) {
+            userItemsPerPage = parseInt(val);
+            userCurrentPage = 1;
+            renderCombine();
+        };
 
         // Fetch active teams
         db.collection('teams').where('isActive', '==', true).onSnapshot(snap => {
@@ -471,6 +502,7 @@
         // ── Missing Logic: Implementing Search functionality ───────────
         function applyFilters() {
             searchQuery = document.getElementById('search-users').value.toLowerCase().trim();
+            userCurrentPage = 1;
             renderCombine();
         }
 
@@ -504,18 +536,30 @@
             const displayUsers = getFilteredUsers();
             const total = displayUsers.length;
             
+            const totalPages = Math.ceil(total / userItemsPerPage) || 1;
+            if (userCurrentPage > totalPages) userCurrentPage = totalPages;
+            if (userCurrentPage < 1) userCurrentPage = 1;
+            
+            const startIndex = (userCurrentPage - 1) * userItemsPerPage;
+            const endIndex = Math.min(startIndex + userItemsPerPage, total);
+            const paginatedUsers = displayUsers.slice(startIndex, endIndex);
+            
             // Labels Update
             document.getElementById('user-count-label').textContent = `Assign and manage users with specific roles for this festival (${allUsers.length} total)`;
-            document.getElementById('pagination-label').textContent = total > 0 ? `Showing 1 to ${total} of ${total} results` : `No users match your search.`;
+            document.getElementById('pagination-label').textContent = total > 0 ? `Showing ${startIndex + 1} to ${endIndex} of ${total} results` : `No users match your search.`;
+            
+            document.getElementById('user-page-info').innerText = `Page ${userCurrentPage} of ${totalPages}`;
+            document.getElementById('user-prev-page').disabled = userCurrentPage === 1;
+            document.getElementById('user-next-page').disabled = userCurrentPage === totalPages;
 
             // Table Rendering
             document.getElementById('table-body').innerHTML = total 
-                ? displayUsers.map(renderTableRow).join('') 
+                ? paginatedUsers.map(renderTableRow).join('') 
                 : `<div class="text-center py-12 text-[13px] text-gray-400">No users found matching "${searchQuery}".</div>`;
                 
             // Cards Rendering
             document.getElementById('cards-grid').innerHTML = total 
-                ? displayUsers.map(renderCard).join('') 
+                ? paginatedUsers.map(renderCard).join('') 
                 : `<div class="col-span-full text-center text-[13px] text-gray-400 py-12">No users found matching "${searchQuery}".</div>`;
         }
 

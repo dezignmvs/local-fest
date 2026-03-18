@@ -395,6 +395,23 @@
                         <div class="flex flex-col sm:flex-row justify-between items-center py-3 px-4 sm:px-6 bg-white border-t border-gray-100 text-[13px] text-gray-600">
                             <div class="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-0">
                                 <span id="du-pagination-label">Loading...</span>
+                                <span class="text-gray-300 text-[10px] hidden sm:inline">●</span>
+                                <div class="relative ml-2 sm:ml-0">
+                                    <select id="du-user-per-page" onchange="duChangeUserPerPage(this.value)" class="appearance-none border border-gray-200 rounded-md py-1 pl-2 pr-6 bg-white outline-none hover:border-gray-300 focus:border-gray-400 cursor-pointer">
+                                        <option value="25">25</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                        <option value="250">250</option>
+                                    </select>
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                                        <i class="fi fi-rr-angle-small-down text-[10px]"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-3 sm:space-x-4">
+                                <button id="du-user-prev-page" onclick="duChangeUserPage(-1)" class="w-7 h-7 flex items-center justify-center rounded-md border border-gray-200 text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"><i class="fi fi-rr-angle-small-left text-xs"></i></button>
+                                <span id="du-user-page-info" class="text-gray-600 text-[12px] sm:text-[13px]">Page 1 of 1</span>
+                                <button id="du-user-next-page" onclick="duChangeUserPage(1)" class="w-7 h-7 flex items-center justify-center rounded-md border border-gray-200 text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"><i class="fi fi-rr-angle-small-right text-xs"></i></button>
                             </div>
                         </div>
                     </div>
@@ -466,6 +483,11 @@
                     </div>
                 </div>
 
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals & Drawers RESTORED -->
 
         <!-- Global Action Menu -->
         <div id="global-action-menu" class="hidden fixed w-48 bg-white rounded-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.15)] border border-gray-100 py-1.5 z-[100] dropdown-enter text-left overflow-hidden"></div>
@@ -552,7 +574,6 @@
                 <button onclick="saveFestData()" class="w-full bg-brand-blue text-white py-3 rounded-xl font-semibold hover:opacity-90 shadow-lg shadow-brand-blue/30 transition-all active:scale-95">Save Changes</button>
             </div>
         </div>
-    </div>
 
     <div id="assignRoleOverlay" onclick="closeAssignRole()" class="fixed inset-0 bg-black/40 backdrop-blur-[2px] z-[60] hidden transition-opacity duration-300"></div>
 
@@ -842,6 +863,19 @@
         let duFestUsersList = [];
         let duAllUsers = [];
         let duSearchQuery = '';
+        let duUserCurrentPage = 1;
+        let duUserItemsPerPage = 25;
+
+        function duChangeUserPage(dir) {
+            duUserCurrentPage += dir;
+            duRenderCombine();
+        }
+        
+        function duChangeUserPerPage(val) {
+            duUserItemsPerPage = parseInt(val);
+            duUserCurrentPage = 1;
+            duRenderCombine();
+        }
 
         function duRelativeTime(ts) {
             if (!ts || !ts.toMillis) return 'just now';
@@ -1012,20 +1046,35 @@
 
         function duRenderAll(displayUsers) {
             const total = displayUsers.length;
+            const totalPages = Math.ceil(total / duUserItemsPerPage) || 1;
+            if (duUserCurrentPage > totalPages) duUserCurrentPage = totalPages;
+            if (duUserCurrentPage < 1) duUserCurrentPage = 1;
+            
+            const startIndex = (duUserCurrentPage - 1) * duUserItemsPerPage;
+            const endIndex = Math.min(startIndex + duUserItemsPerPage, total);
+            const paginatedUsers = displayUsers.slice(startIndex, endIndex);
+
             const countEl = document.getElementById('du-count-label');
             const pageEl  = document.getElementById('du-pagination-label');
             const tbody   = document.getElementById('du-table-body');
             const grid    = document.getElementById('du-cards-grid');
+            const pageInfo = document.getElementById('du-user-page-info');
+            const prevBtn = document.getElementById('du-user-prev-page');
+            const nextBtn = document.getElementById('du-user-next-page');
             
             if (countEl) countEl.textContent = `Assign and manage users with specific roles for this festival (${duAllUsers.length} total)`;
-            if (pageEl)  pageEl.textContent  = total > 0 ? `Showing 1 to ${total} of ${total} results` : `No users match your search.`;
+            if (pageEl)  pageEl.textContent  = total > 0 ? `Showing ${startIndex + 1} to ${endIndex} of ${total} results` : `No users match your search.`;
+            
+            if (pageInfo) pageInfo.innerText = `Page ${duUserCurrentPage} of ${totalPages}`;
+            if (prevBtn) prevBtn.disabled = duUserCurrentPage === 1;
+            if (nextBtn) nextBtn.disabled = duUserCurrentPage === totalPages;
             
             if (tbody) tbody.innerHTML = total
-                ? displayUsers.map(duRenderTableRow).join('')
+                ? paginatedUsers.map(duRenderTableRow).join('')
                     : `<div class="text-center py-12 text-[13px] text-gray-400">No users found matching "${duSearchQuery}".</div>`;
                 
             if (grid) grid.innerHTML  = total
-                ? displayUsers.map(duRenderCard).join('')
+                ? paginatedUsers.map(duRenderCard).join('')
                 : `<div class="col-span-full text-center text-[13px] text-gray-400 py-12">No users found matching "${duSearchQuery}".</div>`;
         }
 
@@ -1931,8 +1980,6 @@
                 if (teamData && teamData.chestNoSeries > 0) {
                     if (!maxChestPerTeam[teamKey] || maxChestPerTeam[teamKey] < teamData.chestNoSeries) {
                         maxChestPerTeam[teamKey] = teamData.chestNoSeries;
-                    } else {
-                        maxChestPerTeam[teamKey]++;
                     }
                 } else {
                     // Fallback to original creation order logic
@@ -1943,8 +1990,8 @@
                     if (!maxChestPerTeam[teamKey] || maxChestPerTeam[teamKey] < teamBase) {
                         maxChestPerTeam[teamKey] = teamBase;
                     }
-                    maxChestPerTeam[teamKey]++;
                 }
+                maxChestPerTeam[teamKey]++;
 
                 let generatedChestNo = maxChestPerTeam[teamKey].toString();
 

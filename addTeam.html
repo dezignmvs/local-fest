@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Teams UI - Responsive Toggle</title>
+    <link rel="icon" type="image/svg+xml" href="logo-192.svg?v=4">
     <!-- Load Tailwind CSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Font (Inter) -->
@@ -141,10 +142,10 @@
                     <span id="results-count">Showing results</span>
                     <span class="text-gray-300 text-[10px] hidden sm:inline">●</span>
                     <div class="relative ml-2 sm:ml-0">
-                        <select class="appearance-none border border-gray-200 rounded-md py-1 pl-2 pr-6 bg-white outline-none hover:border-gray-300 focus:border-gray-400 cursor-pointer">
-                            <option>15</option>
-                            <option>30</option>
-                            <option>50</option>
+                        <select id="team-per-page" onchange="changeTeamPerPage(this.value)" class="appearance-none border border-gray-200 rounded-md py-1 pl-2 pr-6 bg-white outline-none hover:border-gray-300 focus:border-gray-400 cursor-pointer">
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
                         </select>
                         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
                             <i class="fi fi-rr-angle-small-down text-[10px]"></i>
@@ -153,11 +154,11 @@
                 </div>
 
                 <div class="flex items-center space-x-3 sm:space-x-4">
-                    <button class="w-7 h-7 flex items-center justify-center rounded-md border border-gray-200 text-gray-400 hover:text-gray-600 transition-colors">
+                    <button id="team-prev-page" onclick="changeTeamPage(-1)" class="w-7 h-7 flex items-center justify-center rounded-md border border-gray-200 text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                         <i class="fi fi-rr-angle-small-left text-xs"></i>
                     </button>
-                    <span class="text-gray-600 text-[12px] sm:text-[13px]">Page 1 of 1</span>
-                    <button class="w-7 h-7 flex items-center justify-center rounded-md border border-gray-200 text-gray-400 hover:text-gray-600 transition-colors">
+                    <span id="team-page-info" class="text-gray-600 text-[12px] sm:text-[13px]">Page 1 of 1</span>
+                    <button id="team-next-page" onclick="changeTeamPage(1)" class="w-7 h-7 flex items-center justify-center rounded-md border border-gray-200 text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                         <i class="fi fi-rr-angle-small-right text-xs"></i>
                     </button>
                 </div>
@@ -236,6 +237,8 @@
         var selectedTeamIds = new Set();
         var editingTeamId = null;
         var activeTeamDropdownId = null;
+        var teamCurrentPage = 1;
+        var teamItemsPerPage = 25;
 
         window.switchView = function(viewName) {
             const viewTable = document.getElementById('view-table');
@@ -279,8 +282,20 @@
 
         var teamSearchQuery = '';
         
+        window.changeTeamPage = function(dir) {
+            teamCurrentPage += dir;
+            renderTeamsUI();
+        };
+        
+        window.changeTeamPerPage = function(val) {
+            teamItemsPerPage = parseInt(val);
+            teamCurrentPage = 1;
+            renderTeamsUI();
+        };
+
         function applyTeamFilters() {
             teamSearchQuery = document.getElementById('search-teams').value.toLowerCase().trim();
+            teamCurrentPage = 1;
             renderTeamsUI();
         }
 
@@ -299,7 +314,19 @@
             const blkHeader = document.getElementById('bulk-header');
             
             const filteredData = getFilteredTeams();
-            document.getElementById('results-count').innerText = `Showing 1 to ${filteredData.length} of ${filteredData.length} results`;
+            
+            const totalItems = filteredData.length;
+            const totalPages = Math.ceil(totalItems / teamItemsPerPage) || 1;
+            if (teamCurrentPage > totalPages) teamCurrentPage = totalPages;
+            if (teamCurrentPage < 1) teamCurrentPage = 1;
+            const startIndex = (teamCurrentPage - 1) * teamItemsPerPage;
+            const endIndex = Math.min(startIndex + teamItemsPerPage, totalItems);
+            const paginatedData = filteredData.slice(startIndex, endIndex);
+
+            document.getElementById('results-count').innerText = `Showing ${totalItems > 0 ? startIndex + 1 : 0} to ${endIndex} of ${totalItems} results`;
+            document.getElementById('team-page-info').innerText = `Page ${teamCurrentPage} of ${totalPages}`;
+            document.getElementById('team-prev-page').disabled = teamCurrentPage === 1;
+            document.getElementById('team-next-page').disabled = teamCurrentPage === totalPages;
 
             if(selectedTeamIds.size > 0) {
                 stdHeader.classList.add('hidden');
@@ -320,7 +347,7 @@
             let tableHTML = '';
             let cardsHTML = '';
 
-            filteredData.forEach(d => {
+            paginatedData.forEach(d => {
                 const initial = d.name ? d.name.charAt(0).toUpperCase() : 'T';
                 const isSelected = selectedTeamIds.has(d.id);
                 const cardBorder = isSelected ? 'border-2 border-[#FFC107]' : 'border border-gray-200';

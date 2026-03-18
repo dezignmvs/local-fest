@@ -862,6 +862,15 @@
                     toggleTemplateState('progGrading', 'progGradeTemplate', 'icon-grade-template');
                     toggleTemplateState('progScoring', 'progScoreTemplate', 'icon-score-template');
                 }
+                else {
+                    document.getElementById('vp-name').innerText = "Program Not Found";
+                    const statusEl = document.getElementById('vp-head-status');
+                    statusEl.innerText = "DELETED";
+                    statusEl.className = "text-[10px] border font-bold px-2 py-0.5 rounded-full uppercase tracking-wider shadow-sm bg-red-50 border-red-200 text-red-700";
+                }
+            }, err => {
+                document.getElementById('vp-name').innerText = "Error Loading";
+                console.error("Error fetching program data:", err);
             });
 
             // Fetch Registrations & Candidates for this Program

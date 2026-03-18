@@ -187,6 +187,15 @@
                             statEl.className = isActive ? 'px-3 py-1.5 bg-[#FFB33F] text-[#111827] rounded-full text-[11px] font-bold shadow-sm' : 'px-3 py-1.5 bg-red-50 text-red-600 rounded-full text-[11px] font-bold shadow-sm';
                         }
                     }
+                    else {
+                        const statEl = document.getElementById('vsd-section-status');
+                        if (statEl) {
+                            statEl.innerText = 'DELETED';
+                            statEl.className = 'px-3 py-1.5 bg-red-50 text-red-600 rounded-full text-[11px] font-bold shadow-sm';
+                        }
+                    }
+                }, err => {
+                    console.error("Error fetching section data:", err);
                 });
 
                 let sectionCandidatesData = [];

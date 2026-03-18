@@ -286,6 +286,15 @@
                     // Fetch Candidates for this team
                     fetchTeamMainData(teamName, t.color);
                 }
+                else {
+                    document.getElementById('vt-name').innerText = "Team Not Found";
+                    document.getElementById('vt-subtitle').innerText = "This team may have been deleted";
+                    document.getElementById('vt-status').innerText = "DELETED";
+                    document.getElementById('vt-status').className = "bg-red-50 text-red-600 text-[10px] font-black tracking-[0.1em] uppercase px-4 py-1.5 rounded-full shadow-sm border border-red-100";
+                }
+            }, err => {
+                document.getElementById('vt-name').innerText = "Error Loading Team";
+                console.error("Error fetching team data:", err);
             });
 
             function fetchTeamMainData(teamName, teamColor) {

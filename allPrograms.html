@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Programs UI</title>
+    <link rel="icon" type="image/svg+xml" href="logo-192.svg?v=4">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
@@ -135,6 +136,24 @@
                 <div class="flex flex-col sm:flex-row justify-between items-center py-3 px-4 sm:px-6 bg-white border-t border-gray-100 text-[13px] text-gray-600">
                     <div class="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-0">
                         <span id="results-count">Showing results</span>
+                        <span class="text-gray-300 text-[10px] hidden sm:inline">●</span>
+                        <div class="relative ml-2 sm:ml-0">
+                            <select id="prog-per-page" onchange="changeProgPerPage(this.value)" class="appearance-none border border-gray-200 rounded-md py-1 pl-2 pr-6 bg-white outline-none hover:border-gray-300 focus:border-gray-400 cursor-pointer">
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                                <option value="250">250</option>
+                                <option value="500">500</option>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                                <i class="fi fi-rr-angle-small-down text-[10px]"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3 sm:space-x-4">
+                        <button id="prog-prev-page" onclick="changeProgPage(-1)" class="w-7 h-7 flex items-center justify-center rounded-md border border-gray-200 text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"><i class="fi fi-rr-angle-small-left text-xs"></i></button>
+                        <span id="prog-page-info" class="text-gray-600 text-[12px] sm:text-[13px]">Page 1 of 1</span>
+                        <button id="prog-next-page" onclick="changeProgPage(1)" class="w-7 h-7 flex items-center justify-center rounded-md border border-gray-200 text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"><i class="fi fi-rr-angle-small-right text-xs"></i></button>
                     </div>
                 </div>
             </div>
@@ -403,6 +422,8 @@
         var activeProgDropdownId = null;
         var progSearchQuery = '';
         var quickEditingProgId = null;
+        var progCurrentPage = 1;
+        var progItemsPerPage = 25;
 
         // Section fetching for dropdown
         if(typeof db !== 'undefined') {
@@ -630,6 +651,7 @@
 
         function applyProgFilters() {
             progSearchQuery = document.getElementById('search-programs').value.toLowerCase().trim();
+            progCurrentPage = 1;
             renderProgsUI();
         }
 
@@ -646,7 +668,18 @@
                 );
             }
 
-            document.getElementById('results-count').innerText = `Showing 1 to ${filtered.length} of ${filtered.length} results`;
+            const totalItems = filtered.length;
+            const totalPages = Math.ceil(totalItems / progItemsPerPage) || 1;
+            if (progCurrentPage > totalPages) progCurrentPage = totalPages;
+            if (progCurrentPage < 1) progCurrentPage = 1;
+            const startIndex = (progCurrentPage - 1) * progItemsPerPage;
+            const endIndex = Math.min(startIndex + progItemsPerPage, totalItems);
+            const paginatedData = filtered.slice(startIndex, endIndex);
+
+            document.getElementById('results-count').innerText = `Showing ${totalItems > 0 ? startIndex + 1 : 0} to ${endIndex} of ${totalItems} results`;
+            document.getElementById('prog-page-info').innerText = `Page ${progCurrentPage} of ${totalPages}`;
+            document.getElementById('prog-prev-page').disabled = progCurrentPage === 1;
+            document.getElementById('prog-next-page').disabled = progCurrentPage === totalPages;
 
             const stdHeader = document.getElementById('standard-header');
             const blkHeader = document.getElementById('bulk-header');
@@ -667,7 +700,7 @@
             }
 
             let tableHTML = '', cardsHTML = '';
-            filtered.forEach(p => {
+            paginatedData.forEach(p => {
                 const isSel = selectedProgIds.has(p.id);
                 const bg = isSel ? 'bg-blue-50/20' : 'bg-white hover:bg-gray-50';
                 const cardBorder = isSel ? 'border-2 border-[#FFC107]' : 'border border-gray-200';
@@ -711,6 +744,17 @@
         }
 
         // ---- Actions ----
+        function changeProgPage(dir) {
+            progCurrentPage += dir;
+            renderProgsUI();
+        }
+        
+        function changeProgPerPage(val) {
+            progItemsPerPage = parseInt(val);
+            progCurrentPage = 1;
+            renderProgsUI();
+        }
+        
         function toggleProgSelect(id, e) {
             e.stopPropagation();
             if(selectedProgIds.has(id)) selectedProgIds.delete(id); else selectedProgIds.add(id);

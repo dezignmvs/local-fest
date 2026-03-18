@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Candidates UI</title>
+    <link rel="icon" type="image/svg+xml" href="logo-192.svg?v=4">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
@@ -134,8 +135,12 @@
                     <span id="results-count">Showing results</span>
                     <span class="text-gray-300 text-[10px] hidden sm:inline">●</span>
                     <div class="relative ml-2 sm:ml-0">
-                        <select class="appearance-none border border-gray-200 rounded-md py-1 pl-2 pr-6 bg-white outline-none hover:border-gray-300 focus:border-gray-400 cursor-pointer">
-                            <option>15</option><option>30</option><option>50</option>
+                        <select id="cand-per-page" onchange="changeCandPerPage(this.value)" class="appearance-none border border-gray-200 rounded-md py-1 pl-2 pr-6 bg-white outline-none hover:border-gray-300 focus:border-gray-400 cursor-pointer">
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                            <option value="250">250</option>
+                            <option value="500">500</option>
                         </select>
                         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
                             <i class="fi fi-rr-angle-small-down text-[10px]"></i>
@@ -143,9 +148,9 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-3 sm:space-x-4">
-                    <button class="w-7 h-7 flex items-center justify-center rounded-md border border-gray-200 text-gray-400 hover:text-gray-600 transition-colors"><i class="fi fi-rr-angle-small-left text-xs"></i></button>
-                    <span class="text-gray-600 text-[12px] sm:text-[13px]">Page 1 of 1</span>
-                    <button class="w-7 h-7 flex items-center justify-center rounded-md border border-gray-200 text-gray-400 hover:text-gray-600 transition-colors"><i class="fi fi-rr-angle-small-right text-xs"></i></button>
+                    <button id="cand-prev-page" onclick="changeCandPage(-1)" class="w-7 h-7 flex items-center justify-center rounded-md border border-gray-200 text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"><i class="fi fi-rr-angle-small-left text-xs"></i></button>
+                    <span id="cand-page-info" class="text-gray-600 text-[12px] sm:text-[13px]">Page 1 of 1</span>
+                    <button id="cand-next-page" onclick="changeCandPage(1)" class="w-7 h-7 flex items-center justify-center rounded-md border border-gray-200 text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"><i class="fi fi-rr-angle-small-right text-xs"></i></button>
                 </div>
             </div>
         </div>
@@ -253,6 +258,8 @@
         var activeDropdownId = null;
         var activeTeamsData = [];
         var activeSectionsData = [];
+        var candCurrentPage = 1;
+        var candItemsPerPage = 25;
 
         function getTeamColor(teamName) {
             const team = activeTeamsData.find(t => t.name === teamName);
@@ -284,6 +291,7 @@
         
         function applyCandFilters() {
             candSearchQuery = document.getElementById('search-candidates').value.toLowerCase().trim();
+            candCurrentPage = 1;
             renderUI();
         }
 
@@ -303,7 +311,19 @@
             const tableList = document.getElementById('candidate-table-list');
             const cardsList = document.getElementById('candidate-cards-list');
             const filteredData = getFilteredCandidates();
-            document.getElementById('results-count').innerText = `Showing 1 to ${filteredData.length} of ${filteredData.length} results`;
+            
+            const totalItems = filteredData.length;
+            const totalPages = Math.ceil(totalItems / candItemsPerPage) || 1;
+            if (candCurrentPage > totalPages) candCurrentPage = totalPages;
+            if (candCurrentPage < 1) candCurrentPage = 1;
+            const startIndex = (candCurrentPage - 1) * candItemsPerPage;
+            const endIndex = Math.min(startIndex + candItemsPerPage, totalItems);
+            const paginatedData = filteredData.slice(startIndex, endIndex);
+
+            document.getElementById('results-count').innerText = `Showing ${totalItems > 0 ? startIndex + 1 : 0} to ${endIndex} of ${totalItems} results`;
+            document.getElementById('cand-page-info').innerText = `Page ${candCurrentPage} of ${totalPages}`;
+            document.getElementById('cand-prev-page').disabled = candCurrentPage === 1;
+            document.getElementById('cand-next-page').disabled = candCurrentPage === totalPages;
 
             // Toggle Bulk Header
             const stdHeader = document.getElementById('standard-header');
@@ -328,7 +348,7 @@
             let tableHTML = '';
             let cardsHTML = '';
 
-            filteredData.forEach(cand => {
+            paginatedData.forEach(cand => {
                 const initial = cand.name ? cand.name.charAt(0).toUpperCase() : '?';
                 const teamColorHex = getTeamColor(cand.team);
                 const isSelected = selectedIds.has(cand.id);
@@ -354,7 +374,7 @@
                     </div>
                     <div class="col-span-3 flex items-center justify-center space-x-2">
                         <span class="w-[7px] h-[7px] rounded-full" style="background-color: ${teamColorHex}"></span>
-                        <span onclick="window.viewTeamByName('${cand.team}', event)" class="text-[13px] text-gray-700 hover:text-brand-blue hover:underline cursor-pointer transition-all active:scale-95">${cand.team}</span>
+                        <span class="text-[13px] text-gray-700 font-medium">${cand.team}</span>
                     </div>
                     <div class="col-span-2 flex items-center justify-center">
                         <span class="px-2.5 py-1 bg-white border border-gray-200 rounded-full text-[11px] font-medium text-gray-600 shadow-sm leading-tight">${cand.section}</span>
@@ -383,7 +403,7 @@
                             </div>
                             <div class="flex items-center space-x-2 mt-3">
                                 <span class="w-[7px] h-[7px] rounded-full" style="background-color: ${teamColorHex}"></span>
-                                <span onclick="window.viewTeamByName('${cand.team}', event)" class="text-[13px] text-gray-600 hover:text-brand-blue hover:underline cursor-pointer transition-all active:scale-95">${cand.team}</span>
+                                <span class="text-[13px] text-gray-600 font-medium">${cand.team}</span>
                             </div>
                         </div>
                     </div>
@@ -399,6 +419,17 @@
         }
 
         // SELECTION LOGIC
+        window.changeCandPage = function(dir) {
+            candCurrentPage += dir;
+            renderUI();
+        };
+        
+        window.changeCandPerPage = function(val) {
+            candItemsPerPage = parseInt(val);
+            candCurrentPage = 1;
+            renderUI();
+        };
+
         function toggleSelection(id, event) {
             event.stopPropagation(); // Prevents bubbling to other elements
             if (selectedIds.has(id)) selectedIds.delete(id);
@@ -559,9 +590,7 @@
                 
                 if (teamData && teamData.chestNoSeries > 0) {
                     if (maxChest < teamData.chestNoSeries) {
-                        chestInput.value = teamData.chestNoSeries;
-                    } else {
-                        chestInput.value = maxChest + 1;
+                        maxChest = teamData.chestNoSeries;
                     }
                 } else {
                     // Fallback to original creation order logic
@@ -570,8 +599,8 @@
                     let teamBase = (teamIndex + 1) * 100;
                     
                     if (maxChest < teamBase) maxChest = teamBase;
-                    chestInput.value = maxChest + 1;
                 }
+                chestInput.value = maxChest + 1;
                 
                 // Brief highlight effect to show it was auto-generated
                 chestInput.classList.add('bg-[#FFB33F]/10', 'border-[#FFB33F]');
