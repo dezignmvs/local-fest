@@ -87,7 +87,7 @@
             </div>
             <div class="flex items-center gap-2 shrink-0">
                 <button
-                    onclick="Toastify({text: 'Coming soon', duration: 2000, gravity: 'bottom', position: 'center'}).showToast()"
+                    onclick="vpToast('Coming soon')"
                     class="hidden md:flex px-4 py-2 bg-white border border-gray-200 shadow-sm rounded-full text-sm items-center gap-2 hover:bg-gray-50 font-medium text-gray-700 transition-colors">
                     <i class="fi fi-rr-download text-gray-500"></i> Judge Sheet
                 </button>
@@ -572,8 +572,7 @@
                                         <div class="relative w-full">
                                             <select id="progGradeTemplate" disabled
                                                 class="w-full px-4 py-2.5 bg-gray-100 text-gray-500 border border-gray-200 rounded-lg text-[13px] focus:outline-none transition-all appearance-none cursor-not-allowed">
-                                                <option value="Standard">Standard Grade Template</option>
-                                                <option value="Custom1">Custom Rules A</option>
+                                                <option value="">Loading templates…</option>
                                             </select>
                                             <i id="icon-grade-template"
                                                 class="fi fi-rr-lock absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none transition-colors"></i>
@@ -581,13 +580,12 @@
                                     </div>
 
                                     <div id="score-container">
-                                        <label class="block text-[13px] font-medium text-gray-800 mb-1.5">Position
+                                        <label class="block text-[13px] font-medium text-gray-800 mb-1.5">Pattern
                                             Template</label>
                                         <div class="relative w-full">
                                             <select id="progScoreTemplate" disabled
                                                 class="w-full px-4 py-2.5 bg-gray-100 text-gray-500 border border-gray-200 rounded-lg text-[13px] focus:outline-none transition-all appearance-none cursor-not-allowed">
-                                                <option value="Top3">Top 3 Winners</option>
-                                                <option value="Top5">Top 5 Winners</option>
+                                                <option value="">Loading templates…</option>
                                             </select>
                                             <i id="icon-score-template"
                                                 class="fi fi-rr-lock absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none transition-colors"></i>
@@ -621,23 +619,30 @@
             } else { alert(msg); }
         }
 
-        const tabs = ['overview', 'registrations', 'results', 'substitutions', 'gallery', 'settings'];
+        // IDs of sidebar tabs that are desktop-only (hidden on mobile)
+        const desktopOnlyTabs = ['gallery', 'settings'];
+
         function switchTab(tabId) {
             // Find all section content panels and tabs
             const contents = document.querySelectorAll('div[id^="content-"]');
-            const tabs = document.querySelectorAll('button[id^="tab-"]');
+            const tabButtons = document.querySelectorAll('button[id^="tab-"]');
 
             // Hide all contents and reset tabs styles
             contents.forEach(content => content.classList.add('hidden'));
-            tabs.forEach(tab => {
-                tab.className = "tab-inactive flex-col lg:flex-row flex items-center justify-center lg:justify-start gap-1 lg:gap-3 px-4 py-3 rounded-xl text-[11px] lg:text-[14px] transition-colors whitespace-nowrap min-w-[75px] border border-transparent";
+            tabButtons.forEach(tab => {
+                // Determine if this tab is a desktop-only tab (needs the `hidden lg:flex` class)
+                const isDesktopOnly = desktopOnlyTabs.some(id => tab.id === 'tab-' + id);
+                const displayClass = isDesktopOnly ? 'hidden lg:flex' : 'flex';
+                tab.className = `tab-inactive flex-col lg:flex-row ${displayClass} items-center justify-center lg:justify-start gap-1 lg:gap-3 px-4 py-3 rounded-xl text-[11px] lg:text-[14px] transition-colors whitespace-nowrap min-w-[75px] border border-transparent`;
             });
 
             // Show active content and set active tab styles
             document.getElementById('content-' + tabId).classList.remove('hidden');
             document.getElementById('content-' + tabId).classList.add('block');
             const activeTab = document.getElementById('tab-' + tabId);
-            activeTab.className = "tab-active flex-col lg:flex-row flex items-center justify-center lg:justify-start gap-1 lg:gap-3 px-4 py-3 rounded-xl text-[11px] lg:text-[14px] transition-colors whitespace-nowrap min-w-[75px] border border-[#fef08a]";
+            const isActiveDesktopOnly = desktopOnlyTabs.includes(tabId);
+            const activeDisplayClass = isActiveDesktopOnly ? 'hidden lg:flex' : 'flex';
+            activeTab.className = `tab-active flex-col lg:flex-row ${activeDisplayClass} items-center justify-center lg:justify-start gap-1 lg:gap-3 px-4 py-3 rounded-xl text-[11px] lg:text-[14px] transition-colors whitespace-nowrap min-w-[75px] border border-[#fef08a]`;
         }
 
         function toggleDropdown(event) {
@@ -718,9 +723,9 @@
                     maxParticipants: parseInt(document.getElementById('progMax').value) || 1,
                     topicRegistration: document.getElementById('progTopicReg').checked,
                     enableGrading: document.getElementById('progGrading').checked,
-                    gradeTemplate: document.getElementById('progGrading').checked ? document.getElementById('progGradeTemplate').value : null,
+                    gradeTemplateId: document.getElementById('progGrading').checked ? (document.getElementById('progGradeTemplate').value || null) : null,
                     enableScoring: document.getElementById('progScoring').checked,
-                    positionTemplate: document.getElementById('progScoring').checked ? document.getElementById('progScoreTemplate').value : null,
+                    positionTemplateId: document.getElementById('progScoring').checked ? (document.getElementById('progScoreTemplate').value || null) : null,
                     updatedAt: ts
                 };
 
@@ -797,23 +802,29 @@
                 return;
             }
 
+            let savedSection = null;
+            let savedProgSet = null;
+            let savedGradeTemplate = null;
+            let savedPositionTemplate = null;
+
             // Fetch dropdown data
             db.collection('sections').where('isActive', '==', true).onSnapshot(snap => {
                 const secSelect = document.getElementById('progSection');
-                const current = secSelect.value;
-                let opts = '<option value="" disabled selected>Select Section</option>';
-                snap.forEach(doc => {
-                    const d = doc.data();
-                    opts += `<option value="${d.name}">${d.name}</option>`;
-                });
-                secSelect.innerHTML = opts;
-                if (current) secSelect.value = current;
+                if(secSelect) {
+                    const current = savedSection || secSelect.value;
+                    let opts = '<option value="" disabled selected>Select Section</option>';
+                    snap.forEach(doc => {
+                        opts += `<option value="${doc.data().name}">${doc.data().name}</option>`;
+                    });
+                    secSelect.innerHTML = opts;
+                    if (current) secSelect.value = current;
+                }
             });
 
             db.collection('programSets').onSnapshot(snap => {
                 const el = document.getElementById('progSet');
-                const cur = el ? el.value : '';
                 if (el) {
+                    const cur = savedProgSet || el.value;
                     let html = '<option value="">No Limit Set</option>';
                     snap.forEach(d => { html += `<option value="${d.data().name}">${d.data().name}</option>`; });
                     el.innerHTML = html;
@@ -821,10 +832,38 @@
                 }
             });
 
+            db.collection('gradeTemplates').onSnapshot(snap => {
+                const el = document.getElementById('progGradeTemplate');
+                if (el) {
+                    const cur = savedGradeTemplate || el.value;
+                    let html = '<option value="">— None —</option>';
+                    snap.forEach(d => { html += `<option value="${d.id}">${d.data().name}</option>`; });
+                    el.innerHTML = html;
+                    if (cur) el.value = cur;
+                }
+            });
+
+            db.collection('positionTemplates').onSnapshot(snap => {
+                const el = document.getElementById('progScoreTemplate');
+                if (el) {
+                    const cur = savedPositionTemplate || el.value;
+                    let html = '<option value="">— None —</option>';
+                    snap.forEach(d => { html += `<option value="${d.id}">${d.data().name}</option>`; });
+                    el.innerHTML = html;
+                    if (cur) el.value = cur;
+                }
+            });
+
+
             // Fetch Program Details
             db.collection('programs').doc(programId).onSnapshot(doc => {
                 if (doc.exists) {
                     const p = doc.data();
+
+                    savedSection = p.section || null;
+                    savedProgSet = p.progSet;
+                    savedGradeTemplate = p.gradeTemplateId || p.gradeTemplate || null;
+                    savedPositionTemplate = p.positionTemplateId || p.positionTemplate || null;
 
                     document.getElementById('vp-name').innerText = p.name || 'Unnamed Program';
                     document.getElementById('vp-code').innerText = p.code || '---';
@@ -859,10 +898,10 @@
 
                     document.getElementById('progTopicReg').checked = !!p.topicRegistration;
                     document.getElementById('progGrading').checked = !!p.enableGrading;
-                    if (p.enableGrading && p.gradeTemplate) document.getElementById('progGradeTemplate').value = p.gradeTemplate;
+                    if (p.enableGrading && p.gradeTemplateId) document.getElementById('progGradeTemplate').value = p.gradeTemplateId;
 
                     document.getElementById('progScoring').checked = !!p.enableScoring;
-                    if (p.enableScoring && p.positionTemplate) document.getElementById('progScoreTemplate').value = p.positionTemplate;
+                    if (p.enableScoring && p.positionTemplateId) document.getElementById('progScoreTemplate').value = p.positionTemplateId;
 
                     toggleTemplateState('progGrading', 'progGradeTemplate', 'icon-grade-template');
                     toggleTemplateState('progScoring', 'progScoreTemplate', 'icon-score-template');

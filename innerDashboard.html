@@ -96,8 +96,8 @@
                         <i id="owner-icon-submenu-templates" class="fi fi-rr-angle-small-down text-xs opacity-50 group-hover:opacity-100 transition-transform duration-200"></i>
                     </button>
                     <div id="owner-submenu-templates" class="hidden flex-col mt-1 space-y-0.5 px-2">
-                        <a href="#" class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item"><div class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors"></div> Grade</a>
-                        <a href="#" class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item"><div class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors"></div> Position</a>
+                        <a href="#" data-tab="grade" onclick="event.preventDefault(); showOwnerTab('grade')" class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item"><div class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors"></div> Grade</a>
+                        <a href="#" data-tab="position" onclick="event.preventDefault(); showOwnerTab('position')" class="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] text-gray-500 hover:text-brand-blue hover:bg-blue-50/50 font-medium transition-all group/item"><div class="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover/item:bg-brand-blue transition-colors"></div> Pattern</a>
                     </div>
                 </div>
 
@@ -262,6 +262,34 @@
                     </div>
                 </div>
 
+                <!-- Grade Templates Tab -->
+                <div id="tpl-grade" class="hidden animate-in fade-in duration-500">
+                    <div class="flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
+                        <div>
+                            <h1 class="text-[1.35rem] font-bold text-gray-800 flex items-center gap-2"><i class="fi fi-rr-document text-brand-blue"></i> Grade Templates</h1>
+                            <p class="text-[13px] text-gray-500 mt-1">Define points mapping for different grades (e.g. A: 5, B: 3)</p>
+                        </div>
+                        <button onclick="openTemplateSidebar('grade')" class="bg-brand-blue text-white px-5 py-2.5 rounded-full text-sm font-bold shadow-md hover:opacity-90 transition-all flex items-center gap-2"><i class="fi fi-rr-add"></i> Add Template</button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="grade-templates-list">
+                        <!-- Rendered by JS -->
+                    </div>
+                </div>
+
+                <!-- Pattern Templates Tab -->
+                <div id="tpl-position" class="hidden animate-in fade-in duration-500">
+                    <div class="flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
+                        <div>
+                            <h1 class="text-[1.35rem] font-bold text-gray-800 flex items-center gap-2"><i class="fi fi-rr-document text-brand-blue"></i> Pattern Templates</h1>
+                            <p class="text-[13px] text-gray-500 mt-1">Define points mapping for patterns (e.g. 1st: 10, 2nd: 5)</p>
+                        </div>
+                        <button onclick="openTemplateSidebar('position')" class="bg-brand-blue text-white px-5 py-2.5 rounded-full text-sm font-bold shadow-md hover:opacity-90 transition-all flex items-center gap-2"><i class="fi fi-rr-add"></i> Add Template</button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="position-templates-list">
+                        <!-- Rendered by JS -->
+                    </div>
+                </div>
+
                 <!-- Notifications Tab -->
                 <div id="tpl-notify" class="hidden animate-in fade-in duration-500">
                     <div class="flex items-center justify-between mb-8">
@@ -337,7 +365,7 @@
                     </div>
                 </div>
 
-                <div id="tpl-users" class="flex flex-col gap-6">
+                <div id="tpl-users" class="hidden flex-col gap-6 animate-in fade-in duration-500">
 
                     <div class="bg-white rounded-2xl border border-gray-100 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.02)] p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
@@ -503,7 +531,7 @@
         <div id="limitSidebar" class="fixed inset-y-0 right-0 w-[340px] bg-white shadow-2xl z-[70] transform translate-x-full transition-transform duration-300 flex flex-col border-l border-gray-100">
             <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
                 <h2 class="text-[15px] font-bold text-gray-800" id="limitSidebarTitle">Add Program Set</h2>
-                <button onclick="closeLimitSidebar()" class="text-gray-400 hover:text-gray-700 transition-colors"><i class="fi fi-rr-cross"></i></button>
+                <button type="button" onclick="closeLimitSidebar()" class="text-gray-400 hover:text-gray-700 transition-colors"><i class="fi fi-rr-cross"></i></button>
             </div>
             <div class="p-6 flex-1 overflow-y-auto bg-white space-y-5">
                 <div><label class="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wide">Set Name *</label>
@@ -514,7 +542,85 @@
                 <input type="number" id="lim-max" value="1" min="1" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-brand-blue/30 focus:outline-none"></div>
             </div>
             <div class="p-5 border-t border-gray-100 bg-white">
-                <button onclick="saveLimitSet()" class="w-full bg-brand-blue text-white py-3 rounded-xl text-sm font-bold hover:opacity-90 shadow-lg shadow-brand-blue/20 transition-all flex items-center justify-center gap-2"><i class="fi fi-rr-disk text-sm"></i> Save Set</button>
+                <button type="button" onclick="saveLimitSet()" class="w-full bg-brand-blue text-white py-3 rounded-xl text-sm font-bold hover:opacity-90 shadow-lg shadow-brand-blue/20 transition-all flex items-center justify-center gap-2"><i class="fi fi-rr-disk text-sm"></i> Save Set</button>
+            </div>
+        </div>
+
+        <div id="templateSidebar" class="fixed inset-y-0 right-0 w-[440px] max-w-full bg-white shadow-2xl z-[70] transform translate-x-full transition-transform duration-300 flex flex-col border-l border-gray-100">
+            <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                <div>
+                    <h2 class="text-[15px] font-bold text-gray-800" id="templateSidebarTitle">Add Template</h2>
+                    <p id="templateSidebarSubtitle" class="text-[12px] text-gray-400 mt-0.5">Define name → value mapping</p>
+                </div>
+                <button type="button" onclick="closeTemplateSidebar()" class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:bg-gray-200 hover:text-gray-700 transition-colors"><i class="fi fi-rr-cross text-sm"></i></button>
+            </div>
+
+            <div class="p-5 flex-1 overflow-y-auto bg-white space-y-5">
+                <input type="hidden" id="tpl-type" value="">
+
+                <!-- Template Name -->
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wide">Template Name *</label>
+                    <input type="text" id="tpl-name"
+                        style="width: 100%; height: 44px; padding: 0 16px; background-color: #ffffff; border: 2px solid #334155; border-radius: 12px; font-size: 14px; font-weight: 700; color: #0f172a; outline: none; display: block;"
+                        placeholder="e.g. Standard Grade">
+                </div>
+
+                <!-- Values Mapping -->
+                <div class="space-y-4">
+                    <!-- Input Area -->
+                    <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px;">
+                        <label id="tpl-add-label" style="display: block; font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">Add New Entry</label>
+                        
+                        <div style="display: flex; align-items: center; gap: 8px; width: 100%;">
+                            <!-- Name Input -->
+                            <div style="width: 55%;">
+                                <input type="text" id="tpl-input-label" 
+                                    onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('tpl-input-points').focus();}"
+                                    style="width: 100%; height: 44px; padding: 0 12px; background-color: #ffffff; border: 2px solid #334155; border-radius: 10px; font-size: 14px; font-weight: 700; color: #0f172a; outline: none; display: block;"
+                                    placeholder="Name (e.g. A)">
+                            </div>
+                            
+                            <!-- Value Input -->
+                            <div style="width: 25%;">
+                                <input type="number" id="tpl-input-points" 
+                                    onkeydown="if(event.key==='Enter'){event.preventDefault();addTemplateValueCard();}"
+                                    style="width: 100%; height: 44px; padding: 0 4px; background-color: #ffffff; border: 2px solid #334155; border-radius: 10px; font-size: 14px; font-weight: 900; color: #0f172a; text-align: center; outline: none; display: block;"
+                                    placeholder="Value">
+                            </div>
+                            
+                            <!-- Add Button -->
+                            <button type="button" onclick="addTemplateValueCard()" 
+                                style="width: 44px; height: 44px; background-color: #134e8e; color: #ffffff; border-radius: 10px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                                <i class="fi fi-rr-plus" style="font-size: 16px;"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- List Area -->
+                    <div>
+                        <div class="flex items-center justify-between px-2 mb-2">
+                             <label class="text-[11px] font-extrabold text-gray-500 uppercase tracking-widest">Added Entries</label>
+                             <div id="tpl-summary-text-header" class="text-[11px] font-bold text-brand-blue"></div>
+                        </div>
+                        <div id="tpl-cards-container" class="border border-gray-200 rounded-2xl overflow-hidden divide-y divide-gray-100 bg-white">
+                            <div id="tpl-empty-msg" class="p-10 text-center text-gray-400 italic text-[13px]">No entries added yet. Fill above and click + to add.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary badge -->
+                <div id="tpl-summary" class="hidden flex items-center gap-2 text-[12px] text-gray-500 bg-blue-50 border border-blue-100 rounded-lg px-3 py-2">
+                    <i class="fi fi-rr-info text-brand-blue text-xs"></i>
+                    <span id="tpl-summary-text"></span>
+                </div>
+            </div>
+
+            <div class="p-5 border-t border-gray-100 bg-white flex gap-3">
+                <button type="button" onclick="closeTemplateSidebar()" class="flex-1 py-2.5 border border-gray-200 rounded-xl text-[13px] font-semibold text-gray-600 hover:bg-gray-50 transition-all">Cancel</button>
+                <button type="button" onclick="saveTemplate()" class="flex-1 bg-brand-blue text-white py-2.5 rounded-xl text-[13px] font-bold hover:opacity-90 shadow-md transition-all flex items-center justify-center gap-2">
+                    <i class="fi fi-rr-disk text-sm"></i> Save Template
+                </button>
             </div>
         </div>
 
@@ -801,7 +907,7 @@
                     navUsers.classList.add('hidden');
                     // Fallback if currently on users tab
                     const urlParams = new URLSearchParams(window.location.search);
-                    if (urlParams.get('tab') === 'users') showOwnerTab('templates');
+                    if (urlParams.get('tab') === 'users') showOwnerTab('grade');
                 }
             }
 
@@ -1170,9 +1276,9 @@
             const isAsstOwner = localStorage.getItem('semiOwner') === 'true';
             if (tab === 'users' && currentRole !== 'owner' && !isAsstOwner && !canManage) {
                 showToast('<b>🚫</b> Access denied.');
-                // If this was triggered by URL, fallback to templates
+                // If this was triggered by URL, fallback to grade templates
                 if (window.location.search.includes('tab=users')) {
-                    showOwnerTab('templates'); 
+                    showOwnerTab('grade');
                 }
                 return;
             }
@@ -1204,7 +1310,9 @@
                 'topic': 'Topic Registration',
                 'limits': 'Set Limits',
                 'bulk-candidates': 'Bulk Candidate Import',
-                'bulk-programs': 'Bulk Program Import'
+                'bulk-programs': 'Bulk Program Import',
+                'grade': 'Grade Templates',
+                'position': 'Pattern Templates'
             };
             const title = map[tab] || (tab.charAt(0).toUpperCase() + tab.slice(1));
             const sep1 = document.getElementById('breadcrumb-separator-1');
@@ -1327,7 +1435,7 @@
               .catch(err => showToast('<b>❌</b> ' + err.message));
         }
 
-        function closeAllSidebars() { closeManageAccount(); closeFestData(); closeLimitSidebar(); }
+        function closeAllSidebars() { closeManageAccount(); closeFestData(); closeLimitSidebar(); closeTemplateSidebar(); }
 
         // ── Assign Role Sidebar ────────────────────────────────────────
         let currentEditId = null;
@@ -1758,24 +1866,231 @@
             if(tb) { if(allLimits.length===0) tb.innerHTML = "<div class='text-center py-8 text-[13px] text-gray-400'>No sets defined.</div>"; else tb.innerHTML = allLimits.map(l => `<div class="grid grid-cols-12 gap-4 items-center p-3.5 bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-shadow"><div class="col-span-5 font-bold text-[13px] text-gray-800">${l.name}</div><div class="col-span-3 text-center text-[13px] font-medium text-gray-500">${l.minCount}</div><div class="col-span-3 text-center text-[13px] font-medium text-gray-500">${l.maxCount}</div><div class="col-span-1 flex gap-3 justify-end"><i class="fi fi-rr-edit text-gray-400 hover:text-brand-blue cursor-pointer transition-colors" onclick="openLimitSidebar('${l.id}')"></i><i class="fi fi-rr-trash text-gray-400 hover:text-red-500 cursor-pointer transition-colors" onclick="deleteLimit('${l.id}')"></i></div></div>`).join(''); }
         });
 
-        // ═══════════════════════════════════════════════════════════════
-        // SUBMENU TOGGLE
-        // ═══════════════════════════════════════════════════════════════
-        function toggleSubmenu(id, iconId) {
-            const el = document.getElementById(id);
-            const icon = document.getElementById(iconId);
-            if (!el) return;
-            const isHidden = el.classList.contains('hidden');
-            el.classList.toggle('hidden', !isHidden);
-            el.classList.toggle('flex', isHidden);
-            if (icon) icon.classList.toggle('rotate-180', isHidden);
+        // ── Grade & Pattern Templates Logic ───────────────────────────
+        let editingTemplateId = null;
+        let currentTemplateType = null;
+        let allGradeTemplates = [];
+        let allPositionTemplates = [];
+        let currentTemplateValues = [];
+
+        function openTemplateSidebar(type, id = null) {
+            editingTemplateId = id;
+            currentTemplateType = type;
+
+            const isGrade = type === 'grade';
+            const typeLabel = isGrade ? 'Grade' : 'Pattern';
+
+            document.getElementById('tpl-type').value = type;
+            document.getElementById('templateSidebarTitle').innerText = (id ? 'Edit ' : 'Add ') + typeLabel + ' Template';
+
+            const subtitle = document.getElementById('templateSidebarSubtitle');
+            if (subtitle) subtitle.innerText = isGrade
+                ? 'Map grade letters to values (e.g. A → 5, B → 3)'
+                : 'Map patterns to values (e.g. 1st → 10, 2nd → 6)';
+
+            const addLabel = document.getElementById('tpl-add-label');
+            if (addLabel) addLabel.innerText = 'Add New ' + (isGrade ? 'Grade' : 'Pattern');
+
+            const nameInput = document.getElementById('tpl-name');
+            nameInput.value = '';
+            nameInput.placeholder = 'e.g. ' + (isGrade ? 'Standard Grade' : 'Top 3 Pattern');
+
+            document.getElementById('tpl-input-label').value = '';
+            document.getElementById('tpl-input-points').value = '';
+            document.getElementById('tpl-input-label').placeholder = isGrade ? 'Name (e.g. A)' : 'Name (e.g. 1st)';
+
+            const summary = document.getElementById('tpl-summary');
+            if (summary) summary.classList.add('hidden');
+
+            currentTemplateValues = [];
+
+            if (id) {
+                const list = isGrade ? allGradeTemplates : allPositionTemplates;
+                const tpl = list.find(x => x.id === id);
+                if (tpl) {
+                    document.getElementById('tpl-name').value = tpl.name;
+                    if (tpl.values && Array.isArray(tpl.values)) currentTemplateValues = [...tpl.values];
+                }
+            }
+
+            renderTemplateValueCards();
+            document.getElementById('rightSidebarOverlay').classList.remove('hidden');
+            document.getElementById('templateSidebar').classList.remove('translate-x-full');
+            setTimeout(() => document.getElementById('tpl-name').focus(), 320);
         }
+
+        function closeTemplateSidebar() {
+            document.getElementById('templateSidebar').classList.add('translate-x-full');
+            document.getElementById('rightSidebarOverlay').classList.add('hidden');
+        }
+
+        function renderTemplateValueCards() {
+            const container = document.getElementById('tpl-cards-container');
+            const emptyMsg  = document.getElementById('tpl-empty-msg');
+            const summary   = document.getElementById('tpl-summary');
+            const sumText   = document.getElementById('tpl-summary-text');
+            const sumTextH  = document.getElementById('tpl-summary-text-header');
+
+            if (currentTemplateValues.length === 0) {
+                container.innerHTML = '<div class="px-4 py-5 text-center text-[12px] text-gray-400 italic" id="tpl-empty-msg">No values added yet</div>';
+                if (summary) summary.classList.add('hidden');
+                if (sumTextH) sumTextH.textContent = '';
+                return;
+            }
+
+            container.innerHTML = currentTemplateValues.map((v, index) => `
+                <div class="flex items-center gap-2 p-3 hover:bg-gray-50 transition-colors group">
+                    <div class="flex-[2] text-[13px] font-bold text-gray-800 break-words">${v.label}</div>
+                    <div class="flex-1 text-center text-[13.5px] font-black text-brand-blue">${v.points} <span class="text-[10px] font-normal text-gray-400">val</span></div>
+                    <div class="w-8 shrink-0 flex justify-end">
+                        <button type="button" onclick="removeTemplateValueCard(${index})"
+                            class="w-8 h-8 flex items-center justify-center rounded-full text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100">
+                            <i class="fi fi-rr-trash text-[11px]"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            if (summary) {
+                const total = currentTemplateValues.reduce((s, v) => s + Number(v.points), 0);
+                summary.classList.remove('hidden');
+                sumText.textContent = `${currentTemplateValues.length} value${currentTemplateValues.length > 1 ? 's' : ''} · Total value: ${total}`;
+                if (sumTextH) sumTextH.textContent = `Total Value: ${total}`;
+            }
+        }
+
+        function addTemplateValueCard() {
+            const labelInput  = document.getElementById('tpl-input-label');
+            const pointsInput = document.getElementById('tpl-input-points');
+            const label  = labelInput.value.trim();
+            const points = pointsInput.value;
+
+            if (!label || points === '') return showToast('<b>❌</b> Please fill both name and value.');
+
+            // Duplicate label guard
+            if (currentTemplateValues.some(v => v.label.toLowerCase() === label.toLowerCase())) {
+                return showToast('<b>⚠️</b> Name "' + label + '" already exists.');
+            }
+
+            currentTemplateValues.push({ label: label, points: Number(points) });
+            labelInput.value  = '';
+            pointsInput.value = '';
+            labelInput.focus();
+            renderTemplateValueCards();
+        }
+
+        function removeTemplateValueCard(index) {
+            currentTemplateValues.splice(index, 1);
+            renderTemplateValueCards();
+        }
+
+        function saveTemplate() {
+            const name = document.getElementById('tpl-name').value.trim();
+            const type = document.getElementById('tpl-type').value;
+            if (!name) return showToast('<b>❌</b> Template Name is required.');
+            if (currentTemplateValues.length === 0) return showToast('<b>❌</b> Add at least one value & point pair.');
+
+            const btn = document.querySelector('#templateSidebar button[onclick="saveTemplate()"]');
+            const origHTML = btn ? btn.innerHTML : '';
+            if (btn) { btn.disabled = true; btn.innerHTML = '<div class="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin"></div> Saving…'; }
+
+            const payload = { name, values: currentTemplateValues, type, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
+            const col = type === 'grade' ? 'gradeTemplates' : 'positionTemplates';
+
+            const done = () => { showToast('<b>✅</b> Template ' + (editingTemplateId ? 'updated' : 'added') + '!'); closeTemplateSidebar(); if (btn) { btn.disabled = false; btn.innerHTML = origHTML; } };
+            const fail = (err) => { showToast('<b>❌</b> ' + err.message); if (btn) { btn.disabled = false; btn.innerHTML = origHTML; } };
+
+            if (editingTemplateId) {
+                db.collection(col).doc(editingTemplateId).update(payload).then(done).catch(fail);
+            } else {
+                payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                db.collection(col).add(payload).then(done).catch(fail);
+            }
+        }
+
+        function deleteTemplate(type, id) {
+            if (confirm('Delete this template? This cannot be undone.')) {
+                const col = type === 'grade' ? 'gradeTemplates' : 'positionTemplates';
+                db.collection(col).doc(id).delete()
+                    .then(() => showToast('<b>✅</b> Template deleted!'))
+                    .catch(err => showToast('<b>❌</b> ' + err.message));
+            }
+        }
+
+        function renderTemplateCard(t, type) {
+            const colLabel = type === 'grade' ? 'Grade' : 'Pattern';
+            const rowsHtml = (t.values || []).map(v =>
+                `<div class="grid grid-cols-2 gap-2 py-1.5 border-b border-gray-50 last:border-0">
+                    <span class="text-[12px] font-bold text-gray-700">${v.label}</span>
+                    <span class="text-[12px] font-semibold text-brand-blue">${v.points}</span>
+                </div>`
+            ).join('');
+
+            return `<div class="bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-all relative group flex flex-col">
+                <div class="flex justify-between items-start p-5 pb-3">
+                    <div>
+                        <h3 class="font-bold text-[14px] text-gray-900 leading-tight">${t.name}</h3>
+                        <span class="text-[11px] text-gray-400 font-medium">${(t.values||[]).length} ${colLabel.toLowerCase()} values</span>
+                    </div>
+                    <div class="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button onclick="openTemplateSidebar('${type}', '${t.id}')" title="Edit"
+                            class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-brand-blue hover:bg-blue-50 transition-all">
+                            <i class="fi fi-rr-edit text-xs"></i>
+                        </button>
+                        <button onclick="deleteTemplate('${type}', '${t.id}')" title="Delete"
+                            class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all">
+                            <i class="fi fi-rr-trash text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="px-5 pb-5 flex-1">
+                    <div class="grid grid-cols-2 gap-2 border-b border-gray-100 pb-1.5 mb-1">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wide">${colLabel} Name</span>
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wide">Value</span>
+                    </div>
+                    <div class="max-h-[140px] overflow-y-auto pr-0.5">
+                        ${rowsHtml || '<span class="text-[12px] text-gray-400 italic">No values defined</span>'}
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        db.collection('gradeTemplates').onSnapshot(snap => {
+            allGradeTemplates = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            const container = document.getElementById('grade-templates-list');
+            if (!container) return;
+            if (allGradeTemplates.length === 0) {
+                container.innerHTML = `<div class="col-span-full flex flex-col items-center justify-center py-20 opacity-40">
+                    <i class="fi fi-rr-document text-4xl mb-3 text-gray-400"></i>
+                    <p class="text-[13px] font-medium text-gray-500">No grade templates defined yet.</p>
+                    <p class="text-[12px] text-gray-400 mt-1">Click <b>Add Template</b> to get started.</p>
+                </div>`;
+            } else {
+                container.innerHTML = allGradeTemplates.map(t => renderTemplateCard(t, 'grade')).join('');
+            }
+        });
+
+        db.collection('positionTemplates').onSnapshot(snap => {
+            allPositionTemplates = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            const container = document.getElementById('position-templates-list');
+            if (!container) return;
+            if (allPositionTemplates.length === 0) {
+                container.innerHTML = `<div class="col-span-full flex flex-col items-center justify-center py-20 opacity-40">
+                    <i class="fi fi-rr-trophy text-4xl mb-3 text-gray-400"></i>
+                    <p class="text-[13px] font-medium text-gray-500">No pattern templates defined yet.</p>
+                    <p class="text-[12px] text-gray-400 mt-1">Click <b>Add Template</b> to get started.</p>
+                </div>`;
+            } else {
+                container.innerHTML = allPositionTemplates.map(t => renderTemplateCard(t, 'position')).join('');
+            }
+        });
+
 
         // ═══════════════════════════════════════════════════════════════
         // BULK IMPORT — CANDIDATE DATA
         // ═══════════════════════════════════════════════════════════════
         const CAND_HEADERS = ['name','team','section','admissionNo','class','status'];
-        const PROG_HEADERS = ['code','name','section','type','maxParticipants','status'];
+        const PROG_HEADERS = ['code','name','section','type','maxParticipants','status','progSet'];
 
         function downloadCandidateTemplate() {
             const csv = CAND_HEADERS.join(',') + '\n';
@@ -1816,8 +2131,8 @@
             const team = (r.team || '').trim();
             if (!(r.name || '').trim()) errs.push('Name is required');
             if (!sec) errs.push('Section is required');
-            if (!team) errs.push('Team is required');
             else if (!bulkCandidateValidSections.some(s => s.toLowerCase() === sec.toLowerCase())) errs.push('Unknown section "' + sec + '"');
+            if (!team) errs.push('Team is required');
             else if (!bulkCandidateValidTeams.some(t => t.toLowerCase() === team.toLowerCase())) errs.push('Unknown team "' + team + '"');
             r._errors = errs;
             r._valid = errs.length === 0;
@@ -2018,6 +2333,7 @@
         // ═══════════════════════════════════════════════════════════════
         let bulkProgramRows = [];
         let bulkProgramValidSections = [];
+        let bulkProgramValidSets = [];
 
         function validateProgramRow(r) {
             const errs = [];
@@ -2032,6 +2348,10 @@
             if (!sec) errs.push('Section is required');
             else if (!bulkProgramValidSections.some(s => s.toLowerCase() === sec.toLowerCase())) errs.push('Unknown section "' + sec + '"');
             if (!['individual','group'].includes((r.type || '').trim().toLowerCase())) errs.push('Type must be Individual or Group');
+            
+            const pset = (r.progset || '').trim();
+            if (pset && !bulkProgramValidSets.some(s => s.toLowerCase() === pset.toLowerCase())) errs.push('Unknown program set "' + pset + '"');
+            
             r._errors = errs;
             r._valid = errs.length === 0;
         }
@@ -2078,12 +2398,14 @@
                     showToast('<b>❌</b> Missing columns: ' + missingHeaders.join(', '));
                     return;
                 }
-                const [secSnap, progSnap] = await Promise.all([
+            const [secSnap, progSnap, setSnap] = await Promise.all([
                     db.collection('sections').where('isActive','==',true).get(),
-                    db.collection('programs').get()
+                db.collection('programs').get(),
+                db.collection('programSets').get()
                 ]);
                 bulkProgramValidSections = secSnap.docs.map(d => (d.data().name||'').trim());
                 window.bulkExistingCodes = progSnap.docs.map(d => String(d.data().code).trim().toLowerCase());
+            bulkProgramValidSets = setSnap.docs.map(d => (d.data().name||'').trim());
 
                 bulkProgramRows = rows.map((r, i) => {
                     return { ...r, _index: i, _rowNum: i+2 };
@@ -2128,6 +2450,16 @@
                 ['Active', 'Inactive'].forEach(t => {
                     if (t.toLowerCase() === valLower) matched = true;
                     opts += `<option value="${t}" ${t.toLowerCase() === valLower ? 'selected' : ''}>${t}</option>`;
+                });
+                if (val && !matched) opts = `<option value="${val}" selected disabled class="text-red-500">Invalid: ${val}</option>` + opts;
+                return `<select class="${baseClass} cursor-pointer" onchange="updateBulkProgramRow(${r._index}, '${field}', this.value)">${opts}</select>`;
+            }
+            if (field === 'progset') {
+                let opts = `<option value="">No Limit Set</option>`;
+                let matched = false;
+                bulkProgramValidSets.forEach(s => {
+                    if (s.toLowerCase() === valLower) matched = true;
+                    opts += `<option value="${s}" ${s.toLowerCase() === valLower ? 'selected' : ''}>${s}</option>`;
                 });
                 if (val && !matched) opts = `<option value="${val}" selected disabled class="text-red-500">Invalid: ${val}</option>` + opts;
                 return `<select class="${baseClass} cursor-pointer" onchange="updateBulkProgramRow(${r._index}, '${field}', this.value)">${opts}</select>`;
@@ -2184,6 +2516,7 @@
                     name: r.name,
                     section: r.section,
                     type: r.type,
+                    progSet: r.progset || '',
                     maxParticipants: parseInt(r.maxparticipants || r.maxParticipants) || 1,
                     minParticipants: 1,
                     status: (r.status||'active').toLowerCase() !== 'inactive',
@@ -2230,11 +2563,21 @@
                 else if (role === 'Admin') bcBase.innerText = 'Admin';
                 else bcBase.innerText = 'Dashboard';
             }
-            // Handle tab switching via URL parameter
+            // Handle tab switching via URL parameter; fall back to a sensible default
             const urlParams = new URLSearchParams(window.location.search);
             const tab = urlParams.get('tab');
             if (tab) {
                 showOwnerTab(tab);
+            } else {
+                // Default tab: users for owner/semi-owner/user-manager, else grade templates
+                const defaultRole = localStorage.getItem('userRole');
+                const defaultSemiOwner = localStorage.getItem('semiOwner') === 'true';
+                const defaultCanManage = localStorage.getItem('userManagement') === 'true';
+                if (defaultRole === 'owner' || defaultSemiOwner || defaultCanManage) {
+                    showOwnerTab('users');
+                } else {
+                    showOwnerTab('grade');
+                }
             }
 
             const btn = document.getElementById('logoutBtnOwner');

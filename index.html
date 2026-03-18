@@ -358,8 +358,8 @@
             const fallbackLogin = () => {
                 if (user === 'admin' && pass === '81119') {
                     // Seed initial data to firestore so it isn't empty!
-                    firebase.firestore().collection('admin').doc('credentials').set({ username: 'admin', password: '81119', name: 'ARfets' }).catch(() => {});
-                    firebase.firestore().collection('config').doc('festData').set({ name: 'ARfets', isActive: true }).catch(() => {});
+                    firebase.firestore().collection('admin').doc('credentials').set({ username: 'admin', password: '81119', name: 'ArtFest' }).catch(() => {});
+                    firebase.firestore().collection('config').doc('festData').set({ name: 'ArtFest', isActive: true }).catch(() => {});
 
                     showToast('<b>✅</b> Successfully logged in!');
                     localStorage.setItem('isLoggedIn', 'true');
@@ -386,8 +386,8 @@
                 if (user === validUser && pass === validPass) {
                     // Owner login — always allowed
                     if (!doc.exists) {
-                        dbRef.set({ username: 'admin', password: '81119', name: 'ARfets' }).catch(() => {});
-                        firebase.firestore().collection('config').doc('festData').set({ name: 'ARfets', isActive: true }).catch(() => {});
+                        dbRef.set({ username: 'admin', password: '81119', name: 'ArtFest' }).catch(() => {});
+                        firebase.firestore().collection('config').doc('festData').set({ name: 'ArtFest', isActive: true }).catch(() => {});
                     }
                     showToast('<b>✅</b> Successfully logged in!');
                     localStorage.setItem('isLoggedIn', 'true');
