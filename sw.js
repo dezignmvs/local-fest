@@ -1,4 +1,4 @@
-const CACHE_NAME = 'festie-cache-v4'; // Increment this to force update
+const CACHE_NAME = 'festie-cache-v9'; // Increment this to force update
 const URLS_TO_CACHE = [
     './',
     './index.html',
@@ -63,11 +63,26 @@ self.addEventListener('activate', event => {
     );
 });
 
-// Fetch event: serve from cache, fallback to network
+// Fetch event: Network-first, fallback to cache
 self.addEventListener('fetch', event => {
+    if (event.request.method !== 'GET') return;
+
+    // Force our own files to bypass the browser's HTTP disk cache 
+    const fetchOptions = {};
+    if (event.request.url.startsWith(self.location.origin)) {
+        fetchOptions.cache = 'no-cache';
+    }
+
     event.respondWith(
-        caches.match(event.request, { ignoreSearch: true }).then(response => {
-            return response || fetch(event.request);
+        fetch(event.request, fetchOptions)
+            .then(response => {
+                const responseClone = response.clone();
+                caches.open(CACHE_NAME).then(cache => {
+                    cache.put(event.request, responseClone);
+                });
+                return response;
+            }).catch(() => {
+                return caches.match(event.request, { ignoreSearch: true });
         })
     );
 });

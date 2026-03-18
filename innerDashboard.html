@@ -5,6 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings — Festival Dashboard</title>
+    <!-- Favicon / PWA Setup -->
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" href="logo-512.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="logo-192.png">
+    <link rel="manifest" href="manifest.json">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
@@ -57,12 +62,13 @@
             class="bg-white w-64 h-full border-r border-brand-border flex flex-col fixed lg:relative z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out shadow-sm lg:shadow-none">
 
             <div class="h-20 flex items-center justify-between px-6 border-b border-brand-border">
-                <div class="flex items-center gap-3">
-                    <img id="owner-sidebar-avatar" src="logo-192.svg?v=4"
-                        class="w-10 h-10 rounded-full bg-white flex items-center justify-center border border-gray-100 shadow-sm object-contain p-1">
-                    <div>
-                        <h2 id="owner-sidebar-name" class="text-sm font-bold text-brand-textDark leading-none mb-1">Suhail</h2>
-                        <span id="owner-sidebar-status" class="text-[11px] font-medium text-brand-blue bg-blue-50 px-2 py-0.5 rounded-full">Active</span>
+                <div class="flex items-center gap-3 bg-white p-2">
+                    <div id="owner-sidebar-avatar" class="flex h-[42px] w-[42px] items-center justify-center rounded-[12px] bg-[#eecb4a] pb-1 text-[22px] font-bold text-white uppercase">
+                        S
+                    </div>
+                    <div class="flex flex-col justify-center">
+                        <span id="owner-sidebar-name" class="leading-tight text-[15px] font-medium text-[#00488f] capitalize">Suhail</span>
+                        <span id="owner-sidebar-status" class="mt-0.5 leading-tight text-[13px] text-[#7a8288]">Active</span>
                     </div>
                 </div>
                 <button class="lg:hidden text-gray-400 hover:text-gray-800" onclick="toggleSidebar()">
@@ -767,7 +773,7 @@
             [['owner-sidebar-name', name]].forEach(([id, val]) => { const el=document.getElementById(id); if(el) el.innerText=val; });
             [['owner-sidebar-avatar', ch]].forEach(([id, val]) => { const el=document.getElementById(id); if(el && el.tagName !== 'IMG') el.innerText=val; });
             const el = document.getElementById('owner-sidebar-status');
-            if (el) { el.innerText = isActive ? 'Active' : 'Inactive'; el.className = isActive ? "text-[11px] font-medium text-brand-blue bg-blue-50 px-2 py-0.5 rounded-full" : "text-[11px] font-medium text-brand-red bg-red-50 px-2 py-0.5 rounded-full"; }
+            if (el) { el.innerText = isActive ? 'Active' : 'Inactive'; el.className = isActive ? "mt-0.5 leading-tight text-[13px] text-[#7a8288]" : "mt-0.5 leading-tight text-[13px] text-red-500"; }
         }
 
         function updateUserDataUI(username) {
